@@ -167,6 +167,12 @@ Run frontend quality gate:
 npm run quality
 ```
 
+Check that GitHub Actions workflows do not contain hardcoded Laravel app keys:
+
+```bash
+npm run security:ci
+```
+
 ## Infrastructure
 
 The current local infrastructure is MySQL plus the `cs85_php_programming` database.
@@ -240,6 +246,7 @@ Current test coverage verifies:
 - `resources/css/app.css` stays Tailwind-only
 
 GitHub Actions runs the same quality gates on pushes and pull requests to `main`.
+The workflow generates its Laravel `APP_KEY` during the CI run and does not store it in repository files.
 
 ## Development Notes
 

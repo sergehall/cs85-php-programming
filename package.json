@@ -10,7 +10,8 @@
         "infra:up": "node scripts/infra-up.mjs",
         "infra:down": "node scripts/infra-down.mjs",
         "lint": "npm run format:check",
-        "quality": "npm run lint && npm run build",
+        "quality": "npm run lint && npm run security:ci && npm run build",
+        "security:ci": "node scripts/check-ci-secrets.mjs",
         "start:app": "npm run infra:up && concurrently --kill-others-on-fail --names laravel,vite,open --prefix-colors blue,green,gray \"php artisan serve --host=127.0.0.1 --port=8000\" \"vite --host 127.0.0.1\" \"node scripts/open-local-app.mjs\"",
         "stop:infra": "npm run infra:down"
     },

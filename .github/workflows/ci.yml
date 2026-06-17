@@ -25,7 +25,6 @@ jobs:
     env:
       APP_ENV: testing
       APP_DEBUG: false
-      APP_KEY: base64:4VJbGAtbfpjA0om1YndFNfqcS7bBwneWc0xnKFS5avE=
       DB_CONNECTION: sqlite
       DB_DATABASE: database/database.sqlite
       CACHE_STORE: array
