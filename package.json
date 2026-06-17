@@ -1,0 +1,20 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "infra:up": "node scripts/infra-up.mjs",
+        "infra:down": "node scripts/infra-down.mjs",
+        "start:app": "npm run infra:up && concurrently --kill-others-on-fail --names laravel,vite,open --prefix-colors blue,green,gray \"php artisan serve --host=127.0.0.1 --port=8000\" \"vite --host 127.0.0.1\" \"node scripts/open-local-app.mjs\"",
+        "stop:infra": "npm run infra:down"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.0.0",
+        "concurrently": "^10.0.3",
+        "laravel-vite-plugin": "^3.1",
+        "tailwindcss": "^4.0.0",
+        "vite": "^8.0.0"
+    }
+}
