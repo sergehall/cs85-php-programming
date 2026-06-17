@@ -5,8 +5,12 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
+        "format": "prettier --write README.md package.json scripts/*.mjs resources/js/*.js",
+        "format:check": "prettier --check README.md package.json scripts/*.mjs resources/js/*.js",
         "infra:up": "node scripts/infra-up.mjs",
         "infra:down": "node scripts/infra-down.mjs",
+        "lint": "npm run format:check",
+        "quality": "npm run lint && npm run build",
         "start:app": "npm run infra:up && concurrently --kill-others-on-fail --names laravel,vite,open --prefix-colors blue,green,gray \"php artisan serve --host=127.0.0.1 --port=8000\" \"vite --host 127.0.0.1\" \"node scripts/open-local-app.mjs\"",
         "stop:infra": "npm run infra:down"
     },
@@ -14,6 +18,7 @@
         "@tailwindcss/vite": "^4.0.0",
         "concurrently": "^10.0.3",
         "laravel-vite-plugin": "^3.1",
+        "prettier": "^3.8.4",
         "tailwindcss": "^4.0.0",
         "vite": "^8.0.0"
     }
