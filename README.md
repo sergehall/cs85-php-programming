@@ -22,6 +22,8 @@ This project is intentionally structured as more than a disposable course sandbo
 - SQLite for fast default Laravel startup
 - PHPUnit feature tests
 - Laravel Pint formatting
+- Larastan and PHPStan static analysis
+- Prettier formatting for JavaScript and project documentation
 - Laravel Debugbar for local debugging
 - Laravel Tinker for interactive exploration
 - OpenAI PHP client for the final project
@@ -40,6 +42,7 @@ resources/views/partials Shared Blade partials
 resources/css/app.css    Tailwind entrypoint only
 scripts/                 Local app and infrastructure automation
 tests/Feature            Route, navigation, and access-surface tests
+tests/Unit               Configuration and project invariant tests
 assignments/             Weekly assignment work
 labs/                    Practice exercises
 notes/                   Course notes and reading summaries
@@ -49,17 +52,17 @@ final-project/           AI-powered final project work
 
 ## Application Areas
 
-| Area | Route | Purpose |
-| --- | --- | --- |
-| Home | `/` | Project entry point and current readiness overview |
-| Roadmap | `/roadmap` | CS85 six-week module path |
-| Stack | `/stack` | Installed tooling and technical foundation |
-| Contact | `/contact` | Course and project contact channels |
-| Cabinet | `/cabinet` | Future authenticated user workspace |
-| Profile | `/cabinet/profile` | Prepared user profile area |
-| Coursework | `/cabinet/coursework` | Prepared assignments, labs, notes, and final-project workspace |
-| Messages | `/cabinet/messages` | Prepared user message area |
-| Admin Tools | `/cabinet/admin` | Prepared admin-only operational area |
+| Area        | Route                 | Purpose                                                        |
+| ----------- | --------------------- | -------------------------------------------------------------- |
+| Home        | `/`                   | Project entry point and current readiness overview             |
+| Roadmap     | `/roadmap`            | CS85 six-week module path                                      |
+| Stack       | `/stack`              | Installed tooling and technical foundation                     |
+| Contact     | `/contact`            | Course and project contact channels                            |
+| Cabinet     | `/cabinet`            | Future authenticated user workspace                            |
+| Profile     | `/cabinet/profile`    | Prepared user profile area                                     |
+| Coursework  | `/cabinet/coursework` | Prepared assignments, labs, notes, and final-project workspace |
+| Messages    | `/cabinet/messages`   | Prepared user message area                                     |
+| Admin Tools | `/cabinet/admin`      | Prepared admin-only operational area                           |
 
 `/admin` is kept as a legacy convenience route and redirects to `/cabinet`.
 
@@ -121,16 +124,46 @@ Run tests:
 php artisan test
 ```
 
-Run formatting check:
+Run PHP formatting:
 
 ```bash
-vendor/bin/pint --test
+composer format
 ```
 
-Run Composer test script:
+Run PHP formatting check:
 
 ```bash
-composer test
+composer format:check
+```
+
+Run PHP static analysis:
+
+```bash
+composer lint
+```
+
+Run the PHP quality gate:
+
+```bash
+composer quality
+```
+
+Run frontend/documentation formatting:
+
+```bash
+npm run format
+```
+
+Run frontend/documentation formatting check:
+
+```bash
+npm run format:check
+```
+
+Run frontend quality gate:
+
+```bash
+npm run quality
 ```
 
 ## Infrastructure
@@ -185,13 +218,13 @@ Never commit real secrets.
 Recommended before committing:
 
 ```bash
-php artisan test
-vendor/bin/pint --test
+composer quality
+npm run quality
 npm run build
 npm audit
 ```
 
-Current feature coverage verifies:
+Current test coverage verifies:
 
 - public routes render successfully
 - cabinet navigation is visible
@@ -199,6 +232,11 @@ Current feature coverage verifies:
 - user cabinet routes render successfully
 - admin-rule routes render inside the cabinet
 - the old phrase `A minimal Laravel project` does not appear
+- navigation config points only to registered routes
+- user and admin role rules remain separated
+- the roadmap keeps the six-week CS85 structure
+- starter stack and contact data are ready for Blade views
+- `resources/css/app.css` stays Tailwind-only
 
 ## Development Notes
 
