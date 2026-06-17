@@ -149,6 +149,18 @@ Run PHP static analysis:
 composer lint
 ```
 
+Auto-fix PHP style and then run static analysis:
+
+```bash
+composer lint-fix
+```
+
+VS Code npm script alias:
+
+```bash
+npm run lint-fix
+```
+
 Run the PHP quality gate:
 
 ```bash

@@ -60,6 +60,10 @@
         "lint": [
             "@php vendor/bin/phpstan analyse --memory-limit=512M"
         ],
+        "lint-fix": [
+            "@format",
+            "@lint"
+        ],
         "quality": [
             "@format:check",
             "@lint",

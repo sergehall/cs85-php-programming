@@ -11,6 +11,7 @@
         "infra:up": "node scripts/infra-up.mjs",
         "infra:down": "node scripts/infra-down.mjs",
         "lint": "npm run format:check",
+        "lint-fix": "composer lint-fix",
         "quality": "npm run lint && npm run security:ci && npm run build",
         "security:ci": "node scripts/check-ci-secrets.mjs",
         "start:app": "npm run dev",
