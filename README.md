@@ -96,15 +96,21 @@ php artisan migrate
 Start the full local application:
 
 ```bash
-npm run start:app
+npm run dev
 ```
 
 This command runs infrastructure first, then starts Laravel, Vite, and opens the app in the browser.
 
+Alias:
+
+```bash
+npm run start:app
+```
+
 Run only the frontend asset dev server:
 
 ```bash
-npm run dev
+npm run dev:assets
 ```
 
 Run only the Laravel server:

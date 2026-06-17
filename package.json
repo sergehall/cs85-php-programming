@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite",
+        "dev": "npm run infra:up && concurrently --kill-others-on-fail --names laravel,vite,open --prefix-colors blue,green,gray \"php artisan serve --host=127.0.0.1 --port=8000\" \"vite --host 127.0.0.1\" \"node scripts/open-local-app.mjs\"",
+        "dev:assets": "vite",
         "format": "prettier --write README.md package.json .github/workflows/*.yml scripts/*.mjs resources/js/*.js",
         "format:check": "prettier --check README.md package.json .github/workflows/*.yml scripts/*.mjs resources/js/*.js",
         "infra:up": "node scripts/infra-up.mjs",
@@ -12,7 +13,7 @@
         "lint": "npm run format:check",
         "quality": "npm run lint && npm run security:ci && npm run build",
         "security:ci": "node scripts/check-ci-secrets.mjs",
-        "start:app": "npm run infra:up && concurrently --kill-others-on-fail --names laravel,vite,open --prefix-colors blue,green,gray \"php artisan serve --host=127.0.0.1 --port=8000\" \"vite --host 127.0.0.1\" \"node scripts/open-local-app.mjs\"",
+        "start:app": "npm run dev",
         "stop:infra": "npm run infra:down"
     },
     "devDependencies": {
