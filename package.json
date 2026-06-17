@@ -5,8 +5,8 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "format": "prettier --write README.md package.json scripts/*.mjs resources/js/*.js",
-        "format:check": "prettier --check README.md package.json scripts/*.mjs resources/js/*.js",
+        "format": "prettier --write README.md package.json .github/workflows/*.yml scripts/*.mjs resources/js/*.js",
+        "format:check": "prettier --check README.md package.json .github/workflows/*.yml scripts/*.mjs resources/js/*.js",
         "infra:up": "node scripts/infra-up.mjs",
         "infra:down": "node scripts/infra-down.mjs",
         "lint": "npm run format:check",

@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Laravel quality gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      APP_ENV: testing
+      APP_DEBUG: false
+      APP_KEY: base64:4VJbGAtbfpjA0om1YndFNfqcS7bBwneWc0xnKFS5avE=
+      DB_CONNECTION: sqlite
+      DB_DATABASE: database/database.sqlite
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      OPENAI_API_KEY: ''
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, fileinfo, pdo, pdo_sqlite, sqlite3
+          coverage: none
+          tools: composer:v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Validate Composer configuration
+        run: composer validate --strict
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare Laravel testing environment
+        run: |
+          cp .env.example .env
+          touch database/database.sqlite
+          php artisan key:generate --ansi
+          php artisan migrate --force --ansi
+
+      - name: Run PHP quality gate
+        run: composer quality
+
+      - name: Audit PHP dependencies
+        run: composer audit --locked
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Run frontend quality gate
+        run: npm run quality
+
+      - name: Audit Node.js dependencies
+        run: npm audit --audit-level=moderate

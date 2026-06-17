@@ -43,6 +43,7 @@ resources/css/app.css    Tailwind entrypoint only
 scripts/                 Local app and infrastructure automation
 tests/Feature            Route, navigation, and access-surface tests
 tests/Unit               Configuration and project invariant tests
+.github/workflows        GitHub Actions quality automation
 assignments/             Weekly assignment work
 labs/                    Practice exercises
 notes/                   Course notes and reading summaries
@@ -220,7 +221,7 @@ Recommended before committing:
 ```bash
 composer quality
 npm run quality
-npm run build
+composer audit
 npm audit
 ```
 
@@ -237,6 +238,8 @@ Current test coverage verifies:
 - the roadmap keeps the six-week CS85 structure
 - starter stack and contact data are ready for Blade views
 - `resources/css/app.css` stays Tailwind-only
+
+GitHub Actions runs the same quality gates on pushes and pull requests to `main`.
 
 ## Development Notes
 
