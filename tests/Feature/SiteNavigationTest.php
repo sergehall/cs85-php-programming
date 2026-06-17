@@ -63,6 +63,9 @@ class SiteNavigationTest extends TestCase
         $response->assertSee($expectedText);
     }
 
+    /**
+     * @return array<string, array{string, string}>
+     */
     public static function publicRoutes(): array
     {
         return [
@@ -74,6 +77,9 @@ class SiteNavigationTest extends TestCase
         ];
     }
 
+    /**
+     * @return array<string, array{string, string}>
+     */
     public static function cabinetRoutes(): array
     {
         return [
@@ -84,6 +90,9 @@ class SiteNavigationTest extends TestCase
         ];
     }
 
+    /**
+     * @return array<string, array{string, string}>
+     */
     public static function cabinetAdminRoutes(): array
     {
         return [
