@@ -241,9 +241,16 @@ Alias:
 npm run stop:infra
 ```
 
-`infra:up` starts Docker Compose services and waits until MySQL accepts connections inside the container.
+`infra:up` starts Docker Compose services with `--no-recreate`, waits until MySQL accepts connections inside the container, and reuses the same project environment after the first creation.
 If Docker Desktop is not running on macOS, the script opens it and waits for Docker to become ready.
 `infra:down` stops containers but preserves Docker volumes so local data is not deleted.
+
+The environment is intentionally persistent:
+
+- existing containers are reused on every `npm run infra:up`
+- MySQL data is stored in the `cs85-php-programming_mysql-data` Docker volume
+- Redis data is stored in the `cs85-php-programming_redis-data` Docker volume
+- containers are recreated only if you intentionally change Compose definitions and choose to recreate them manually
 
 ## Environment
 

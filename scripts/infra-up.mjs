@@ -92,10 +92,11 @@ async function waitForMysql() {
 }
 
 await ensureDockerDaemon();
-await run('docker', ['compose', 'up', '-d']);
+await run('docker', ['compose', 'up', '-d', '--no-recreate']);
 await waitForMysql();
 await run('docker', ['compose', 'ps']);
 
+console.log('Existing Docker containers are reused. Volumes are preserved.');
 console.log(`Infrastructure is ready. MySQL database: ${databaseName}`);
 console.log(`Laravel DB host: 127.0.0.1:${mysqlHostPort}`);
 console.log('Adminer: http://127.0.0.1:8081');
