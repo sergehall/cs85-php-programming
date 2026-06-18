@@ -73,7 +73,7 @@ class SiteNavigationTest extends TestCase
             'roadmap' => ['/roadmap', 'Course Roadmap'],
             'stack' => ['/stack', 'Starter Stack'],
             'contact' => ['/contact', 'serge.hall.dev@gmail.com'],
-            'cabinet' => ['/cabinet', 'Cabinet Foundation'],
+            'cabinet' => ['/cabinet', 'Student Cabinet'],
         ];
     }
 
@@ -83,10 +83,12 @@ class SiteNavigationTest extends TestCase
     public static function cabinetRoutes(): array
     {
         return [
-            'dashboard' => ['/cabinet', 'Personal workspace first'],
+            'dashboard' => ['/cabinet', 'Manage CS85 from one focused workspace'],
             'profile' => ['/cabinet/profile', 'Profile'],
             'coursework' => ['/cabinet/coursework', 'Coursework'],
             'messages' => ['/cabinet/messages', 'Messages'],
+            'security' => ['/cabinet/security', 'Security Foundation'],
+            'activity' => ['/cabinet/activity', 'Activity Timeline'],
         ];
     }
 

@@ -12,6 +12,15 @@
         </p>
     </section>
 
+    <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4" aria-label="Admin summary">
+        @foreach ($summary as $item)
+            <article class="rounded-lg border border-stone-300 bg-white p-5">
+                <p class="text-xs font-bold uppercase tracking-normal text-slate-500">{{ $item['label'] }}</p>
+                <strong class="mt-2 block text-lg text-slate-950">{{ $item['value'] }}</strong>
+            </article>
+        @endforeach
+    </section>
+
     <section class="grid gap-5 md:grid-cols-3">
         @foreach ($sections as $section)
             <a class="grid min-h-44 content-start gap-3 rounded-lg border border-stone-300 bg-white p-6 no-underline transition hover:-translate-y-0.5 hover:border-teal-700" href="{{ route($section['route']) }}">

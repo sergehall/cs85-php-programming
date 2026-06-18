@@ -81,6 +81,44 @@ class ProjectConfigurationTest extends TestCase
         }
     }
 
+    public function test_cabinet_configuration_is_ready_for_focused_pages(): void
+    {
+        $sections = config('cabinet.sections');
+        $metrics = config('cabinet.metrics');
+        $adminSections = config('cabinet.admin.sections');
+
+        $this->assertIsArray($sections);
+        $this->assertIsArray($metrics);
+        $this->assertIsArray($adminSections);
+        $this->assertArrayHasKey('profile', $sections);
+        $this->assertArrayHasKey('coursework', $sections);
+        $this->assertArrayHasKey('messages', $sections);
+        $this->assertArrayHasKey('security', $sections);
+        $this->assertArrayHasKey('activity', $sections);
+
+        foreach ($sections as $section) {
+            $this->assertIsArray($section);
+            $this->assertNotEmpty($section['title']);
+            $this->assertNotEmpty($section['description']);
+            $this->assertIsArray($section['summary']);
+            $this->assertIsArray($section['panels']);
+            $this->assertIsArray($section['tasks']);
+        }
+
+        foreach ($metrics as $metric) {
+            $this->assertIsArray($metric);
+            $this->assertNotEmpty($metric['label']);
+            $this->assertNotEmpty($metric['value']);
+        }
+
+        foreach ($adminSections as $section) {
+            $this->assertIsArray($section);
+            $this->assertNotEmpty($section['title']);
+            $this->assertIsArray($section['items']);
+            $this->assertIsArray($section['tasks']);
+        }
+    }
+
     public function test_css_entrypoint_stays_tailwind_only(): void
     {
         $css = file_get_contents(resource_path('css/app.css'));

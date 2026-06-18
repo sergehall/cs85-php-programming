@@ -13,6 +13,8 @@ return [
         ['label' => 'Profile', 'route' => 'cabinet.profile'],
         ['label' => 'Coursework', 'route' => 'cabinet.coursework'],
         ['label' => 'Messages', 'route' => 'cabinet.messages'],
+        ['label' => 'Security', 'route' => 'cabinet.security'],
+        ['label' => 'Activity', 'route' => 'cabinet.activity'],
     ],
 
     'cabinet_admin' => [

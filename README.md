@@ -106,6 +106,8 @@ Homebrew MySQL is not required for this project. The app connects to Docker MySQ
 | Profile     | `/cabinet/profile`    | Prepared user profile area                                     |
 | Coursework  | `/cabinet/coursework` | Prepared assignments, labs, notes, and final-project workspace |
 | Messages    | `/cabinet/messages`   | Prepared user message area                                     |
+| Security    | `/cabinet/security`   | Prepared account protection and authorization planning area    |
+| Activity    | `/cabinet/activity`   | Prepared project and future user activity timeline             |
 | Admin Tools | `/cabinet/admin`      | Prepared admin-only operational area                           |
 
 `/admin` is kept as a legacy convenience route and redirects to `/cabinet`.
@@ -118,6 +120,20 @@ The project currently exposes role intent in `config/navigation.php` before real
 - `admin`: can access future operational tools for users, content, and message review.
 
 When the course reaches sessions, authentication, and authorization, these rules should move behind Laravel middleware, policies, gates, and database-backed role fields.
+
+## Cabinet Foundation
+
+The cabinet follows the focused-section pattern used in the CS79D final project, adapted for Laravel and CS85:
+
+- `Overview`: account summary, metrics, prepared roles, and activity preview
+- `Profile`: student identity, portfolio links, editable profile fields, and persistence path
+- `Coursework`: assignments, labs, notes, projects, and final-project workspace planning
+- `Messages`: future inbox, contact requests, reviewed states, and Mailpit-ready email flow
+- `Security`: authentication, policies, MFA/OAuth ideas, and audit-readiness notes
+- `Activity`: project evidence stream and future database-backed event log
+- `Admin`: users, content, and message review surfaces prepared for role middleware
+
+The content currently lives in `config/cabinet.php` so the pages can grow without duplicating arrays across Blade views. When database work starts, these config-backed panels should move into models, migrations, seeders, policies, and controllers.
 
 ## Commands
 
