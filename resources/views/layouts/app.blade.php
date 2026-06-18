@@ -38,7 +38,7 @@
 </head>
 <body class="min-h-screen bg-stone-50 text-slate-950 antialiased">
     <div class="min-h-screen">
-        <header class="mx-auto flex w-[min(1120px,calc(100%_-_2rem))] flex-col gap-4 py-6 md:flex-row md:items-center md:gap-6">
+        <header class="mx-auto flex w-[min(1120px,calc(100%_-_2rem))] flex-col gap-4 py-4 md:flex-row md:items-center md:gap-6">
             <a class="flex min-w-42 items-center gap-3 no-underline" href="{{ route('home') }}" aria-label="CS85 PHP Programming home">
                 <img class="h-11 w-11 rounded-lg object-cover" src="{{ asset('assets/brand/cs85-logo-192.png') }}" width="44" height="44" alt="CS85 PHP Programming logo">
                 <span class="grid gap-0.5">
@@ -109,14 +109,10 @@
             </div>
         </header>
 
-        <main class="mx-auto grid w-[min(1120px,calc(100%_-_2rem))] gap-7 py-9 md:pb-12">
+        <main class="mx-auto grid w-[min(1120px,calc(100%_-_2rem))] gap-4 pt-2 pb-8 md:pb-10">
             @yield('content')
         </main>
 
-        <footer class="mx-auto flex w-[min(1120px,calc(100%_-_2rem))] flex-col gap-3 border-t border-stone-300 py-6 text-xs font-bold text-slate-500 md:flex-row md:justify-between">
-            <span>Santa Monica College - Summer 2026</span>
-            <span>Built with Laravel, MySQL readiness, and AI extension points.</span>
-        </footer>
     </div>
 </body>
 </html>

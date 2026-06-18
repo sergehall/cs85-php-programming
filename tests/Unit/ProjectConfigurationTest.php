@@ -46,18 +46,25 @@ class ProjectConfigurationTest extends TestCase
         $this->assertNotContains('manage_users', $roles['user']['abilities']);
     }
 
-    public function test_course_roadmap_matches_six_week_summer_structure(): void
+    public function test_course_roadmap_prepares_eight_clickable_modules(): void
     {
         $modules = config('course.modules');
 
         $this->assertIsArray($modules);
-        $this->assertCount(6, $modules);
+        $this->assertCount(8, $modules);
 
         foreach ($modules as $module) {
             $this->assertIsArray($module);
+            $this->assertNotEmpty($module['module']);
+            $this->assertNotEmpty($module['slug']);
             $this->assertNotEmpty($module['week']);
             $this->assertNotEmpty($module['title']);
             $this->assertNotEmpty($module['description']);
+            $this->assertNotEmpty($module['status']);
+            $this->assertIsArray($module['assignments']);
+            $this->assertIsArray($module['resources']);
+            $this->assertIsArray($module['notes']);
+            $this->assertTrue(Route::has('roadmap.module'));
         }
     }
 

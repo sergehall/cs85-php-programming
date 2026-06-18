@@ -40,11 +40,61 @@ class SiteNavigationTest extends TestCase
         $response->assertDontSee('Open admin foundation');
     }
 
+    public function test_contact_page_keeps_email_protected_until_user_action(): void
+    {
+        $response = $this->get('/contact');
+
+        $response->assertOk();
+        $response->assertSee('Protected email');
+        $response->assertSee('Show email');
+        $response->assertDontSee(config('course.contact.email'), false);
+        $response->assertDontSee('mailto:', false);
+    }
+
     public function test_legacy_admin_entry_redirects_to_cabinet(): void
     {
         $response = $this->get('/admin');
 
         $response->assertRedirect('/cabinet');
+    }
+
+    public function test_roadmap_links_to_each_module_page(): void
+    {
+        $response = $this->get('/roadmap');
+
+        $response->assertOk();
+        $response->assertSee('Eight prepared modules');
+
+        foreach (config('course.modules') as $module) {
+            $response->assertSee(route('roadmap.module', $module['slug']), false);
+        }
+    }
+
+    public function test_roadmap_module_pages_render_placeholder_workspace(): void
+    {
+        $module = config('course.modules.0');
+
+        $response = $this->get(route('roadmap.module', $module['slug']));
+
+        $response->assertOk();
+        $response->assertSee('Roadmap module switcher');
+        $response->assertSee('aria-current="page"', false);
+        $response->assertSee($module['title']);
+        $response->assertSee('Assignments');
+        $response->assertSee('Notes');
+        $response->assertSee('Resources');
+        $response->assertSee('Assignments will be added here');
+
+        foreach (config('course.modules') as $roadmapModule) {
+            $response->assertSee(route('roadmap.module', $roadmapModule['slug']), false);
+        }
+    }
+
+    public function test_unknown_roadmap_module_returns_not_found(): void
+    {
+        $response = $this->get('/roadmap/not-a-real-module');
+
+        $response->assertNotFound();
     }
 
     public function test_guest_is_redirected_from_cabinet_to_login(): void
@@ -96,7 +146,7 @@ class SiteNavigationTest extends TestCase
             'home' => ['/', 'CS85 PHP Programming'],
             'roadmap' => ['/roadmap', 'Course Roadmap'],
             'stack' => ['/stack', 'Starter Stack'],
-            'contact' => ['/contact', 'serge.hall.dev@gmail.com'],
+            'contact' => ['/contact', 'Protected email'],
         ];
     }
 

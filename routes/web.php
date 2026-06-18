@@ -17,6 +17,19 @@ Route::get('/roadmap', function () {
     ]);
 })->name('roadmap');
 
+Route::get('/roadmap/{module}', function (string $module) {
+    $modules = collect(config('course.modules'));
+    $selectedModule = $modules->firstWhere('slug', $module);
+
+    abort_unless($selectedModule, 404);
+
+    return view('pages.roadmap-module', [
+        'module' => $selectedModule,
+        'modules' => $modules,
+        'position' => $modules->search(fn (array $item): bool => $item['slug'] === $module) + 1,
+    ]);
+})->name('roadmap.module');
+
 Route::get('/stack', function () {
     return view('pages.stack', [
         'stack' => config('course.stack'),

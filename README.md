@@ -102,7 +102,7 @@ Homebrew MySQL is not required for this project. The app connects to Docker MySQ
 | Area        | Route                 | Purpose                                                        |
 | ----------- | --------------------- | -------------------------------------------------------------- |
 | Home        | `/`                   | Project entry point and current readiness overview             |
-| Roadmap     | `/roadmap`            | CS85 six-week module path                                      |
+| Roadmap     | `/roadmap`            | CS85 eight-module path with links to module workspaces         |
 | Stack       | `/stack`              | Installed tooling and technical foundation                     |
 | Contact     | `/contact`            | Course and project contact channels                            |
 | Login       | `/login`              | Session login with email/password and GitHub OAuth             |
@@ -116,6 +116,8 @@ Homebrew MySQL is not required for this project. The app connects to Docker MySQ
 | Admin Tools | `/cabinet/admin`      | Admin-only operational area inside the cabinet                 |
 
 `/admin` is kept as a legacy convenience route and redirects to `/cabinet`.
+
+Each roadmap module has its own public page under `/roadmap/{module-slug}`. These pages are intentionally empty workspaces for now and will collect assignments, notes, and resources as the course progresses.
 
 ## Authentication
 
@@ -451,7 +453,7 @@ Current test coverage verifies:
 - the old phrase `A minimal Laravel project` does not appear
 - navigation config points only to registered routes
 - user and admin role rules remain separated
-- the roadmap keeps the six-week CS85 structure
+- the roadmap exposes eight clickable module workspaces
 - starter stack and contact data are ready for Blade views
 - `resources/css/app.css` stays Tailwind-only
 - CSP and security headers match the strict application policy
