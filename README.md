@@ -344,6 +344,12 @@ Stop infrastructure:
 npm run infra:down
 ```
 
+Remove infrastructure containers from Docker Desktop without deleting data volumes:
+
+```bash
+npm run infra:destroy
+```
+
 Alias:
 
 ```bash
@@ -352,14 +358,15 @@ npm run stop:infra
 
 `infra:up` starts Docker Compose services with `--no-recreate`, waits until MySQL accepts connections inside the container, and reuses the same project environment after the first creation.
 If Docker Desktop is not running on macOS, the script opens it and waits for Docker to become ready.
-`infra:down` stops containers but preserves Docker volumes so local data is not deleted.
+`infra:down` runs `docker compose stop`, so containers stay visible in Docker Desktop as stopped containers and Docker volumes are preserved.
+`infra:destroy` runs `docker compose down`, which removes containers and the Compose network from Docker Desktop but still preserves Docker volumes.
 
 The environment is intentionally persistent:
 
 - existing containers are reused on every `npm run infra:up`
 - MySQL data is stored in the `cs85-php-programming_mysql-data` Docker volume
 - Redis data is stored in the `cs85-php-programming_redis-data` Docker volume
-- containers are recreated only if you intentionally change Compose definitions and choose to recreate them manually
+- containers are removed only if you intentionally run `npm run infra:destroy` or recreate Compose definitions manually
 
 Full local startup flow:
 
@@ -376,7 +383,7 @@ npm run dev-local
   -> open http://127.0.0.1:8000
 ```
 
-Use `npm run infra:down` when you want to stop local services but keep project data. Avoid deleting Docker volumes unless you intentionally want to reset the local database.
+Use `npm run infra:down` when you want to stop local services and keep the containers visible in Docker Desktop. Use `npm run infra:destroy` only when you want to remove the stopped containers from Docker Desktop. Avoid deleting Docker volumes unless you intentionally want to reset the local database.
 
 ## Environment
 

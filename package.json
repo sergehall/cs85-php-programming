@@ -12,6 +12,7 @@
         "format:check": "prettier --check README.md package.json compose.yaml vite.config.js public/manifest.webmanifest .github/workflows/*.yml scripts/*.mjs resources/js/*.js",
         "infra:up": "node scripts/infra-up.mjs",
         "infra:down": "node scripts/infra-down.mjs",
+        "infra:destroy": "node scripts/infra-destroy.mjs",
         "lint": "npm run format:check",
         "lint-fix": "composer lint-fix",
         "quality": "npm run lint && npm run security:ci && npm run build",

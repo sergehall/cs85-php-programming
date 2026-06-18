@@ -15,6 +15,8 @@ async function run(command, args) {
     }
 }
 
-await run('docker', ['compose', 'stop']);
-console.log('Infrastructure stopped. Docker containers are preserved for Docker Desktop.');
-console.log('Volumes are preserved.');
+await run('docker', ['compose', 'down']);
+console.log('Infrastructure containers were removed from Docker Desktop.');
+console.log(
+    'Volumes are preserved. Use Docker volume removal only for an intentional database reset.',
+);
