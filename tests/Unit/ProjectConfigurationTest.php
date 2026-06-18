@@ -9,11 +9,18 @@ class ProjectConfigurationTest extends TestCase
 {
     public function test_navigation_config_points_to_registered_routes(): void
     {
-        foreach (['public', 'cabinet', 'cabinet_admin'] as $group) {
-            foreach ($this->navigationGroup($group) as $item) {
+        foreach ($this->navigationGroup('public') as $item) {
+            $this->assertTrue(
+                Route::has($item['route']),
+                "Navigation route [{$item['route']}] from group [public] is not registered.",
+            );
+        }
+
+        foreach (['user', 'admin'] as $group) {
+            foreach ($this->cabinetNavigationGroup($group) as $item) {
                 $this->assertTrue(
                     Route::has($item['route']),
-                    "Navigation route [{$item['route']}] from group [{$group}] is not registered.",
+                    "Cabinet route [{$item['route']}] from group [{$group}] is not registered.",
                 );
             }
         }
@@ -119,6 +126,25 @@ class ProjectConfigurationTest extends TestCase
         }
     }
 
+    public function test_cabinet_section_registries_drive_routes_and_navigation(): void
+    {
+        $sections = config('cabinet.sections');
+        $adminSections = config('cabinet.admin.sections');
+
+        $this->assertIsArray($sections);
+        $this->assertIsArray($adminSections);
+
+        foreach (array_keys($sections) as $sectionKey) {
+            $this->assertTrue(Route::has("cabinet.{$sectionKey}"));
+            $this->assertContains($sectionKey, $this->cabinetNavigationSectionKeys('user'));
+        }
+
+        foreach (array_keys($adminSections) as $sectionKey) {
+            $this->assertTrue(Route::has("cabinet.admin.{$sectionKey}"));
+            $this->assertContains($sectionKey, $this->cabinetNavigationSectionKeys('admin'));
+        }
+    }
+
     public function test_css_entrypoint_stays_tailwind_only(): void
     {
         $css = file_get_contents(resource_path('css/app.css'));
@@ -157,5 +183,57 @@ class ProjectConfigurationTest extends TestCase
         }
 
         return $validatedItems;
+    }
+
+    /**
+     * @return list<array{label: string, route: string, section?: string}>
+     */
+    private function cabinetNavigationGroup(string $key): array
+    {
+        $items = config("cabinet.navigation.{$key}");
+
+        $this->assertIsArray($items);
+
+        $validatedItems = [];
+
+        foreach ($items as $item) {
+            if (
+                ! is_array($item) ||
+                ! isset($item['label'], $item['route']) ||
+                ! is_string($item['label']) ||
+                ! is_string($item['route'])
+            ) {
+                $this->fail("Cabinet navigation group [{$key}] contains an invalid item.");
+            }
+
+            $validatedItem = [
+                'label' => $item['label'],
+                'route' => $item['route'],
+            ];
+
+            if (isset($item['section']) && is_string($item['section'])) {
+                $validatedItem['section'] = $item['section'];
+            }
+
+            $validatedItems[] = $validatedItem;
+        }
+
+        return $validatedItems;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function cabinetNavigationSectionKeys(string $key): array
+    {
+        $sectionKeys = [];
+
+        foreach ($this->cabinetNavigationGroup($key) as $item) {
+            if (isset($item['section'])) {
+                $sectionKeys[] = $item['section'];
+            }
+        }
+
+        return $sectionKeys;
     }
 }

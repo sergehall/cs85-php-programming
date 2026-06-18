@@ -8,22 +8,6 @@ return [
         ['label' => 'Contact', 'route' => 'contact'],
     ],
 
-    'cabinet' => [
-        ['label' => 'Overview', 'route' => 'cabinet.dashboard'],
-        ['label' => 'Profile', 'route' => 'cabinet.profile'],
-        ['label' => 'Coursework', 'route' => 'cabinet.coursework'],
-        ['label' => 'Messages', 'route' => 'cabinet.messages'],
-        ['label' => 'Security', 'route' => 'cabinet.security'],
-        ['label' => 'Activity', 'route' => 'cabinet.activity'],
-    ],
-
-    'cabinet_admin' => [
-        ['label' => 'Admin Overview', 'route' => 'cabinet.admin.dashboard'],
-        ['label' => 'Users', 'route' => 'cabinet.admin.users'],
-        ['label' => 'Content', 'route' => 'cabinet.admin.content'],
-        ['label' => 'Messages', 'route' => 'cabinet.admin.messages'],
-    ],
-
     'roles' => [
         'user' => [
             'label' => 'User',

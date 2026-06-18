@@ -37,35 +37,13 @@ Route::prefix('cabinet')->name('cabinet.')->group(function () {
         ]);
     })->name('dashboard');
 
-    Route::get('/profile', function () {
-        return view('cabinet.section', [
-            'section' => config('cabinet.sections.profile'),
-        ]);
-    })->name('profile');
-
-    Route::get('/coursework', function () {
-        return view('cabinet.section', [
-            'section' => config('cabinet.sections.coursework'),
-        ]);
-    })->name('coursework');
-
-    Route::get('/messages', function () {
-        return view('cabinet.section', [
-            'section' => config('cabinet.sections.messages'),
-        ]);
-    })->name('messages');
-
-    Route::get('/security', function () {
-        return view('cabinet.section', [
-            'section' => config('cabinet.sections.security'),
-        ]);
-    })->name('security');
-
-    Route::get('/activity', function () {
-        return view('cabinet.section', [
-            'section' => config('cabinet.sections.activity'),
-        ]);
-    })->name('activity');
+    foreach (array_keys(config('cabinet.sections', [])) as $sectionKey) {
+        Route::get("/{$sectionKey}", function () use ($sectionKey) {
+            return view('cabinet.section', [
+                'section' => config("cabinet.sections.{$sectionKey}"),
+            ]);
+        })->name($sectionKey);
+    }
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', function () {
@@ -75,22 +53,12 @@ Route::prefix('cabinet')->name('cabinet.')->group(function () {
             ]);
         })->name('dashboard');
 
-        Route::get('/users', function () {
-            return view('cabinet.admin-section', [
-                'section' => config('cabinet.admin.sections.users'),
-            ]);
-        })->name('users');
-
-        Route::get('/content', function () {
-            return view('cabinet.admin-section', [
-                'section' => config('cabinet.admin.sections.content'),
-            ]);
-        })->name('content');
-
-        Route::get('/messages', function () {
-            return view('cabinet.admin-section', [
-                'section' => config('cabinet.admin.sections.messages'),
-            ]);
-        })->name('messages');
+        foreach (array_keys(config('cabinet.admin.sections', [])) as $sectionKey) {
+            Route::get("/{$sectionKey}", function () use ($sectionKey) {
+                return view('cabinet.admin-section', [
+                    'section' => config("cabinet.admin.sections.{$sectionKey}"),
+                ]);
+            })->name($sectionKey);
+        }
     });
 });

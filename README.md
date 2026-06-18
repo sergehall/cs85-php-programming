@@ -135,6 +135,19 @@ The cabinet follows the focused-section pattern used in the CS79D final project,
 
 The content currently lives in `config/cabinet.php` so the pages can grow without duplicating arrays across Blade views. When database work starts, these config-backed panels should move into models, migrations, seeders, policies, and controllers.
 
+Cabinet extensibility is intentionally config-first:
+
+```text
+config/cabinet.php
+  navigation.user       User cabinet navigation registry
+  navigation.admin      Admin cabinet navigation registry
+  sections              User section registry; routes are generated from keys
+  admin.sections        Admin section registry; routes are generated from keys
+  extension_points      Notes for future auth, CRUD, and database-backed upgrades
+```
+
+To add a user cabinet section, add a new key under `sections`, add a navigation item under `navigation.user`, and the `/cabinet/{key}` route will be registered automatically. Admin sections work the same way under `admin.sections` and `navigation.admin`.
+
 ## Commands
 
 Install dependencies:

@@ -13,11 +13,48 @@ return [
         'focus' => 'Build a portfolio-ready Laravel application while following the CS85 course path.',
     ],
 
+    'navigation' => [
+        'user' => [
+            ['label' => 'Overview', 'route' => 'cabinet.dashboard'],
+            ['label' => 'Profile', 'route' => 'cabinet.profile', 'section' => 'profile'],
+            ['label' => 'Coursework', 'route' => 'cabinet.coursework', 'section' => 'coursework'],
+            ['label' => 'Messages', 'route' => 'cabinet.messages', 'section' => 'messages'],
+            ['label' => 'Security', 'route' => 'cabinet.security', 'section' => 'security'],
+            ['label' => 'Activity', 'route' => 'cabinet.activity', 'section' => 'activity'],
+        ],
+
+        'admin' => [
+            ['label' => 'Admin Overview', 'route' => 'cabinet.admin.dashboard'],
+            ['label' => 'Users', 'route' => 'cabinet.admin.users', 'section' => 'users'],
+            ['label' => 'Content', 'route' => 'cabinet.admin.content', 'section' => 'content'],
+            ['label' => 'Messages', 'route' => 'cabinet.admin.messages', 'section' => 'messages'],
+        ],
+    ],
+
     'metrics' => [
         ['label' => 'Course Weeks', 'value' => '6', 'detail' => 'Summer sprint structure'],
-        ['label' => 'Prepared Routes', 'value' => '11', 'detail' => 'Public, user, and admin pages'],
+        ['label' => 'Prepared Routes', 'value' => '15', 'detail' => 'Public, user, admin, and legacy pages'],
         ['label' => 'Quality Gate', 'value' => '20', 'detail' => 'Automated tests currently passing'],
         ['label' => 'Infra Services', 'value' => '4', 'detail' => 'MySQL, Redis, Mailpit, Adminer'],
+    ],
+
+    'extension_points' => [
+        [
+            'name' => 'User cabinet section',
+            'description' => 'Add a key under cabinet.sections and a navigation item under cabinet.navigation.user. Routes are registered automatically.',
+        ],
+        [
+            'name' => 'Admin cabinet section',
+            'description' => 'Add a key under cabinet.admin.sections and a navigation item under cabinet.navigation.admin. Admin routes are registered automatically.',
+        ],
+        [
+            'name' => 'Dashboard focus card',
+            'description' => 'Add an item to cabinet.dashboard.focus to surface a new workflow on the overview page.',
+        ],
+        [
+            'name' => 'Database-backed upgrade',
+            'description' => 'Move config data into models, migrations, seeders, policies, and controllers when CS85 reaches CRUD and auth.',
+        ],
     ],
 
     'dashboard' => [

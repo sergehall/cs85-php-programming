@@ -41,15 +41,7 @@
         </aside>
     </section>
 
-    <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4" aria-label="Cabinet metrics">
-        @foreach ($metrics as $metric)
-            <article class="rounded-lg border border-stone-300 bg-white p-5">
-                <p class="text-xs font-bold uppercase tracking-normal text-slate-500">{{ $metric['label'] }}</p>
-                <strong class="mt-2 block text-3xl font-bold text-slate-950">{{ $metric['value'] }}</strong>
-                <p class="mt-2 text-sm leading-6 text-slate-600">{{ $metric['detail'] }}</p>
-            </article>
-        @endforeach
-    </section>
+    @include('partials.cabinet.summary-grid', ['items' => $metrics, 'label' => 'Cabinet metrics'])
 
     <section class="grid gap-5 md:grid-cols-2" aria-label="Cabinet focus areas">
         @foreach ($focusItems as $item)

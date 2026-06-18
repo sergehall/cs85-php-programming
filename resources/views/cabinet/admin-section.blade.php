@@ -9,23 +9,11 @@
         <p class="text-lg leading-8 text-slate-600">{{ $section['description'] }}</p>
     </section>
 
-    <section class="grid gap-5 md:grid-cols-2">
-        <article class="rounded-lg border border-stone-300 bg-white p-6">
-            <h2 class="text-xl font-bold text-slate-950">Prepared capabilities</h2>
-            <ul class="mt-5 grid gap-2 pl-5 leading-7 text-slate-600">
-                @foreach ($section['items'] as $item)
-                    <li>{{ $item }}</li>
-                @endforeach
-            </ul>
-        </article>
-
-        <article class="rounded-lg border border-stone-300 bg-white p-6">
-            <h2 class="text-xl font-bold text-slate-950">Implementation path</h2>
-            <ul class="mt-5 grid gap-2 pl-5 leading-7 text-slate-600">
-                @foreach ($section['tasks'] as $task)
-                    <li>{{ $task }}</li>
-                @endforeach
-            </ul>
-        </article>
-    </section>
+    @include('partials.cabinet.panel-list', [
+        'label' => $section['title'] . ' admin panels',
+        'panels' => [
+            ['title' => 'Prepared capabilities', 'items' => $section['items']],
+            ['title' => 'Implementation path', 'items' => $section['tasks']],
+        ],
+    ])
 @endsection
