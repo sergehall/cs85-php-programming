@@ -60,12 +60,49 @@
 
             <div class="flex flex-wrap items-center gap-2">
                 @auth
+                    @php
+                        $currentUser = auth()->user();
+                        $displayName = $currentUser->name ?: explode('@', $currentUser->email)[0];
+                        $roleLabel = config("navigation.roles.{$currentUser->role}.label", ucfirst($currentUser->role));
+                        $initial = strtoupper(substr($displayName, 0, 1)) ?: 'U';
+                    @endphp
                     <a class="rounded-lg border border-transparent px-3 py-2 text-sm font-bold text-teal-800 no-underline transition hover:border-stone-300 hover:bg-white hover:text-slate-950" href="{{ route('cabinet.dashboard') }}">Cabinet</a>
-                    <span class="hidden max-w-40 truncate text-sm font-bold text-slate-500 md:block">{{ auth()->user()->name }}</span>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button class="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm font-bold text-slate-600 transition hover:border-orange-700 hover:text-orange-700" type="submit">Logout</button>
-                    </form>
+                    <details class="group relative" data-account-menu>
+                        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-lg border border-stone-300 bg-white px-2 py-2 text-left transition hover:border-teal-700 hover:shadow-lg hover:shadow-slate-900/10 group-open:border-teal-700 group-open:shadow-lg group-open:shadow-slate-900/10 [&::-webkit-details-marker]:hidden">
+                            <span class="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-slate-950 text-sm font-bold text-white">
+                                @if ($currentUser->github_avatar_url)
+                                    <img class="h-full w-full object-cover" src="{{ $currentUser->github_avatar_url }}" alt="" referrerpolicy="no-referrer">
+                                @else
+                                    {{ $initial }}
+                                @endif
+                            </span>
+                            <span class="hidden min-w-0 gap-0.5 md:grid">
+                                <span class="max-w-36 truncate text-sm font-bold text-slate-950">{{ $displayName }}</span>
+                                <span class="text-xs font-bold uppercase tracking-normal text-slate-500">{{ $roleLabel }}</span>
+                            </span>
+                            <span class="rounded-md bg-stone-100 px-2 py-1 text-xs font-bold text-slate-500 group-open:bg-teal-800 group-open:text-white">Menu</span>
+                            <span class="sr-only">Open account menu</span>
+                        </summary>
+
+                        <div class="absolute right-0 top-full z-50 mt-3 grid w-[min(20rem,calc(100vw_-_2rem))] gap-2 rounded-lg border border-stone-300 bg-white p-3 shadow-2xl shadow-slate-900/20" role="menu">
+                            <div class="grid gap-1 border-b border-stone-200 px-2 pb-3">
+                                <span class="text-xs font-bold uppercase tracking-normal text-orange-700">Account</span>
+                                <span class="truncate text-sm font-bold text-slate-950">{{ $displayName }}</span>
+                                <span class="truncate text-xs font-bold text-slate-500">{{ $currentUser->email }}</span>
+                            </div>
+
+                            <a class="rounded-lg px-3 py-2 text-sm font-bold text-slate-700 no-underline transition hover:bg-stone-100 hover:text-teal-800" href="{{ route('cabinet.dashboard') }}" role="menuitem">Cabinet</a>
+
+                            @if ($currentUser->isAdmin())
+                                <a class="rounded-lg px-3 py-2 text-sm font-bold text-slate-700 no-underline transition hover:bg-stone-100 hover:text-teal-800" href="{{ route('cabinet.admin.dashboard') }}" role="menuitem">Admin tools</a>
+                            @endif
+
+                            <form class="border-t border-stone-200 pt-2" method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button class="w-full rounded-lg px-3 py-2 text-left text-sm font-bold text-orange-700 transition hover:bg-orange-50 hover:text-orange-800" type="submit" role="menuitem">Log out</button>
+                            </form>
+                        </div>
+                    </details>
                 @else
                     <a class="rounded-lg border border-transparent px-3 py-2 text-sm font-bold text-teal-800 no-underline transition hover:border-stone-300 hover:bg-white hover:text-slate-950" href="{{ route('login') }}">Login</a>
                     <a class="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm font-bold text-slate-950 no-underline transition hover:border-teal-700 hover:text-teal-800" href="{{ route('register') }}">Create one</a>
