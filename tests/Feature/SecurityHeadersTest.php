@@ -45,4 +45,25 @@ class SecurityHeadersTest extends TestCase
         $this->assertStringNotContainsString("'unsafe-eval'", $policy);
         $this->assertStringNotContainsString('http:', $policy);
     }
+
+    public function test_local_development_policy_does_not_force_https_for_vite(): void
+    {
+        config([
+            'security.headers.hsts.enabled' => false,
+            'security.csp.allow_vite_dev_server' => true,
+            'security.csp.allow_debug_tooling' => true,
+            'security.csp.enforce_https_upgrades' => false,
+        ]);
+
+        $response = $this->get('/');
+        $policy = $response->headers->get('Content-Security-Policy');
+
+        $this->assertIsString($policy);
+        $response->assertHeaderMissing('Strict-Transport-Security');
+        $this->assertStringContainsString('http://127.0.0.1:5173', $policy);
+        $this->assertStringContainsString('ws://127.0.0.1:5173', $policy);
+        $this->assertStringContainsString("'unsafe-inline'", $policy);
+        $this->assertStringNotContainsString('upgrade-insecure-requests', $policy);
+        $this->assertStringNotContainsString('block-all-mixed-content', $policy);
+    }
 }
