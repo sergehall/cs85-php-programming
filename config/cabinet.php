@@ -5,10 +5,10 @@ return [
         'name' => 'Serge Hall',
         'initials' => 'SH',
         'email' => 'serge.hall.dev@gmail.com',
-        'role' => 'Student',
+        'role' => 'User',
         'status' => 'Active foundation',
         'course' => 'CS85 PHP Programming - Summer 2026',
-        'student_id' => 'Prepared after authentication',
+        'user_id' => 'Prepared after authentication',
         'member_since' => 'Summer 2026',
         'focus' => 'Build a portfolio-ready Laravel application while following the CS85 course path.',
     ],
@@ -93,17 +93,17 @@ return [
 
     'sections' => [
         'profile' => [
-            'eyebrow' => 'Student Profile',
+            'eyebrow' => 'User Profile',
             'title' => 'Profile Overview',
-            'description' => 'A prepared student profile surface inspired by the CS79D cabinet: account summary, portfolio identity, skills, and profile completion signals.',
+            'description' => 'A prepared user profile surface inspired by the CS79D cabinet: account summary, portfolio identity, skills, and profile completion signals.',
             'summary' => [
                 ['label' => 'Name', 'value' => 'Serge Hall'],
                 ['label' => 'Email', 'value' => 'serge.hall.dev@gmail.com'],
                 ['label' => 'Course', 'value' => 'CS85 PHP Programming'],
-                ['label' => 'Role', 'value' => 'Student'],
+                ['label' => 'Role', 'value' => 'User'],
             ],
             'panels' => [
-                ['title' => 'Editable profile fields', 'items' => ['First and last name', 'Student ID', 'GitHub and LinkedIn links', 'Short bio', 'Technical skills']],
+                ['title' => 'Editable profile fields', 'items' => ['First and last name', 'User ID', 'GitHub and LinkedIn links', 'Short bio', 'Technical skills']],
                 ['title' => 'Portfolio links', 'items' => ['GitHub: SergeHall', 'Instagram: @sergioartg', 'Project repository: cs85-php-programming']],
                 ['title' => 'Future persistence', 'items' => ['users table', 'profiles table', 'Form Request validation', 'Policy-protected updates']],
             ],
@@ -117,7 +117,7 @@ return [
         'coursework' => [
             'eyebrow' => 'Course Workspace',
             'title' => 'Coursework Control Center',
-            'description' => 'Assignments, labs, notes, and the final project are grouped as a real student workspace instead of scattered files.',
+            'description' => 'Assignments, labs, notes, and the final project are grouped as a real user workspace instead of scattered files.',
             'summary' => [
                 ['label' => 'Assignments', 'value' => 'Prepared'],
                 ['label' => 'Labs', 'value' => 'Prepared'],
@@ -212,7 +212,7 @@ return [
                 ['label' => 'Policies', 'value' => 'Planned'],
             ],
             'sections' => [
-                ['title' => 'Users', 'route' => 'cabinet.admin.users', 'status' => 'Prepared', 'description' => 'Student accounts, roles, profile status, and access review.'],
+                ['title' => 'Users', 'route' => 'cabinet.admin.users', 'status' => 'Prepared', 'description' => 'User accounts, roles, profile status, and access review.'],
                 ['title' => 'Content', 'route' => 'cabinet.admin.content', 'status' => 'Prepared', 'description' => 'Assignments, labs, notes, roadmap content, and project pages.'],
                 ['title' => 'Messages', 'route' => 'cabinet.admin.messages', 'status' => 'Prepared', 'description' => 'Contact requests, feedback, reviewed states, and admin response workflow.'],
             ],
@@ -221,7 +221,7 @@ return [
             'users' => [
                 'eyebrow' => 'Admin Users',
                 'title' => 'User Management',
-                'description' => 'Prepared operational surface for student accounts, roles, status review, and future policy-protected edits.',
+                'description' => 'Prepared operational surface for user accounts, roles, status review, and future policy-protected edits.',
                 'items' => ['Search users', 'Review role', 'Check profile completion', 'Inspect recent activity'],
                 'tasks' => ['Add users table fields', 'Create admin middleware', 'Add audit records for role changes'],
             ],

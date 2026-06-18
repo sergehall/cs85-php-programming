@@ -49,12 +49,12 @@ class AuthFlowTest extends TestCase
     public function test_login_authenticates_existing_user(): void
     {
         $user = User::factory()->create([
-            'email' => 'student@example.com',
+            'email' => 'user@example.com',
             'password' => 'StrongPassword123!',
         ]);
 
         $response = $this->post('/login', [
-            'email' => 'student@example.com',
+            'email' => 'user@example.com',
             'password' => 'StrongPassword123!',
         ]);
 

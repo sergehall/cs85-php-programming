@@ -6,7 +6,7 @@
             <p class="text-xs font-bold uppercase tracking-normal text-orange-700">Secure Cabinet Access</p>
             <h1 class="max-w-4xl text-4xl font-bold leading-none text-slate-950 md:text-6xl">Sign in to your CS85 cabinet.</h1>
             <p class="max-w-3xl text-lg leading-8 text-slate-600">
-                Use your course account or GitHub to enter the protected student workspace.
+                Use your course account or GitHub to enter the protected user workspace.
                 The cabinet is ready for user and admin rules as the project grows.
             </p>
         </div>

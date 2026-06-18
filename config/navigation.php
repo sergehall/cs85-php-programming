@@ -11,7 +11,7 @@ return [
     'roles' => [
         'user' => [
             'label' => 'User',
-            'description' => 'Learner workspace for profile, coursework, messages, and final project progress.',
+            'description' => 'User workspace for profile, coursework, messages, and final project progress.',
             'abilities' => ['view_cabinet', 'manage_own_profile', 'track_coursework', 'send_messages'],
         ],
         'admin' => [

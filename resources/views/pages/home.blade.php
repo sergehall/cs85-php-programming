@@ -3,9 +3,13 @@
 @section('content')
     <section class="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(280px,0.75fr)]">
         <div class="rounded-lg border border-stone-300 bg-white p-6 shadow-xl shadow-slate-900/10 md:p-8">
-            <img class="mb-5 h-24 w-24 rounded-lg object-cover shadow-lg shadow-slate-900/20" src="{{ asset('assets/brand/cs85-logo-192.png') }}" width="96" height="96" alt="CS85 PHP Programming logo">
-            <p class="mb-3 text-xs font-bold uppercase tracking-normal text-orange-700">Santa Monica College - Summer 2026</p>
-            <h1 class="mb-4 max-w-3xl text-4xl font-bold leading-none text-slate-950 md:text-6xl">CS85 PHP Programming</h1>
+            <div class="mb-6 flex flex-col gap-5 sm:flex-row sm:items-center">
+                <img class="h-32 w-32 shrink-0 rounded-lg object-cover shadow-lg shadow-slate-900/20 md:h-40 md:w-40" src="{{ asset('assets/brand/cs85-logo-192.png') }}" width="160" height="160" alt="CS85 PHP Programming logo">
+                <div class="grid gap-3">
+                    <p class="text-xs font-bold uppercase tracking-normal text-orange-700 md:text-sm">Santa Monica College - Summer 2026</p>
+                    <h1 class="max-w-3xl text-4xl font-bold leading-none text-slate-950 md:text-6xl">CS85 PHP Programming</h1>
+                </div>
+            </div>
             <p class="max-w-3xl text-lg leading-8 text-slate-600">
                 A Laravel foundation for learning server-side PHP, building database-backed web
                 applications, and growing the final AI-powered project without throwing away the

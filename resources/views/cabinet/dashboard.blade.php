@@ -5,7 +5,7 @@
 
     <section class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div class="grid content-start gap-4 py-3">
-            <p class="text-xs font-bold uppercase tracking-normal text-orange-700">Student Cabinet</p>
+            <p class="text-xs font-bold uppercase tracking-normal text-orange-700">User Cabinet</p>
             <h1 class="max-w-4xl text-4xl font-bold leading-none text-slate-950 md:text-6xl">Manage CS85 from one focused workspace.</h1>
             <p class="max-w-3xl text-lg leading-8 text-slate-600">
                 The cabinet is organized like a professional account portal: profile, coursework,

@@ -154,7 +154,7 @@ Newly registered and GitHub-created users receive the `user` role by default. Ad
 The cabinet follows the focused-section pattern used in the CS79D final project, adapted for Laravel and CS85:
 
 - `Overview`: account summary, metrics, prepared roles, and activity preview
-- `Profile`: student identity, portfolio links, editable profile fields, and persistence path
+- `Profile`: user identity, portfolio links, editable profile fields, and persistence path
 - `Coursework`: assignments, labs, notes, projects, and final-project workspace planning
 - `Messages`: future inbox, contact requests, reviewed states, and Mailpit-ready email flow
 - `Security`: authentication, policies, MFA/OAuth ideas, and audit-readiness notes
