@@ -45,6 +45,7 @@ resources/views/cabinet  User cabinet and admin-rule pages
 resources/views/partials Shared Blade partials
 resources/css/app.css    Tailwind entrypoint only
 scripts/                 Local app and infrastructure automation
+compose.yaml             Persistent Docker Compose infrastructure
 tests/Feature            Route, navigation, and access-surface tests
 tests/Unit               Configuration and project invariant tests
 .github/workflows        GitHub Actions quality automation
@@ -54,6 +55,44 @@ notes/                   Course notes and reading summaries
 projects/                Larger module projects
 final-project/           AI-powered final project work
 ```
+
+## Runtime Architecture
+
+The Laravel application runs on the host machine through PHP, Composer, Node.js, and Vite. Project infrastructure runs in Docker Compose and is reused between sessions.
+
+```mermaid
+flowchart LR
+    Developer["Developer / VS Code"] --> Script["npm run dev-local"]
+    Script --> Infra["npm run infra:up"]
+    Script --> Migrate["npm run db:migrate:local"]
+    Script --> Laravel["Laravel dev server\n127.0.0.1:8000"]
+    Script --> Vite["Vite dev server\n127.0.0.1:5173"]
+    Script --> Browser["Browser opens\n127.0.0.1:8000"]
+
+    Infra --> Compose["Docker Compose\ncompose.yaml"]
+    Compose --> MySQL["MySQL 9\n127.0.0.1:3307"]
+    Compose --> Redis["Redis\n127.0.0.1:6379"]
+    Compose --> Mailpit["Mailpit\nSMTP 1025 / UI 8025"]
+    Compose --> Adminer["Adminer\n127.0.0.1:8081"]
+
+    Laravel --> MySQL
+    Laravel --> Mailpit
+    Laravel -. "future cache/queues" .-> Redis
+    Adminer --> MySQL
+```
+
+The application layer and infrastructure layer are intentionally separated:
+
+| Layer       | Runs on    | Responsibility                                               |
+| ----------- | ---------- | ------------------------------------------------------------ |
+| Laravel app | macOS host | Routes, Blade views, PHP application code, migrations, tests |
+| Vite        | macOS host | Tailwind CSS and frontend asset development                  |
+| MySQL       | Docker     | Persistent local database for course CRUD work               |
+| Redis       | Docker     | Prepared cache/queue service for future Laravel features     |
+| Mailpit     | Docker     | Local email capture without real SMTP credentials            |
+| Adminer     | Docker     | Lightweight database browser for the Docker MySQL service    |
+
+Homebrew MySQL is not required for this project. The app connects to Docker MySQL on `127.0.0.1:3307`, which avoids conflicts with other local database installations.
 
 ## Application Areas
 
@@ -215,6 +254,17 @@ The local infrastructure is managed with Docker Compose:
 | Mailpit SMTP | `127.0.0.1:1025`        | Local SMTP endpoint       |
 | Adminer      | `http://127.0.0.1:8081` | Database browser          |
 
+Docker Compose uses the project name `cs85-php-programming`, so containers and volumes are namespaced for this repository:
+
+```text
+cs85-mysql
+cs85-redis
+cs85-mailpit
+cs85-adminer
+cs85-php-programming_mysql-data
+cs85-php-programming_redis-data
+```
+
 Default database credentials:
 
 ```text
@@ -251,6 +301,23 @@ The environment is intentionally persistent:
 - MySQL data is stored in the `cs85-php-programming_mysql-data` Docker volume
 - Redis data is stored in the `cs85-php-programming_redis-data` Docker volume
 - containers are recreated only if you intentionally change Compose definitions and choose to recreate them manually
+
+Full local startup flow:
+
+```text
+npm run dev-local
+  -> npm run infra:up
+     -> open Docker Desktop if needed
+     -> docker compose up -d --no-recreate
+     -> wait for Docker MySQL health
+  -> npm run db:migrate:local
+     -> run Laravel migrations against Docker MySQL
+  -> start Laravel on 127.0.0.1:8000
+  -> start Vite on 127.0.0.1:5173
+  -> open http://127.0.0.1:8000
+```
+
+Use `npm run infra:down` when you want to stop local services but keep project data. Avoid deleting Docker volumes unless you intentionally want to reset the local database.
 
 ## Environment
 
