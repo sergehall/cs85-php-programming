@@ -1,0 +1,21 @@
+{
+    "name": "CS85 PHP Programming",
+    "short_name": "CS85",
+    "description": "Laravel coursework project with protected cabinet authentication and Dockerized infrastructure.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#050816",
+    "theme_color": "#050816",
+    "icons": [
+        {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

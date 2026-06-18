@@ -3,6 +3,7 @@
 @section('content')
     <section class="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(280px,0.75fr)]">
         <div class="rounded-lg border border-stone-300 bg-white p-6 shadow-xl shadow-slate-900/10 md:p-8">
+            <img class="mb-5 h-24 w-24 rounded-lg object-cover shadow-lg shadow-slate-900/20" src="{{ asset('assets/brand/cs85-logo-192.png') }}" width="96" height="96" alt="CS85 PHP Programming logo">
             <p class="mb-3 text-xs font-bold uppercase tracking-normal text-orange-700">Santa Monica College - Summer 2026</p>
             <h1 class="mb-4 max-w-3xl text-4xl font-bold leading-none text-slate-950 md:text-6xl">CS85 PHP Programming</h1>
             <p class="max-w-3xl text-lg leading-8 text-slate-600">

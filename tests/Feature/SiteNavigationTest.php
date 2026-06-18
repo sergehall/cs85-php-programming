@@ -2,11 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class SiteNavigationTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -43,10 +47,19 @@ class SiteNavigationTest extends TestCase
         $response->assertRedirect('/cabinet');
     }
 
+    public function test_guest_is_redirected_from_cabinet_to_login(): void
+    {
+        $response = $this->get('/cabinet');
+
+        $response->assertRedirect('/login');
+    }
+
     #[DataProvider('cabinetRoutes')]
     public function test_cabinet_pages_render_successfully(string $path, string $expectedText): void
     {
-        $response = $this->get($path);
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get($path);
 
         $response->assertOk();
         $response->assertSee('Cabinet');
@@ -56,11 +69,22 @@ class SiteNavigationTest extends TestCase
     #[DataProvider('cabinetAdminRoutes')]
     public function test_admin_rule_pages_render_inside_cabinet(string $path, string $expectedText): void
     {
-        $response = $this->get($path);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get($path);
 
         $response->assertOk();
         $response->assertSee('Admin');
         $response->assertSee($expectedText);
+    }
+
+    public function test_user_cannot_open_admin_cabinet_rules(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+
+        $response = $this->actingAs($user)->get('/cabinet/admin');
+
+        $response->assertForbidden();
     }
 
     /**
@@ -73,7 +97,6 @@ class SiteNavigationTest extends TestCase
             'roadmap' => ['/roadmap', 'Course Roadmap'],
             'stack' => ['/stack', 'Starter Stack'],
             'contact' => ['/contact', 'serge.hall.dev@gmail.com'],
-            'cabinet' => ['/cabinet', 'Student Cabinet'],
         ];
     }
 

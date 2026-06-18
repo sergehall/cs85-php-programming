@@ -155,6 +155,59 @@ class ProjectConfigurationTest extends TestCase
         $this->assertStringNotContainsString('}', $css);
     }
 
+    public function test_seo_assets_and_indexing_files_are_present(): void
+    {
+        $requiredPublicFiles = [
+            'favicon.ico',
+            'favicon-16x16.png',
+            'favicon-32x32.png',
+            'apple-touch-icon.png',
+            'android-chrome-192x192.png',
+            'android-chrome-512x512.png',
+            'og-image.png',
+            'manifest.webmanifest',
+            'robots.txt',
+            'sitemap.xml',
+            'assets/brand/cs85-logo.png',
+            'assets/brand/cs85-logo-192.png',
+            'assets/brand/cs85-logo-512.png',
+        ];
+
+        foreach ($requiredPublicFiles as $file) {
+            $path = public_path($file);
+
+            $this->assertFileExists($path);
+            $this->assertGreaterThan(0, filesize($path));
+        }
+
+        $robots = file_get_contents(public_path('robots.txt'));
+        $sitemap = file_get_contents(public_path('sitemap.xml'));
+
+        $this->assertIsString($robots);
+        $this->assertIsString($sitemap);
+        $this->assertStringContainsString('Disallow: /cabinet', $robots);
+        $this->assertStringContainsString('Sitemap: http://127.0.0.1:8000/sitemap.xml', $robots);
+        $this->assertStringContainsString('<loc>http://127.0.0.1:8000/roadmap</loc>', $sitemap);
+        $this->assertStringNotContainsString('/cabinet', $sitemap);
+        $this->assertStringNotContainsString('/login', $sitemap);
+    }
+
+    public function test_home_page_exposes_brand_and_seo_metadata(): void
+    {
+        $this->withoutVite();
+
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('rel="manifest"', false);
+        $response->assertSee('favicon-32x32.png', false);
+        $response->assertSee('apple-touch-icon.png', false);
+        $response->assertSee('og:image', false);
+        $response->assertSee('summary_large_image', false);
+        $response->assertSee('assets/brand/cs85-logo-192.png', false);
+        $response->assertSee('index, follow, max-image-preview:large', false);
+    }
+
     /**
      * @return list<array{label: string, route: string}>
      */

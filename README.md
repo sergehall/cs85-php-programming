@@ -36,9 +36,12 @@ This project is intentionally structured as more than a disposable course sandbo
 
 ```text
 app/                    Laravel application code
+app/Http/Controllers    Auth and future workflow controllers
+app/Http/Middleware     Role middleware for protected cabinet areas
 config/course.php        CS85 roadmap, stack, and contact data
 config/navigation.php    Public, cabinet, admin, and role navigation rules
-routes/web.php           Public, cabinet, and prepared admin routes
+database/migrations      Users, sessions, jobs, cache, and auth profile schema
+routes/web.php           Public, auth, cabinet, and admin routes
 resources/views/layouts  Shared Blade application layout
 resources/views/pages    Public pages
 resources/views/cabinet  User cabinet and admin-rule pages
@@ -102,24 +105,49 @@ Homebrew MySQL is not required for this project. The app connects to Docker MySQ
 | Roadmap     | `/roadmap`            | CS85 six-week module path                                      |
 | Stack       | `/stack`              | Installed tooling and technical foundation                     |
 | Contact     | `/contact`            | Course and project contact channels                            |
-| Cabinet     | `/cabinet`            | Future authenticated user workspace                            |
+| Login       | `/login`              | Session login with email/password and GitHub OAuth             |
+| Register    | `/register`           | Create one standard user account for cabinet access            |
+| Cabinet     | `/cabinet`            | Authenticated user workspace                                   |
 | Profile     | `/cabinet/profile`    | Prepared user profile area                                     |
 | Coursework  | `/cabinet/coursework` | Prepared assignments, labs, notes, and final-project workspace |
 | Messages    | `/cabinet/messages`   | Prepared user message area                                     |
 | Security    | `/cabinet/security`   | Prepared account protection and authorization planning area    |
 | Activity    | `/cabinet/activity`   | Prepared project and future user activity timeline             |
-| Admin Tools | `/cabinet/admin`      | Prepared admin-only operational area                           |
+| Admin Tools | `/cabinet/admin`      | Admin-only operational area inside the cabinet                 |
 
 `/admin` is kept as a legacy convenience route and redirects to `/cabinet`.
 
-## Prepared Roles
+## Authentication
 
-The project currently exposes role intent in `config/navigation.php` before real authentication is added.
+The cabinet is protected with Laravel session authentication.
+
+Supported entry points:
+
+- Email and password login through `/login`
+- Account creation through `/register`
+- GitHub OAuth through `/auth/github/redirect`
+- Logout through `POST /logout`
+
+Google OAuth is intentionally not registered in this project.
+
+GitHub OAuth uses a session-backed state value before redirecting to GitHub and validates the state on callback. User records store the GitHub id, username, avatar URL, verified email, and the local role.
+
+Configure GitHub OAuth in `.env`:
+
+```dotenv
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+GITHUB_REDIRECT_URI="${APP_URL}/auth/github/callback"
+```
+
+## Roles
+
+Role intent lives in `config/navigation.php` and is enforced for admin routes by middleware.
 
 - `user`: can view the cabinet, manage their own profile, track coursework, and send messages.
 - `admin`: can access future operational tools for users, content, and message review.
 
-When the course reaches sessions, authentication, and authorization, these rules should move behind Laravel middleware, policies, gates, and database-backed role fields.
+Newly registered and GitHub-created users receive the `user` role by default. Admin access must be assigned intentionally in the database or a future admin workflow.
 
 ## Cabinet Foundation
 
@@ -131,7 +159,7 @@ The cabinet follows the focused-section pattern used in the CS79D final project,
 - `Messages`: future inbox, contact requests, reviewed states, and Mailpit-ready email flow
 - `Security`: authentication, policies, MFA/OAuth ideas, and audit-readiness notes
 - `Activity`: project evidence stream and future database-backed event log
-- `Admin`: users, content, and message review surfaces prepared for role middleware
+- `Admin`: users, content, and message review surfaces protected by admin middleware
 
 The content currently lives in `config/cabinet.php` so the pages can grow without duplicating arrays across Blade views. When database work starts, these config-backed panels should move into models, migrations, seeders, policies, and controllers.
 
@@ -374,6 +402,14 @@ For the AI-powered final project, keep the API key local:
 OPENAI_API_KEY=
 ```
 
+For GitHub OAuth, keep client credentials local:
+
+```dotenv
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+GITHUB_REDIRECT_URI="${APP_URL}/auth/github/callback"
+```
+
 Never commit real secrets.
 
 ## Quality Gates
@@ -390,10 +426,15 @@ npm audit
 Current test coverage verifies:
 
 - public routes render successfully
-- cabinet navigation is visible
+- guests are redirected from the cabinet to login
+- login and registration pages render the GitHub-only auth entry point
+- registration creates a standard user account and enters the cabinet
+- email/password login and logout work
+- GitHub OAuth callback creates a user with fake HTTP responses
 - `/admin` redirects to `/cabinet`
 - user cabinet routes render successfully
-- admin-rule routes render inside the cabinet
+- admin-rule routes render only for admin users
+- standard users cannot open admin cabinet routes
 - the old phrase `A minimal Laravel project` does not appear
 - navigation config points only to registered routes
 - user and admin role rules remain separated
@@ -409,12 +450,11 @@ The workflow generates its Laravel `APP_KEY` during the CI run and does not stor
 - Blade views use Tailwind utility classes only.
 - `resources/css/app.css` is a Tailwind entrypoint, not a place for raw project CSS.
 - Course data and navigation rules live in config files so pages can grow without duplicating arrays across views.
-- Admin screens are not protected yet. They are placeholders for future middleware, policies, role checks, and audit logging.
+- Admin screens are protected by the `admin` middleware and remain ready for future policies and audit logging.
 - Contact details are adapted from the Lavoval contact surface.
 
 ## Roadmap
 
-- Add authentication when the course reaches sessions and authorization.
 - Persist profile, coursework, content, and messages in MySQL.
 - Replace route closures with controllers as workflows become more complex.
 - Add Form Request validation for write operations.

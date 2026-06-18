@@ -33,8 +33,8 @@ return [
 
     'metrics' => [
         ['label' => 'Course Weeks', 'value' => '6', 'detail' => 'Summer sprint structure'],
-        ['label' => 'Prepared Routes', 'value' => '15', 'detail' => 'Public, user, admin, and legacy pages'],
-        ['label' => 'Quality Gate', 'value' => '20', 'detail' => 'Automated tests currently passing'],
+        ['label' => 'Prepared Routes', 'value' => '20+', 'detail' => 'Public, auth, user, admin, and legacy pages'],
+        ['label' => 'Quality Gate', 'value' => '30+', 'detail' => 'Automated tests currently passing'],
         ['label' => 'Infra Services', 'value' => '4', 'detail' => 'MySQL, Redis, Mailpit, Adminer'],
     ],
 
@@ -53,7 +53,7 @@ return [
         ],
         [
             'name' => 'Database-backed upgrade',
-            'description' => 'Move config data into models, migrations, seeders, policies, and controllers when CS85 reaches CRUD and auth.',
+            'description' => 'Move config data into models, migrations, seeders, policies, and controllers when CS85 reaches CRUD-heavy workflows.',
         ],
     ],
 
@@ -62,7 +62,7 @@ return [
             [
                 'title' => 'Profile readiness',
                 'status' => 'Prepared',
-                'description' => 'Identity, course role, portfolio links, and future editable profile fields are grouped into one account surface.',
+                'description' => 'Identity, course role, portfolio links, and editable profile fields are grouped into one account surface.',
                 'route' => 'cabinet.profile',
             ],
             [
@@ -73,8 +73,8 @@ return [
             ],
             [
                 'title' => 'Security foundation',
-                'status' => 'Planned',
-                'description' => 'Password, sessions, roles, MFA, and audit ideas are staged before authentication is introduced.',
+                'status' => 'Active',
+                'description' => 'Password, sessions, roles, GitHub OAuth, MFA, and audit ideas are staged in one security surface.',
                 'route' => 'cabinet.security',
             ],
             [
@@ -86,7 +86,7 @@ return [
         ],
         'activity' => [
             ['time' => 'Now', 'title' => 'Docker local environment ready', 'detail' => 'MySQL, Redis, Mailpit, and Adminer run through persistent Docker Compose services.'],
-            ['time' => 'Next', 'title' => 'Authentication milestone', 'detail' => 'Cabinet routes will move behind middleware, policies, and user roles.'],
+            ['time' => 'Now', 'title' => 'Authentication milestone', 'detail' => 'Cabinet routes run behind middleware, session auth, and user/admin role checks.'],
             ['time' => 'Later', 'title' => 'AI final project surface', 'detail' => 'OpenAI features will be connected server-side with safe environment configuration.'],
         ],
     ],
@@ -108,7 +108,7 @@ return [
                 ['title' => 'Future persistence', 'items' => ['users table', 'profiles table', 'Form Request validation', 'Policy-protected updates']],
             ],
             'tasks' => [
-                ['label' => 'Add auth scaffolding', 'status' => 'Upcoming'],
+                ['label' => 'Add auth scaffolding', 'status' => 'Done'],
                 ['label' => 'Create profile migration', 'status' => 'Upcoming'],
                 ['label' => 'Validate profile URLs', 'status' => 'Upcoming'],
             ],
@@ -161,9 +161,9 @@ return [
         'security' => [
             'eyebrow' => 'Account Security',
             'title' => 'Security Foundation',
-            'description' => 'A future protection center for password changes, role checks, sessions, MFA, OAuth, and cabinet-only access.',
+            'description' => 'A protection center for password login, GitHub OAuth, role checks, sessions, MFA planning, and cabinet-only access.',
             'summary' => [
-                ['label' => 'Auth', 'value' => 'Planned'],
+                ['label' => 'Auth', 'value' => 'Active'],
                 ['label' => 'Roles', 'value' => 'Configured'],
                 ['label' => 'Policies', 'value' => 'Planned'],
                 ['label' => 'Audit', 'value' => 'Prepared'],
@@ -171,10 +171,10 @@ return [
             'panels' => [
                 ['title' => 'Prepared controls', 'items' => ['Password update workflow', 'Session logout', 'Admin-only middleware', 'User-owned profile policy']],
                 ['title' => 'Future advanced controls', 'items' => ['Authenticator app MFA', 'GitHub OAuth connection', 'Recovery codes', 'Security event log']],
-                ['title' => 'Current protection', 'items' => ['CSRF-ready Laravel forms', 'Secrets stay in .env', 'CI blocks hardcoded APP_KEY in workflows']],
+                ['title' => 'Current protection', 'items' => ['CSRF-protected Laravel forms', 'Session auth protects cabinet routes', 'GitHub OAuth uses state validation', 'Secrets stay in .env', 'CI blocks hardcoded APP_KEY in workflows']],
             ],
             'tasks' => [
-                ['label' => 'Move cabinet behind auth middleware', 'status' => 'Upcoming'],
+                ['label' => 'Move cabinet behind auth middleware', 'status' => 'Done'],
                 ['label' => 'Add role-based policies', 'status' => 'Upcoming'],
                 ['label' => 'Record sensitive account activity', 'status' => 'Planned'],
             ],
