@@ -15,5 +15,5 @@ async function run(command, args) {
     }
 }
 
-await run('brew', ['services', 'stop', 'mysql']);
-console.log('Infrastructure stopped. MySQL service is down.');
+await run('docker', ['compose', 'down']);
+console.log('Infrastructure stopped. Docker services are down. Volumes are preserved.');

@@ -18,7 +18,11 @@ This project is intentionally structured as more than a disposable course sandbo
 - Composer 2
 - Blade templates
 - Tailwind CSS 4 through Vite
-- MySQL 9 for local infrastructure
+- Docker Compose local infrastructure
+- MySQL 9 for local database persistence
+- Redis for cache-ready local development
+- Mailpit for local email testing
+- Adminer for database inspection
 - SQLite for fast default Laravel startup
 - PHPUnit feature tests
 - Laravel Pint formatting
@@ -96,14 +100,16 @@ php artisan migrate
 Start the full local application:
 
 ```bash
-npm run dev
+npm run dev-local
 ```
 
-This command runs infrastructure first, then starts Laravel, Vite, and opens the app in the browser.
+This command runs Docker infrastructure first, then starts Laravel, Vite, and opens the app in the browser.
+It also runs local MySQL migrations before the Laravel server starts.
 
 Alias:
 
 ```bash
+npm run dev
 npm run start:app
 ```
 
@@ -123,6 +129,12 @@ Build frontend assets:
 
 ```bash
 npm run build
+```
+
+Run local MySQL migrations against Docker infrastructure:
+
+```bash
+npm run db:migrate:local
 ```
 
 Run tests:
@@ -191,9 +203,25 @@ Check that GitHub Actions workflows do not contain hardcoded Laravel app keys:
 npm run security:ci
 ```
 
-## Infrastructure
+## Docker Infrastructure
 
-The current local infrastructure is MySQL plus the `cs85_php_programming` database.
+The local infrastructure is managed with Docker Compose:
+
+| Service      | URL / Port              | Purpose                   |
+| ------------ | ----------------------- | ------------------------- |
+| MySQL        | `127.0.0.1:3307`        | Local Laravel database    |
+| Redis        | `127.0.0.1:6379`        | Cache-ready local service |
+| Mailpit UI   | `http://127.0.0.1:8025` | Local email inbox         |
+| Mailpit SMTP | `127.0.0.1:1025`        | Local SMTP endpoint       |
+| Adminer      | `http://127.0.0.1:8081` | Database browser          |
+
+Default database credentials:
+
+```text
+database: cs85_php_programming
+username: cs85
+password: cs85_password
+```
 
 Start infrastructure:
 
@@ -213,7 +241,9 @@ Alias:
 npm run stop:infra
 ```
 
-`infra:up` starts the Homebrew MySQL service, waits until it accepts TCP connections, and creates the local database if it does not exist.
+`infra:up` starts Docker Compose services and waits until MySQL accepts connections inside the container.
+If Docker Desktop is not running on macOS, the script opens it and waits for Docker to become ready.
+`infra:down` stops containers but preserves Docker volumes so local data is not deleted.
 
 ## Environment
 
@@ -224,10 +254,15 @@ For MySQL, update `.env`:
 ```dotenv
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
-DB_PORT=3306
+DB_PORT=3307
 DB_DATABASE=cs85_php_programming
-DB_USERNAME=root
-DB_PASSWORD=
+DB_USERNAME=cs85
+DB_PASSWORD=cs85_password
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=1025
 ```
 
 For the AI-powered final project, keep the API key local:
