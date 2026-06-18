@@ -58,7 +58,7 @@
                 @endforeach
             </nav>
 
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2 md:justify-end">
                 @auth
                     @php
                         $currentUser = auth()->user();
@@ -66,25 +66,24 @@
                         $roleLabel = config("navigation.roles.{$currentUser->role}.label", ucfirst($currentUser->role));
                         $initial = strtoupper(substr($displayName, 0, 1)) ?: 'U';
                     @endphp
-                    <a class="rounded-lg border border-transparent px-3 py-2 text-sm font-bold text-teal-800 no-underline transition hover:border-stone-300 hover:bg-white hover:text-slate-950" href="{{ route('cabinet.dashboard') }}">Cabinet</a>
                     <details class="group relative" data-account-menu>
-                        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-lg border border-stone-300 bg-white px-2 py-2 text-left transition hover:border-teal-700 hover:shadow-lg hover:shadow-slate-900/10 group-open:border-teal-700 group-open:shadow-lg group-open:shadow-slate-900/10 [&::-webkit-details-marker]:hidden">
-                            <span class="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-slate-950 text-sm font-bold text-white">
+                        <summary class="flex max-w-[calc(100vw_-_2rem)] cursor-pointer list-none items-center gap-2 rounded-lg border border-stone-300 bg-white px-2 py-2 text-left transition hover:border-teal-700 hover:shadow-lg hover:shadow-slate-900/10 group-open:border-teal-700 group-open:shadow-lg group-open:shadow-slate-900/10 sm:gap-3 sm:px-3 [&::-webkit-details-marker]:hidden">
+                            <span class="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-lg bg-slate-950 text-base font-bold text-white sm:h-12 sm:w-12">
                                 @if ($currentUser->github_avatar_url)
                                     <img class="h-full w-full object-cover" src="{{ $currentUser->github_avatar_url }}" alt="" referrerpolicy="no-referrer">
                                 @else
                                     {{ $initial }}
                                 @endif
                             </span>
-                            <span class="hidden min-w-0 gap-0.5 md:grid">
-                                <span class="max-w-36 truncate text-sm font-bold text-slate-950">{{ $displayName }}</span>
-                                <span class="text-xs font-bold uppercase tracking-normal text-slate-500">{{ $roleLabel }}</span>
+                            <span class="grid min-w-0 gap-0.5">
+                                <span class="max-w-28 truncate text-sm font-bold text-slate-950 sm:max-w-40 sm:text-base">{{ $displayName }}</span>
+                                <span class="text-xs font-bold uppercase tracking-normal text-slate-500 sm:text-sm">{{ $roleLabel }}</span>
                             </span>
-                            <span class="rounded-md bg-stone-100 px-2 py-1 text-xs font-bold text-slate-500 group-open:bg-teal-800 group-open:text-white">Menu</span>
+                            <span class="ml-auto rounded-md bg-stone-100 px-2 py-1 text-xs font-bold text-slate-500 group-open:bg-teal-800 group-open:text-white sm:px-3 sm:text-sm">Menu</span>
                             <span class="sr-only">Open account menu</span>
                         </summary>
 
-                        <div class="absolute right-0 top-full z-50 mt-3 grid w-[min(20rem,calc(100vw_-_2rem))] gap-2 rounded-lg border border-stone-300 bg-white p-3 shadow-2xl shadow-slate-900/20" role="menu">
+                        <div class="absolute right-0 top-full z-50 mt-3 grid w-[min(21rem,calc(100vw_-_2rem))] gap-2 rounded-lg border border-stone-300 bg-white p-3 shadow-2xl shadow-slate-900/20" role="menu">
                             <div class="grid gap-1 border-b border-stone-200 px-2 pb-3">
                                 <span class="text-xs font-bold uppercase tracking-normal text-orange-700">Account</span>
                                 <span class="truncate text-sm font-bold text-slate-950">{{ $displayName }}</span>

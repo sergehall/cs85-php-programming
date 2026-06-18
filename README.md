@@ -412,6 +412,19 @@ GITHUB_REDIRECT_URI="${APP_URL}/auth/github/callback"
 
 Never commit real secrets.
 
+## Security Headers
+
+The application sends MDN Observatory-friendly security headers through `App\Http\Middleware\SecurityHeaders`.
+
+- `Content-Security-Policy` denies by default with `default-src 'none'`
+- `script-src` and `style-src` do not allow `unsafe-inline` or `unsafe-eval`
+- `object-src 'none'`, `base-uri 'none'`, `form-action 'self'`, and `frame-ancestors 'none'`
+- `upgrade-insecure-requests` and `block-all-mixed-content`
+- `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, and `Referrer-Policy`
+- Vite production assets receive `sha384` Subresource Integrity hashes in `public/build/manifest.json`
+
+Local development keeps Vite usable by allowing the dev server only when `APP_ENV=local` and `APP_DEBUG=true`.
+
 ## Quality Gates
 
 Recommended before committing:
@@ -441,6 +454,7 @@ Current test coverage verifies:
 - the roadmap keeps the six-week CS85 structure
 - starter stack and contact data are ready for Blade views
 - `resources/css/app.css` stays Tailwind-only
+- CSP and security headers match the strict application policy
 
 GitHub Actions runs the same quality gates on pushes and pull requests to `main`.
 The workflow generates its Laravel `APP_KEY` during the CI run and does not store it in repository files.
