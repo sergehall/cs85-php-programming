@@ -8,13 +8,13 @@ use Cs85\Module2A\Application\QuoteTShirtOrder;
 use Cs85\Module2A\Domain\Pricing\TShirtPriceCalculator;
 use Tests\TestCase;
 
-require_once __DIR__ . '/../../public/bootstrap/autoload.php';
+require_once __DIR__.'/../../public/bootstrap/autoload.php';
 
 class Module2APricingTest extends TestCase
 {
     public function test_module_2a_pricing_rules_cover_required_order_combinations(): void
     {
-        $quoteOrder = new QuoteTShirtOrder(new TShirtPriceCalculator());
+        $quoteOrder = new QuoteTShirtOrder(new TShirtPriceCalculator);
 
         $cases = [
             [

@@ -10,14 +10,14 @@ use Cs85\Module2A\Presentation\OrderInputFactory;
 use Cs85\Module2A\Presentation\ReceiptViewModel;
 use Tests\TestCase;
 
-require_once __DIR__ . '/../../public/bootstrap/autoload.php';
+require_once __DIR__.'/../../public/bootstrap/autoload.php';
 
 class Module2ASecurityTest extends TestCase
 {
     public function test_order_input_factory_rejects_untrusted_option_values(): void
     {
         $defaults = require public_path('config/order.php');
-        $inputFactory = new OrderInputFactory();
+        $inputFactory = new OrderInputFactory;
 
         $config = $inputFactory->fromQuery($defaults, [
             'calculate' => '1',
@@ -36,7 +36,7 @@ class Module2ASecurityTest extends TestCase
     public function test_missing_customization_checkbox_is_handled_as_false(): void
     {
         $defaults = require public_path('config/order.php');
-        $inputFactory = new OrderInputFactory();
+        $inputFactory = new OrderInputFactory;
 
         $config = $inputFactory->fromQuery($defaults, [
             'calculate' => '1',
@@ -50,7 +50,7 @@ class Module2ASecurityTest extends TestCase
 
     public function test_receipt_template_escapes_user_controlled_output(): void
     {
-        $quoteOrder = new QuoteTShirtOrder(new TShirtPriceCalculator());
+        $quoteOrder = new QuoteTShirtOrder(new TShirtPriceCalculator);
         $quote = $quoteOrder->handle([
             'size' => 'M',
             'color' => 'White',
