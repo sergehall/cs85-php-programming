@@ -46,26 +46,31 @@ class ProjectConfigurationTest extends TestCase
         $this->assertNotContains('manage_users', $roles['user']['abilities']);
     }
 
-    public function test_course_roadmap_prepares_eight_clickable_modules(): void
+    public function test_course_roadmap_prepares_twelve_clickable_modules(): void
     {
         $modules = config('course.modules');
 
         $this->assertIsArray($modules);
-        $this->assertCount(8, $modules);
+        $this->assertCount(12, $modules);
 
         foreach ($modules as $module) {
             $this->assertIsArray($module);
             $this->assertNotEmpty($module['module']);
             $this->assertNotEmpty($module['slug']);
             $this->assertNotEmpty($module['week']);
+            $this->assertNotEmpty($module['week_number']);
+            $this->assertNotEmpty($module['start']);
             $this->assertNotEmpty($module['title']);
             $this->assertNotEmpty($module['description']);
             $this->assertNotEmpty($module['status']);
+            $this->assertNotEmpty($module['accent']);
             $this->assertIsArray($module['assignments']);
             $this->assertIsArray($module['resources']);
             $this->assertIsArray($module['notes']);
             $this->assertTrue(Route::has('roadmap.module'));
         }
+
+        $this->assertSame([1, 2, 3, 4, 5, 6], collect($modules)->pluck('week_number')->unique()->values()->all());
     }
 
     public function test_starter_stack_and_contact_data_are_ready_for_views(): void

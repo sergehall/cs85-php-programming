@@ -63,7 +63,8 @@ class SiteNavigationTest extends TestCase
         $response = $this->get('/roadmap');
 
         $response->assertOk();
-        $response->assertSee('Eight prepared modules');
+        $response->assertSee('CS85 modules by week');
+        $response->assertSee('Course Schedule');
 
         foreach (config('course.modules') as $module) {
             $response->assertSee(route('roadmap.module', $module['slug']), false);
@@ -83,7 +84,7 @@ class SiteNavigationTest extends TestCase
         $response->assertSee('Assignments');
         $response->assertSee('Notes');
         $response->assertSee('Resources');
-        $response->assertSee('Assignments will be added here');
+        $response->assertSee('Laravel Hello World');
 
         foreach (config('course.modules') as $roadmapModule) {
             $response->assertSee(route('roadmap.module', $roadmapModule['slug']), false);
