@@ -65,6 +65,13 @@ class ProjectConfigurationTest extends TestCase
             $this->assertNotEmpty($module['status']);
             $this->assertNotEmpty($module['accent']);
             $this->assertIsArray($module['assignments']);
+            foreach ($module['assignments'] as $assignment) {
+                $this->assertIsArray($assignment);
+
+                if (array_key_exists('route', $assignment)) {
+                    $this->assertTrue(Route::has($assignment['route']));
+                }
+            }
             $this->assertIsArray($module['resources']);
             $this->assertIsArray($module['notes']);
             $this->assertTrue(Route::has('roadmap.module'));

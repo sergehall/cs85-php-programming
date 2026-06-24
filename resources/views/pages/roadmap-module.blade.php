@@ -88,20 +88,42 @@
         </div>
     </section>
 
-    <section class="grid gap-5 lg:grid-cols-3" aria-label="Module workspace">
-        <article class="grid min-h-56 content-start gap-4 rounded-lg border border-stone-300 bg-white p-6 shadow-xl shadow-slate-900/5">
+    <section class="grid gap-5 {{ count($module['assignments']) > 2 ? '' : 'lg:grid-cols-3' }}" aria-label="Module workspace">
+        <article class="grid min-h-56 content-start gap-4 rounded-lg border border-stone-300 bg-white p-6 shadow-xl shadow-slate-900/5 {{ count($module['assignments']) > 2 ? '' : '' }}">
             <div class="flex items-center justify-between gap-3">
                 <h2 class="text-xl font-bold text-slate-950">Assignments</h2>
                 <span class="rounded-lg {{ $accent['badge'] }} px-2.5 py-1 text-xs font-bold">{{ count($module['assignments']) }}</span>
             </div>
 
             @forelse ($module['assignments'] as $assignment)
-                <div class="grid gap-2 rounded-lg border border-stone-200 bg-stone-50 p-4">
-                    <span class="text-xs font-bold uppercase tracking-normal {{ $accent['text'] }}">{{ $assignment['label'] }}</span>
-                    <strong class="text-base text-slate-950">{{ $assignment['title'] }}</strong>
-                    <p class="text-sm leading-6 text-slate-600">{{ $assignment['description'] }}</p>
-                    <span class="text-xs font-bold uppercase tracking-normal text-slate-500">{{ $assignment['status'] }}</span>
-                </div>
+                @php
+                    $assignmentRoute = $assignment['route'] ?? null;
+                    $assignmentUrl = $assignmentRoute ? route($assignmentRoute) : ($assignment['url'] ?? null);
+                    $assignmentClasses = 'grid gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4';
+                    $assignmentType = $assignment['type'] ?? $assignment['status'];
+                @endphp
+
+                @if ($assignmentUrl)
+                    <a class="{{ $assignmentClasses }} no-underline transition hover:-translate-y-0.5 hover:border-teal-700 hover:bg-white hover:shadow-lg hover:shadow-slate-900/10" href="{{ $assignmentUrl }}">
+                        <span class="flex items-start justify-between gap-3">
+                            <span class="text-xs font-bold uppercase tracking-normal {{ $accent['text'] }}">{{ $assignment['label'] }}</span>
+                            <span class="rounded-lg bg-orange-100 px-2.5 py-1 text-xs font-bold uppercase tracking-normal text-orange-700">{{ $assignmentType }}</span>
+                        </span>
+                        <strong class="text-xl leading-6 text-slate-950">{{ $assignment['title'] }}</strong>
+                        <p class="text-sm leading-6 text-slate-600">{{ $assignment['description'] }}</p>
+                        <span class="text-xs font-bold uppercase tracking-normal {{ $accent['text'] }}">Open assignment</span>
+                    </a>
+                @else
+                    <div class="{{ $assignmentClasses }}">
+                        <span class="flex items-start justify-between gap-3">
+                            <span class="text-xs font-bold uppercase tracking-normal {{ $accent['text'] }}">{{ $assignment['label'] }}</span>
+                            <span class="rounded-lg bg-stone-200 px-2.5 py-1 text-xs font-bold uppercase tracking-normal text-slate-500">{{ $assignmentType }}</span>
+                        </span>
+                        <strong class="text-xl leading-6 text-slate-950">{{ $assignment['title'] }}</strong>
+                        <p class="text-sm leading-6 text-slate-600">{{ $assignment['description'] }}</p>
+                        <span class="text-xs font-bold uppercase tracking-normal text-slate-500">{{ $assignment['status'] }}</span>
+                    </div>
+                @endif
             @empty
                 <p class="leading-7 text-slate-600">Assignments will be added here as this module opens during the course.</p>
             @endforelse

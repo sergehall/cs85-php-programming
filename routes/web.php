@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Assignments\Module1Assignment1AController;
+use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -16,6 +18,15 @@ Route::get('/roadmap', function () {
         'modules' => config('course.modules'),
     ]);
 })->name('roadmap');
+
+Route::redirect('/modules/module-1', '/roadmap/module-1');
+Route::redirect('/modules/module-2', '/roadmap/module-2');
+
+Route::get('/roadmap/module-1/assignment-1a', Module1Assignment1AController::class)
+    ->name('assignments.module1.assignment1a');
+
+Route::get('/roadmap/module-2/cosmic-calendar', Module2BCosmicCalendarController::class)
+    ->name('assignments.module2.cosmic-calendar');
 
 Route::get('/roadmap/{module}', function (string $module) {
     $modules = collect(config('course.modules'));

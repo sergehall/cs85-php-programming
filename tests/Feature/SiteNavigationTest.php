@@ -85,10 +85,26 @@ class SiteNavigationTest extends TestCase
         $response->assertSee('Notes');
         $response->assertSee('Resources');
         $response->assertSee('Laravel Hello World');
+        $response->assertSee(route('assignments.module1.assignment1a'), false);
 
         foreach (config('course.modules') as $roadmapModule) {
             $response->assertSee(route('roadmap.module', $roadmapModule['slug']), false);
         }
+    }
+
+    public function test_completed_assignment_pages_render_successfully(): void
+    {
+        $this->get(route('assignments.module1.assignment1a'))
+            ->assertOk()
+            ->assertSee('Hello World from Laravel Herd!');
+
+        $this->get(route('assignments.module2.cosmic-calendar'))
+            ->assertOk()
+            ->assertSee('Cosmic Day Number Calendar')
+            ->assertSee('First Name');
+
+        $this->assertFileExists(public_path('module2a/price_engine.php'));
+        $this->assertFileExists(public_path('module2a/price_engine_refactored.php'));
     }
 
     public function test_unknown_roadmap_module_returns_not_found(): void
