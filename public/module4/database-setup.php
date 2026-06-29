@@ -14,8 +14,11 @@ $phpMyAdminUrl = '';
 $mysqlHost = '127.0.0.1';
 $mysqlPort = '3306';
 $mysqlUser = 'root';
+$mysqlPassword = '';
 $notes = '';
 $evidence = [];
+$connectionStatus = 'Not checked yet.';
+$connectionDetails = '';
 
 function h(string $value): string
 {
@@ -28,6 +31,7 @@ if ($submitted) {
     $mysqlHost = trim((string) ($_POST['mysql_host'] ?? ''));
     $mysqlPort = trim((string) ($_POST['mysql_port'] ?? ''));
     $mysqlUser = trim((string) ($_POST['mysql_user'] ?? ''));
+    $mysqlPassword = (string) ($_POST['mysql_password'] ?? '');
     $notes = trim((string) ($_POST['notes'] ?? ''));
     $evidence = array_values(array_filter((array) ($_POST['evidence'] ?? []), 'is_string'));
 
@@ -53,6 +57,27 @@ if ($submitted) {
 
     if (count($evidence) < 3) {
         $errors['evidence'] = 'Check at least three screenshot evidence items.';
+    }
+
+    if ($errors === []) {
+        if (!extension_loaded('pdo_mysql')) {
+            $connectionStatus = 'PDO MySQL extension is not enabled.';
+            $connectionDetails = 'Enable pdo_mysql in PHP before using this page as a live connection check.';
+        } else {
+            try {
+                $dsn = "mysql:host={$mysqlHost};port={$mysqlPort};charset=utf8mb4";
+                $pdo = new PDO($dsn, $mysqlUser, $mysqlPassword, [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_TIMEOUT => 3,
+                ]);
+                $version = $pdo->query('select version()')->fetchColumn();
+                $connectionStatus = 'Connected to MySQL successfully.';
+                $connectionDetails = 'MySQL server version: ' . (is_string($version) ? $version : 'unknown');
+            } catch (PDOException $exception) {
+                $connectionStatus = 'Could not connect to MySQL.';
+                $connectionDetails = $exception->getMessage();
+            }
+        }
     }
 }
 
@@ -166,6 +191,10 @@ $isReady = $submitted && $errors === [];
                 MySQL login target: <?php echo h($mysqlUser); ?>@<?php echo h($mysqlHost); ?>:<?php echo h($mysqlPort); ?>.
             </p>
             <p>Screenshot evidence checked: <?php echo h((string) count($evidence)); ?> item(s).</p>
+            <p>Connection check: <?php echo h($connectionStatus); ?></p>
+            <?php if ($connectionDetails !== '') { ?>
+                <p>Connection details: <?php echo h($connectionDetails); ?></p>
+            <?php } ?>
             <?php if ($notes !== '') { ?>
                 <p>Canvas notes: <?php echo h($notes); ?></p>
             <?php } ?>
@@ -218,7 +247,7 @@ $isReady = $submitted && $errors === [];
 
             <label for="mysql_password">
                 MySQL password
-                <input type="password" id="mysql_password" name="mysql_password">
+                <input type="password" id="mysql_password" name="mysql_password" autocomplete="current-password">
             </label>
         </fieldset>
 
