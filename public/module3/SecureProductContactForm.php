@@ -76,7 +76,7 @@ if ($submitted) {
     if ($message === '') {
         $errors['message'] = 'Message is required.';
     } elseif ($wordCount < 50 || $wordCount > 150) {
-        $errors['message'] = 'Message must be between 50 and 150 words. Current word count: ' . $wordCount . '.';
+        $errors['message'] = 'Message must be between 50 and 150 words. Current word count: '.$wordCount.'.';
     }
 }
 

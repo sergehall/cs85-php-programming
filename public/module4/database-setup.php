@@ -60,7 +60,7 @@ if ($submitted) {
     }
 
     if ($errors === []) {
-        if (!extension_loaded('pdo_mysql')) {
+        if (! extension_loaded('pdo_mysql')) {
             $connectionStatus = 'PDO MySQL extension is not enabled.';
             $connectionDetails = 'Enable pdo_mysql in PHP before using this page as a live connection check.';
         } else {
@@ -72,7 +72,7 @@ if ($submitted) {
                 ]);
                 $version = $pdo->query('select version()')->fetchColumn();
                 $connectionStatus = 'Connected to MySQL successfully.';
-                $connectionDetails = 'MySQL server version: ' . (is_string($version) ? $version : 'unknown');
+                $connectionDetails = 'MySQL server version: '.(is_string($version) ? $version : 'unknown');
             } catch (PDOException $exception) {
                 $connectionStatus = 'Could not connect to MySQL.';
                 $connectionDetails = $exception->getMessage();
