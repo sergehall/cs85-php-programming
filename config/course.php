@@ -86,8 +86,9 @@ return [
                     'label' => 'Assignment 3B',
                     'title' => 'Secure Product Contact Form',
                     'description' => 'Build the next contact form with stronger request handling and security controls.',
-                    'status' => 'Scheduled',
+                    'status' => 'Ready',
                     'type' => 'PHP',
+                    'url' => '/module3/SecureProductContactForm.php',
                 ],
                 [
                     'label' => 'Quiz',
@@ -98,7 +99,7 @@ return [
                 ],
             ],
             'resources' => ['Forms', 'Request lifecycle', 'Validation and CSRF'],
-            'notes' => ['This is where PHP moves from static output into user-submitted data.', 'Assignment 3A preserves the course script style, then documents the security improvements a professional app would need.'],
+            'notes' => ['This is where PHP moves from static output into user-submitted data.', 'Assignment 3A preserves the course script style, then documents the security improvements a professional app would need.', 'Assignment 3B adds POST handling, output escaping, and server-side validation for a secure product contact form.'],
         ],
         [
             'module' => 'Module 4',
