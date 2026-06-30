@@ -120,9 +120,17 @@ return [
                     'type' => 'PHP + MySQL',
                     'url' => '/module4/database-setup.php',
                 ],
+                [
+                    'label' => 'Assignment 4B',
+                    'title' => 'Personal Inventory Database',
+                    'description' => 'Display personal inventory records from MySQL using PDO, prepared statements, and escaped table output.',
+                    'status' => 'Ready',
+                    'type' => 'PDO + MYSQL',
+                    'url' => '/module4b/show_inventory.php',
+                ],
             ],
             'resources' => ['SQL basics', 'MySQL', 'phpMyAdmin', 'Laravel Herd or XAMPP'],
-            'notes' => ['Focus on how data is shaped before Eloquent and migrations arrive.', 'Assignment 4A demonstrates the local database environment through a clickable setup report form.'],
+            'notes' => ['Focus on how data is shaped before Eloquent and migrations arrive.', 'Assignment 4A demonstrates the local database environment through a clickable setup report form.', 'Assignment 4B retrieves personal inventory records from MySQL with PDO and renders them safely in a table.'],
         ],
         [
             'module' => 'Module 5',
