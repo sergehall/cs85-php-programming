@@ -313,6 +313,7 @@ $isSuccessful = $submitted && $errors === [];
             <div class="notice error">
                 Please fix the following:
                 <ul>
+                    <?php // Escape each validation message before rendering it into the HTML page. ?>
                     <?php foreach ($errors as $error) { ?>
                         <li><?php echo escapeOutput($error); ?></li>
                     <?php } ?>
@@ -323,6 +324,7 @@ $isSuccessful = $submitted && $errors === [];
         <?php if ($isSuccessful) { ?>
             <div class="notice success">
                 <p>
+                    <?php // User-submitted values are escaped before display to help prevent XSS. ?>
                     Thank you, <?php echo escapeOutput($fullName); ?>! We received your message about:
                     "<?php echo escapeOutput($topic); ?>"
                 </p>
@@ -333,6 +335,7 @@ $isSuccessful = $submitted && $errors === [];
         <form action="" method="POST">
             <label for="full_name">
                 Full Name
+                <?php // Sticky value: keep the submitted full name after a validation error. ?>
                 <input
                     type="text"
                     id="full_name"
@@ -347,6 +350,7 @@ $isSuccessful = $submitted && $errors === [];
 
             <label for="email">
                 Email Address
+                <?php // Sticky value: keep the submitted email address after a validation error. ?>
                 <input
                     type="email"
                     id="email"
@@ -361,6 +365,7 @@ $isSuccessful = $submitted && $errors === [];
 
             <label for="topic">
                 Topic of Message
+                <?php // Sticky value: keep the submitted topic after a validation error. ?>
                 <input
                     type="text"
                     id="topic"
@@ -377,6 +382,7 @@ $isSuccessful = $submitted && $errors === [];
             <label for="message">
                 Message
                 <span class="hint">Write 50-150 words. Current count after submit: <?php echo $wordCount; ?></span>
+                <?php // Sticky value: keep the submitted message after a validation error. ?>
                 <textarea
                     id="message"
                     name="message"
