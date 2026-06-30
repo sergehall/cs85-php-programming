@@ -3,8 +3,8 @@
  * Module 4 Assignment 4B: Personal Inventory Database
  * Student: Serge Hall
  *
- * This first version creates the assignment page that will display inventory
- * records from a MySQL database using PDO.
+ * This script displays personal inventory records from a MySQL database using
+ * PDO, a prepared SELECT statement, and escaped HTML output.
  *
  * Database setup SQL:
  *
@@ -30,6 +30,15 @@
  *   ('Bike Repair Kit', 'Tools', 1, '2025-04-02'),
  *   ('Drawing Markers', 'Art Supplies', 12, '2025-04-28'),
  *   ('Coffee Grinder', 'Kitchen', 1, '2025-05-10');
+ *
+ * Reflection:
+ * I chose practical items that could belong in a student workspace and home lab:
+ * computer equipment, class materials, tools, art supplies, and kitchen gear.
+ * A real inventory system could scale by adding users, locations, suppliers,
+ * low-stock alerts, barcode scanning, audit history, and role-based access.
+ * PDO helps protect against SQL injection because prepared statements separate
+ * the SQL command from data values instead of mixing user input directly into
+ * the query string.
  */
 
 $databaseHost = '127.0.0.1';
@@ -80,60 +89,228 @@ function formatPurchaseDate(string $value): string
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Module 4B Personal Inventory Database</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #132025;
+            --muted: #59666d;
+            --panel: #ffffff;
+            --line: #d7dee2;
+            --accent: #0f766e;
+            --accent-dark: #134e4a;
+            --warm: #b45309;
+            --soft: #eefcf8;
+            --danger-bg: #fff1f2;
+            --danger-text: #9f1239;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 12% 0%, rgba(180, 83, 9, 0.14), transparent 26rem),
+                radial-gradient(circle at 90% 5%, rgba(15, 118, 110, 0.18), transparent 30rem),
+                linear-gradient(135deg, #f8fafc 0%, #eefcf8 58%, #fff7ed 100%);
+            color: var(--ink);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.5;
+            margin: 0;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        main {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            box-shadow: 0 24px 70px rgba(19, 32, 37, 0.14);
+            margin: 0 auto;
+            max-width: 64rem;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #132025 0%, #134e4a 62%, #9a3412 100%);
+            color: #ffffff;
+            display: grid;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+
+        .back-link {
+            align-items: center;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 999px;
+            color: #ffffff;
+            display: inline-flex;
+            font-size: 0.9rem;
+            font-weight: 700;
+            justify-self: start;
+            padding: 0.55rem 0.85rem;
+            text-decoration: none;
+        }
+
+        .kicker {
+            color: #fed7aa;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            line-height: 1;
+            margin: 0;
+        }
+
+        h2 {
+            margin: 0;
+        }
+
+        .intro {
+            color: #d1fae5;
+            margin: 0;
+            max-width: 45rem;
+        }
+
+        .content {
+            display: grid;
+            gap: 1.25rem;
+            padding: 1.5rem;
+        }
+
+        .notice {
+            background: var(--soft);
+            border: 1px solid #99f6e4;
+            border-radius: 10px;
+            color: var(--accent-dark);
+            font-weight: 700;
+            margin: 0;
+            padding: 0.9rem 1rem;
+        }
+
+        .notice.error {
+            background: var(--danger-bg);
+            border-color: #fecdd3;
+            color: var(--danger-text);
+        }
+
+        .table-wrap {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            min-width: 44rem;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid var(--line);
+            padding: 0.85rem 1rem;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .setup-note {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 10px;
+            color: #78350f;
+            margin: 0;
+            padding: 0.9rem 1rem;
+        }
+    </style>
 </head>
 <body>
 <main>
-    <p><a href="/roadmap/module-4">Back to Module 4</a></p>
-    <h1>Personal Inventory Database</h1>
-    <p>
-        This page will connect to MySQL with PDO and display items from the
-        <strong>inventory_db</strong> database.
-    </p>
-
-    <p>
-        <strong>Status:</strong>
-        <?php echo h($connectionMessage); ?>
-    </p>
-
-    <?php if ($connectionError !== '') { ?>
-        <p>
-            <strong>Connection detail:</strong>
-            <?php echo h($connectionError); ?>
+    <header>
+        <a class="back-link" href="/roadmap/module-4">Back to Module 4</a>
+        <p class="kicker">Module 4 Assignment 4B</p>
+        <h1>Personal Inventory Database</h1>
+        <p class="intro">
+            A PHP and MySQL inventory page that connects with PDO, retrieves records
+            using a prepared statement, and escapes output before displaying the table.
         </p>
-    <?php } ?>
+    </header>
 
-    <h2>Inventory Items</h2>
-    <?php if ($items === []) { ?>
-        <p>No inventory records are available yet. Create the database and insert the sample records below.</p>
-    <?php } else { ?>
-        <table>
-            <thead>
-            <tr>
-                <th scope="col">Item</th>
-                <th scope="col">Category</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Purchase Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($items as $item) { ?>
-                <tr>
-                    <td><?php echo h((string) $item['item_name']); ?></td>
-                    <td><?php echo h((string) $item['category']); ?></td>
-                    <td><?php echo h((string) $item['quantity']); ?></td>
-                    <td><?php echo h(formatPurchaseDate((string) $item['purchase_date'])); ?></td>
-                </tr>
-            <?php } ?>
-            </tbody>
-        </table>
-    <?php } ?>
+    <section class="content">
+        <p class="notice">
+            <strong>Status:</strong>
+            <?php echo h($connectionMessage); ?>
+        </p>
 
-    <h2>Database Setup</h2>
-    <p>
-        The database is named <strong>inventory_db</strong>. The inventory table
-        is named <strong>items</strong> and contains at least five personal
-        inventory records.
-    </p>
+        <?php if ($connectionError !== '') { ?>
+            <p class="notice error">
+                <strong>Connection detail:</strong>
+                <?php echo h($connectionError); ?>
+            </p>
+        <?php } ?>
+
+        <h2>Inventory Items</h2>
+        <?php if ($items === []) { ?>
+            <p>No inventory records are available yet. Create the database and insert the sample records below.</p>
+        <?php } else { ?>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Purchase Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($items as $item) { ?>
+                        <tr>
+                            <td><?php echo h((string) $item['item_name']); ?></td>
+                            <td><?php echo h((string) $item['category']); ?></td>
+                            <td><?php echo h((string) $item['quantity']); ?></td>
+                            <td><?php echo h(formatPurchaseDate((string) $item['purchase_date'])); ?></td>
+                        </tr>
+                    <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php } ?>
+
+        <h2>Database Setup</h2>
+        <p class="setup-note">
+            The database is named <strong>inventory_db</strong>. The inventory table
+            is named <strong>items</strong> and contains at least five personal
+            inventory records. The full SQL setup script is included in the PHP
+            comments at the top of this file.
+        </p>
+
+        <h2>Reflection</h2>
+        <p>
+            I chose practical items from a student workspace and home lab because
+            they make the inventory feel realistic. This could scale into a real
+            system by adding users, locations, suppliers, low-stock alerts, and
+            audit history. PDO prepared statements help protect against SQL
+            injection by separating SQL commands from data values.
+        </p>
+    </section>
 </main>
 </body>
 </html>
