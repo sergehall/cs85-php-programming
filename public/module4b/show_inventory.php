@@ -61,6 +61,18 @@ try {
     $connectionMessage = 'Could not load inventory records.';
     $connectionError = $exception->getMessage();
 }
+
+function h(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+function formatPurchaseDate(string $value): string
+{
+    $timestamp = strtotime($value);
+
+    return $timestamp === false ? $value : date('M j, Y', $timestamp);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -80,14 +92,40 @@ try {
 
     <p>
         <strong>Status:</strong>
-        <?php echo htmlspecialchars($connectionMessage, ENT_QUOTES, 'UTF-8'); ?>
+        <?php echo h($connectionMessage); ?>
     </p>
 
     <?php if ($connectionError !== '') { ?>
         <p>
             <strong>Connection detail:</strong>
-            <?php echo htmlspecialchars($connectionError, ENT_QUOTES, 'UTF-8'); ?>
+            <?php echo h($connectionError); ?>
         </p>
+    <?php } ?>
+
+    <h2>Inventory Items</h2>
+    <?php if ($items === []) { ?>
+        <p>No inventory records are available yet. Create the database and insert the sample records below.</p>
+    <?php } else { ?>
+        <table>
+            <thead>
+            <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Category</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Purchase Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($items as $item) { ?>
+                <tr>
+                    <td><?php echo h((string) $item['item_name']); ?></td>
+                    <td><?php echo h((string) $item['category']); ?></td>
+                    <td><?php echo h((string) $item['quantity']); ?></td>
+                    <td><?php echo h(formatPurchaseDate((string) $item['purchase_date'])); ?></td>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
     <?php } ?>
 
     <h2>Database Setup</h2>
