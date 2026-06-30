@@ -53,8 +53,43 @@ $databaseName = 'inventory_db';
 $databaseUser = 'cs85';
 $databasePassword = 'cs85_password';
 $items = [];
+$categories = [];
 $connectionMessage = 'Inventory has not loaded yet.';
 $connectionError = '';
+$searchTerm = trim((string) ($_GET['search'] ?? ''));
+$selectedCategory = trim((string) ($_GET['category'] ?? ''));
+$minQuantityInput = trim((string) ($_GET['min_quantity'] ?? ''));
+$sortBy = (string) ($_GET['sort'] ?? 'category_name_asc');
+$allowedSorts = [
+    'category_name_asc' => [
+        'label' => 'Category, then item A-Z',
+        'sql' => 'category ASC, item_name ASC',
+    ],
+    'item_name_asc' => [
+        'label' => 'Item name A-Z',
+        'sql' => 'item_name ASC',
+    ],
+    'quantity_desc' => [
+        'label' => 'Quantity high to low',
+        'sql' => 'quantity DESC, item_name ASC',
+    ],
+    'quantity_asc' => [
+        'label' => 'Quantity low to high',
+        'sql' => 'quantity ASC, item_name ASC',
+    ],
+    'purchase_date_desc' => [
+        'label' => 'Newest purchase first',
+        'sql' => 'purchase_date DESC, item_name ASC',
+    ],
+    'purchase_date_asc' => [
+        'label' => 'Oldest purchase first',
+        'sql' => 'purchase_date ASC, item_name ASC',
+    ],
+];
+
+if (! isset($allowedSorts[$sortBy])) {
+    $sortBy = 'category_name_asc';
+}
 
 try {
     $dsn = "mysql:host={$databaseHost};port={$databasePort};dbname={$databaseName};charset=utf8mb4";
@@ -64,15 +99,42 @@ try {
         PDO::ATTR_EMULATE_PREPARES => false,
     ]);
 
-    // Prepared statements keep SQL structure separate from data values.
+    $categoryStatement = $pdo->query('SELECT DISTINCT category FROM items ORDER BY category ASC');
+    $categories = array_map(static fn (array $row): string => (string) $row['category'], $categoryStatement->fetchAll());
+
+    $where = [];
+    $parameters = [];
+
+    // Filter input values are bound as PDO parameters instead of being mixed into SQL.
+    if ($searchTerm !== '') {
+        $where[] = '(item_name LIKE :search_item OR category LIKE :search_category)';
+        $parameters['search_item'] = '%'.$searchTerm.'%';
+        $parameters['search_category'] = '%'.$searchTerm.'%';
+    }
+
+    if ($selectedCategory !== '') {
+        $where[] = 'category = :category';
+        $parameters['category'] = $selectedCategory;
+    }
+
+    if ($minQuantityInput !== '' && filter_var($minQuantityInput, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]) !== false) {
+        $where[] = 'quantity >= :min_quantity';
+        $parameters['min_quantity'] = (int) $minQuantityInput;
+    }
+
+    $whereSql = $where === [] ? '' : ' WHERE '.implode(' AND ', $where);
+    $orderSql = $allowedSorts[$sortBy]['sql'];
+
+    // ORDER BY uses an allowlist because column names cannot be safely bound as values.
     $statement = $pdo->prepare(
-        'SELECT id, item_name, category, quantity, purchase_date
-         FROM items
-         ORDER BY category ASC, item_name ASC'
+        "SELECT id, item_name, category, quantity, purchase_date
+         FROM items{$whereSql}
+         ORDER BY {$orderSql}"
     );
-    $statement->execute();
+    $statement->execute($parameters);
     $items = $statement->fetchAll();
-    $connectionMessage = 'Loaded '.count($items).' inventory items from MySQL.';
+    $itemCount = count($items);
+    $connectionMessage = 'Showing '.$itemCount.' inventory '.($itemCount === 1 ? 'item' : 'items').' from MySQL.';
 } catch (PDOException $exception) {
     $connectionMessage = 'Could not load inventory records.';
     $connectionError = $exception->getMessage();
@@ -207,6 +269,81 @@ function formatPurchaseDate(string $value): string
             color: var(--danger-text);
         }
 
+        .filters {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            display: grid;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .filter-grid {
+            display: grid;
+            gap: 0.85rem;
+        }
+
+        @media (min-width: 760px) {
+            .filter-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        label {
+            color: var(--muted);
+            display: grid;
+            font-size: 0.82rem;
+            font-weight: 800;
+            gap: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        input,
+        select {
+            border: 1px solid #aab4c4;
+            border-radius: 8px;
+            color: var(--ink);
+            font: inherit;
+            padding: 0.72rem;
+            text-transform: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+            outline: none;
+        }
+
+        .filter-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .button {
+            background: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            color: #ffffff;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 800;
+            padding: 0.72rem 1rem;
+        }
+
+        .button-secondary {
+            align-items: center;
+            background: #ffffff;
+            border: 1px solid #aab4c4;
+            border-radius: 8px;
+            color: var(--ink);
+            display: inline-flex;
+            font-weight: 800;
+            padding: 0.72rem 1rem;
+            text-decoration: none;
+        }
+
         .table-wrap {
             border: 1px solid var(--line);
             border-radius: 10px;
@@ -273,9 +410,63 @@ function formatPurchaseDate(string $value): string
             </p>
         <?php } ?>
 
+        <form class="filters" action="" method="GET">
+            <div class="filter-grid">
+                <label for="search">
+                    Search item or category
+                    <input
+                        type="search"
+                        id="search"
+                        name="search"
+                        value="<?php echo h($searchTerm); ?>"
+                        placeholder="keyboard, tools, kitchen..."
+                    >
+                </label>
+
+                <label for="category">
+                    Category
+                    <select id="category" name="category">
+                        <option value="">All categories</option>
+                        <?php foreach ($categories as $category) { ?>
+                            <option value="<?php echo h($category); ?>" <?php echo $selectedCategory === $category ? 'selected' : ''; ?>>
+                                <?php echo h($category); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </label>
+
+                <label for="min_quantity">
+                    Minimum quantity
+                    <input
+                        type="number"
+                        id="min_quantity"
+                        name="min_quantity"
+                        min="0"
+                        value="<?php echo h($minQuantityInput); ?>"
+                    >
+                </label>
+
+                <label for="sort">
+                    Display order
+                    <select id="sort" name="sort">
+                        <?php foreach ($allowedSorts as $sortKey => $sortOption) { ?>
+                            <option value="<?php echo h($sortKey); ?>" <?php echo $sortBy === $sortKey ? 'selected' : ''; ?>>
+                                <?php echo h($sortOption['label']); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </label>
+            </div>
+
+            <div class="filter-actions">
+                <button class="button" type="submit">Apply Filters</button>
+                <a class="button-secondary" href="/module4b/show_inventory.php">Reset</a>
+            </div>
+        </form>
+
         <h2>Inventory Items</h2>
         <?php if ($items === []) { ?>
-            <p>No inventory records are available yet. Create the database and insert the sample records below.</p>
+            <p>No inventory records match the current filters. Adjust the fields above or reset the list.</p>
         <?php } else { ?>
             <div class="table-wrap">
                 <table>
