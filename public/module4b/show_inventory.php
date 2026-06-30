@@ -39,18 +39,25 @@
  * PDO helps protect against SQL injection because prepared statements separate
  * the SQL command from data values instead of mixing user input directly into
  * the query string.
+ *
+ * Local project connection:
+ * Host: 127.0.0.1
+ * Port: 3307
+ * Database: inventory_db
+ * User: cs85
  */
 
 $databaseHost = '127.0.0.1';
+$databasePort = '3307';
 $databaseName = 'inventory_db';
-$databaseUser = 'root';
-$databasePassword = '';
+$databaseUser = 'cs85';
+$databasePassword = 'cs85_password';
 $items = [];
 $connectionMessage = 'Inventory has not loaded yet.';
 $connectionError = '';
 
 try {
-    $dsn = "mysql:host={$databaseHost};dbname={$databaseName};charset=utf8mb4";
+    $dsn = "mysql:host={$databaseHost};port={$databasePort};dbname={$databaseName};charset=utf8mb4";
     $pdo = new PDO($dsn, $databaseUser, $databasePassword, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
