@@ -3,13 +3,29 @@
 namespace App\Http\Controllers\Cabinet;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Services\ActivityLogger;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 
 class CourseworkController extends Controller
 {
-    public function __invoke(): View
+    public function __invoke(Request $request, ActivityLogger $activity): View
     {
+        $user = $request->user();
+
+        if ($user instanceof User) {
+            $activity->recordDaily(
+                subject: $user,
+                actor: $user,
+                category: 'coursework',
+                event: 'coursework.workspace_viewed',
+                title: 'Coursework workspace opened',
+                description: 'Opened the coursework control center and reviewed linked assignments.',
+            );
+        }
+
         $modules = collect(config('course.modules', []))
             ->map(fn (array $module): array => $this->prepareModule($module))
             ->all();

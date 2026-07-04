@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -43,7 +44,7 @@ class GitHubOAuthController extends Controller
         return redirect()->away("https://github.com/login/oauth/authorize?{$query}");
     }
 
-    public function callback(Request $request): RedirectResponse
+    public function callback(Request $request, ActivityLogger $activity): RedirectResponse
     {
         $expectedState = $request->session()->pull('oauth.github_state');
 
@@ -95,7 +96,7 @@ class GitHubOAuthController extends Controller
         ];
 
         if ($request->user() && $linkUserId === $request->user()->getKey()) {
-            return $this->linkCurrentUser($request, $userData['github_id'], $email, $userData);
+            return $this->linkCurrentUser($request, $userData['github_id'], $email, $userData, $activity);
         }
 
         $githubUser = User::query()
@@ -111,6 +112,8 @@ class GitHubOAuthController extends Controller
 
         $user = $githubUser ?: $emailUser;
 
+        $shouldLogGithubConnection = ! $user || ! $user->github_id;
+
         if ($user) {
             $user->forceFill($userData)->save();
         } else {
@@ -118,6 +121,17 @@ class GitHubOAuthController extends Controller
                 'password' => Str::password(48),
                 'role' => 'user',
             ]);
+        }
+
+        if ($shouldLogGithubConnection) {
+            $activity->record(
+                subject: $user,
+                actor: $user,
+                category: 'security',
+                event: 'security.github_connected',
+                title: 'GitHub connected',
+                description: 'GitHub OAuth was connected as an external identity provider.',
+            );
         }
 
         Auth::login($user, remember: true);
@@ -129,7 +143,7 @@ class GitHubOAuthController extends Controller
     /**
      * @param  array{name:mixed,email:string,github_id:string,github_username:mixed,github_avatar_url:mixed,email_verified_at:mixed}  $userData
      */
-    private function linkCurrentUser(Request $request, string $githubId, string $email, array $userData): RedirectResponse
+    private function linkCurrentUser(Request $request, string $githubId, string $email, array $userData, ActivityLogger $activity): RedirectResponse
     {
         $currentUser = $request->user();
 
@@ -161,6 +175,15 @@ class GitHubOAuthController extends Controller
             'github_avatar_url' => $userData['github_avatar_url'],
             'email_verified_at' => $currentUser->email === $email ? now() : $currentUser->email_verified_at,
         ])->save();
+
+        $activity->record(
+            subject: $currentUser,
+            actor: $currentUser,
+            category: 'security',
+            event: 'security.github_connected',
+            title: 'GitHub connected',
+            description: 'GitHub OAuth was connected as an external identity provider.',
+        );
 
         $request->session()->regenerate();
 

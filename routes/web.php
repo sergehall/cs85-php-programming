@@ -6,6 +6,7 @@ use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Cabinet\ActivityController;
 use App\Http\Controllers\Cabinet\Admin\AdminUserRoleController;
 use App\Http\Controllers\Cabinet\Admin\AdminUsersController;
 use App\Http\Controllers\Cabinet\AdminAccessRequestController;
@@ -127,7 +128,9 @@ Route::prefix('cabinet')->middleware('auth')->name('cabinet.')->group(function (
     Route::get('/security', SecurityController::class)->name('security');
     Route::post('/security/admin-access-request', AdminAccessRequestController::class)->name('security.admin-access-request');
 
-    foreach (array_diff(array_keys(config('cabinet.sections', [])), ['profile', 'coursework', 'security']) as $sectionKey) {
+    Route::get('/activity', ActivityController::class)->name('activity');
+
+    foreach (array_diff(array_keys(config('cabinet.sections', [])), ['profile', 'coursework', 'security', 'activity']) as $sectionKey) {
         Route::get("/{$sectionKey}", function () use ($sectionKey) {
             return view('cabinet.section', [
                 'section' => config("cabinet.sections.{$sectionKey}"),
