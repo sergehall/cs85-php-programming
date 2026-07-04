@@ -186,6 +186,7 @@ class SiteNavigationTest extends TestCase
         $response->assertSee('Application MFA');
         $response->assertSee('GitHub MFA');
         $response->assertSee('Managed in GitHub');
+        $response->assertSee('GitHub uses the account currently signed in at github.com.');
     }
 
     #[DataProvider('cabinetAdminRoutes')]

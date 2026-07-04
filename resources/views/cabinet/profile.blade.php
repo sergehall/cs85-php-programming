@@ -125,6 +125,25 @@
         <aside class="grid content-start gap-4 rounded-lg border border-stone-300 bg-white p-6">
             <h2 class="text-xl font-bold text-slate-950">Account summary</h2>
             @php($emptyProfileValue = 'Not provided yet')
+            @php($profileInitials = collect(explode(' ', trim($user->name)))->filter()->map(fn (string $name): string => Str::upper(Str::substr($name, 0, 1)))->take(2)->implode('') ?: 'U')
+
+            <div class="grid gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4">
+                <div class="flex items-center gap-3">
+                    @if ($user->github_avatar_url)
+                        <img class="h-16 w-16 rounded-lg object-cover" src="{{ $user->github_avatar_url }}" alt="" referrerpolicy="no-referrer">
+                    @else
+                        <span class="grid h-16 w-16 place-items-center rounded-lg bg-slate-950 text-lg font-bold text-white">{{ $profileInitials }}</span>
+                    @endif
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold uppercase tracking-normal text-slate-500">Profile photo</p>
+                        <p class="mt-1 font-bold text-slate-950">{{ $user->github_avatar_url ? 'Synced from GitHub' : 'Connect GitHub to sync photo' }}</p>
+                    </div>
+                </div>
+                <p class="text-sm leading-6 text-slate-600">
+                    After you connect GitHub in Security, your GitHub profile photo appears here automatically.
+                </p>
+            </div>
+
             <dl class="grid gap-3 text-sm">
                 <div class="border-t border-stone-200 pt-3">
                     <dt class="font-bold text-slate-500">Account UUID</dt>

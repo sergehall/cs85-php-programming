@@ -158,6 +158,9 @@ class GitHubOAuthSecurityTest extends TestCase
             ->get('/auth/github/callback?state=known-state&code=github-code');
 
         $response->assertSessionHasErrors('github');
+        $response->assertSessionHasErrors([
+            'github' => 'The GitHub account and verified GitHub email belong to different CS85 users. Sign in with the matching local account or use a different GitHub account.',
+        ]);
         $this->assertGuest();
         $this->assertDatabaseHas('users', [
             'github_id' => '12345',
@@ -247,6 +250,9 @@ class GitHubOAuthSecurityTest extends TestCase
             ->get('/auth/github/callback?state=known-state&code=github-code');
 
         $response->assertSessionHasErrors('github');
+        $response->assertSessionHasErrors([
+            'github' => 'The GitHub account you authorized is already connected to another CS85 user. Sign out of GitHub or choose a different GitHub account.',
+        ]);
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'email' => 'local@example.com',

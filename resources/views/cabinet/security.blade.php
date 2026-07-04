@@ -40,6 +40,10 @@
                     @endif
                 </div>
 
+                <p class="mt-4 rounded-lg border border-stone-200 bg-stone-50 p-4 text-sm leading-6 text-slate-600">
+                    GitHub uses the account currently signed in at github.com. To connect a different GitHub identity, sign out of GitHub first or switch accounts during authorization.
+                </p>
+
                 <dl class="mt-5 grid gap-3 text-sm md:grid-cols-2">
                     <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
                         <dt class="font-bold text-slate-500">Connection</dt>

@@ -25,6 +25,8 @@ class ProfileManagementTest extends TestCase
             'first_name' => 'Serge',
             'last_name' => 'Hall',
             'github_profile_url' => 'https://github.com/sergehall',
+            'github_avatar_url' => 'https://avatars.githubusercontent.com/u/12345',
+            'github_id' => '12345',
             'linkedin_profile_url' => 'https://www.linkedin.com/in/sergehall',
             'bio' => 'CS85 student building a Laravel coursework portfolio.',
             'technical_skills' => 'PHP, Laravel, MySQL, Docker',
@@ -46,6 +48,9 @@ class ProfileManagementTest extends TestCase
         $response->assertSee('Serge');
         $response->assertSee('Hall');
         $response->assertSee('https://github.com/sergehall');
+        $response->assertSee('https://avatars.githubusercontent.com/u/12345', false);
+        $response->assertSee('Synced from GitHub');
+        $response->assertSee('After you connect GitHub in Security, your GitHub profile photo appears here automatically.');
         $response->assertSee('https://www.linkedin.com/in/sergehall');
         $response->assertSee('CS85 student building a Laravel coursework portfolio.');
         $response->assertSee('PHP, Laravel, MySQL, Docker');
