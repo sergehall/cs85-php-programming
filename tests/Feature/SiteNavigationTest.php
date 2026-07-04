@@ -186,7 +186,9 @@ class SiteNavigationTest extends TestCase
         $response->assertSee('Application MFA');
         $response->assertSee('GitHub MFA');
         $response->assertSee('Managed in GitHub');
-        $response->assertSee('GitHub uses the account currently signed in at github.com.');
+        $response->assertSee('Current Laravel account:');
+        $response->assertSee('GitHub does not look up this email automatically.');
+        $response->assertSee('A GitHub identity can be connected to only one CS85 user at a time.');
     }
 
     #[DataProvider('cabinetAdminRoutes')]

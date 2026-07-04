@@ -40,9 +40,17 @@
                     @endif
                 </div>
 
-                <p class="mt-4 rounded-lg border border-stone-200 bg-stone-50 p-4 text-sm leading-6 text-slate-600">
-                    GitHub uses the account currently signed in at github.com. To connect a different GitHub identity, sign out of GitHub first or switch accounts during authorization.
-                </p>
+                <div class="mt-4 grid gap-2 rounded-lg border border-stone-200 bg-stone-50 p-4 text-sm leading-6 text-slate-600">
+                    <p>
+                        Current Laravel account: <strong class="text-slate-950">{{ $user->email }}</strong>
+                    </p>
+                    <p>
+                        GitHub does not look up this email automatically. The button connects whichever GitHub account is currently signed in at github.com. If this Laravel account does not have its own GitHub account yet, create one or sign in to the correct GitHub account before connecting.
+                    </p>
+                    <p>
+                        A GitHub identity can be connected to only one CS85 user at a time.
+                    </p>
+                </div>
 
                 <dl class="mt-5 grid gap-3 text-sm md:grid-cols-2">
                     <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
