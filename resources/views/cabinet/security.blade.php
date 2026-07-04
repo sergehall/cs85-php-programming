@@ -50,6 +50,9 @@
                     <p>
                         A GitHub identity can be connected to only one CS85 user at a time.
                     </p>
+                    <p>
+                        For privacy, CS85 does not reveal whether a GitHub identity is connected to another profile.
+                    </p>
                 </div>
 
                 <dl class="mt-5 grid gap-3 text-sm md:grid-cols-2">

@@ -159,8 +159,9 @@ class GitHubOAuthSecurityTest extends TestCase
 
         $response->assertSessionHasErrors('github');
         $response->assertSessionHasErrors([
-            'github' => 'The GitHub account and verified GitHub email belong to different CS85 users. Sign in with the matching local account or use a different GitHub account.',
+            'github' => 'We could not connect that GitHub account. Sign in to the correct GitHub account on github.com or use a private browser window, then try again.',
         ]);
+        $this->assertStringNotContainsString('another', session('errors')->first('github'));
         $this->assertGuest();
         $this->assertDatabaseHas('users', [
             'github_id' => '12345',
@@ -251,8 +252,9 @@ class GitHubOAuthSecurityTest extends TestCase
 
         $response->assertSessionHasErrors('github');
         $response->assertSessionHasErrors([
-            'github' => 'The GitHub account you authorized is already connected to another CS85 user. Sign out of GitHub or choose a different GitHub account.',
+            'github' => 'We could not connect that GitHub account. Sign in to the correct GitHub account on github.com or use a private browser window, then try again.',
         ]);
+        $this->assertStringNotContainsString('already connected', session('errors')->first('github'));
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'email' => 'local@example.com',

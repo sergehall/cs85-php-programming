@@ -106,7 +106,7 @@ class GitHubOAuthController extends Controller
             ->first();
 
         if ($githubUser && $emailUser && ! $githubUser->is($emailUser)) {
-            return $this->fail($request, 'The GitHub account and verified GitHub email belong to different CS85 users. Sign in with the matching local account or use a different GitHub account.');
+            return $this->fail($request, $this->accountLinkingConflictMessage());
         }
 
         $user = $githubUser ?: $emailUser;
@@ -143,7 +143,7 @@ class GitHubOAuthController extends Controller
             ->first();
 
         if ($githubOwner) {
-            return $this->fail($request, 'The GitHub account you authorized is already connected to another CS85 user. Sign out of GitHub or choose a different GitHub account.');
+            return $this->fail($request, $this->accountLinkingConflictMessage());
         }
 
         $emailOwner = User::query()
@@ -152,7 +152,7 @@ class GitHubOAuthController extends Controller
             ->first();
 
         if ($emailOwner) {
-            return $this->fail($request, 'The verified email on this GitHub account belongs to another CS85 user. Sign in with that local account or use a different GitHub account.');
+            return $this->fail($request, $this->accountLinkingConflictMessage());
         }
 
         $currentUser->forceFill([
@@ -176,6 +176,11 @@ class GitHubOAuthController extends Controller
         return redirect()
             ->route($route)
             ->withErrors(['github' => $message]);
+    }
+
+    private function accountLinkingConflictMessage(): string
+    {
+        return 'We could not connect that GitHub account. Sign in to the correct GitHub account on github.com or use a private browser window, then try again.';
     }
 
     private function githubClient(string $token): PendingRequest
