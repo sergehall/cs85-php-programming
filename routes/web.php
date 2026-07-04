@@ -8,6 +8,8 @@ use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\MfaChallengeController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Cabinet\ActivityController;
+use App\Http\Controllers\Cabinet\Admin\AdminDashboardController;
+use App\Http\Controllers\Cabinet\Admin\AdminUserLoginAccessController;
 use App\Http\Controllers\Cabinet\Admin\AdminUserRoleController;
 use App\Http\Controllers\Cabinet\Admin\AdminUsersController;
 use App\Http\Controllers\Cabinet\AdminAccessRequestController;
@@ -102,7 +104,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 
 Route::redirect('/admin', '/cabinet')->name('admin.redirect');
 
-Route::prefix('cabinet')->middleware('auth')->name('cabinet.')->group(function () {
+Route::prefix('cabinet')->middleware(['auth', 'login.enabled'])->name('cabinet.')->group(function () {
     Route::get('/', function (Request $request) {
         $user = $request->user();
         $configuredAccount = config('cabinet.account');
@@ -150,18 +152,17 @@ Route::prefix('cabinet')->middleware('auth')->name('cabinet.')->group(function (
     }
 
     Route::prefix('admin')->middleware('admin')->name('admin.')->group(function () {
-        Route::get('/', function () {
-            return view('cabinet.admin-dashboard', [
-                'summary' => config('cabinet.admin.dashboard.summary'),
-                'sections' => config('cabinet.admin.dashboard.sections'),
-            ]);
-        })->name('dashboard');
+        Route::get('/', AdminDashboardController::class)->name('dashboard');
 
         Route::get('/users', AdminUsersController::class)->name('users');
         Route::patch('/access-requests/{adminAccessRequest}/approve', [AdminUserRoleController::class, 'approve'])
             ->name('access-requests.approve');
         Route::patch('/users/{user}/revoke-admin', [AdminUserRoleController::class, 'revoke'])
             ->name('users.revoke-admin');
+        Route::patch('/users/{user}/disable-login', [AdminUserLoginAccessController::class, 'disable'])
+            ->name('users.disable-login');
+        Route::patch('/users/{user}/enable-login', [AdminUserLoginAccessController::class, 'enable'])
+            ->name('users.enable-login');
 
         foreach (array_diff(array_keys(config('cabinet.admin.sections', [])), ['users']) as $sectionKey) {
             Route::get("/{$sectionKey}", function () use ($sectionKey) {

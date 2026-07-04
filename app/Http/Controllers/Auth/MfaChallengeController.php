@@ -34,7 +34,7 @@ class MfaChallengeController extends Controller
         $userId = $request->session()->get('auth.mfa.user_id');
         $user = is_numeric($userId) ? User::query()->find((int) $userId) : null;
 
-        if (! $user instanceof User || ! $user->hasMfaEnabled()) {
+        if (! $user instanceof User || ! $user->hasMfaEnabled() || ! $user->canLogIn()) {
             $request->session()->forget('auth.mfa');
 
             return redirect()->route('login');

@@ -132,6 +132,35 @@ class GitHubOAuthSecurityTest extends TestCase
         ]);
     }
 
+    public function test_github_callback_rejects_account_disabled_by_admin(): void
+    {
+        User::factory()->create([
+            'email' => 'blocked@example.com',
+            'login_enabled' => false,
+        ]);
+
+        Http::fake([
+            'github.com/login/oauth/access_token' => Http::response(['access_token' => 'github-token'], 200),
+            'api.github.com/user' => Http::response([
+                'id' => 12345,
+                'login' => 'blockedhub',
+                'name' => 'Blocked User',
+                'email' => 'blocked@example.com',
+                'avatar_url' => 'https://avatars.githubusercontent.com/u/12345',
+            ], 200),
+        ]);
+
+        $response = $this
+            ->withSession(['oauth.github_state' => 'known-state'])
+            ->get('/auth/github/callback?state=known-state&code=github-code');
+
+        $response->assertRedirect('/login');
+        $response->assertSessionHasErrors([
+            'github' => 'This account is not allowed to sign in right now. Contact an administrator.',
+        ]);
+        $this->assertGuest();
+    }
+
     public function test_github_callback_rejects_identity_and_email_conflict_between_users(): void
     {
         User::factory()->create([

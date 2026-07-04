@@ -112,6 +112,10 @@ class GitHubOAuthController extends Controller
 
         $user = $githubUser ?: $emailUser;
 
+        if ($user && ! $user->canLogIn()) {
+            return $this->fail($request, 'This account is not allowed to sign in right now. Contact an administrator.');
+        }
+
         $shouldLogGithubConnection = ! $user || ! $user->github_id;
 
         if ($user) {

@@ -62,6 +62,36 @@ class AuthFlowTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
+    public function test_login_rejects_account_disabled_by_admin(): void
+    {
+        User::factory()->create([
+            'email' => 'blocked@example.com',
+            'password' => 'StrongPassword123!',
+            'login_enabled' => false,
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => 'blocked@example.com',
+            'password' => 'StrongPassword123!',
+        ]);
+
+        $response->assertSessionHasErrors([
+            'email' => 'This account is not allowed to sign in right now. Contact an administrator.',
+        ]);
+        $this->assertGuest();
+    }
+
+    public function test_disabled_authenticated_user_is_removed_from_cabinet_session(): void
+    {
+        $user = User::factory()->create(['login_enabled' => false]);
+
+        $response = $this->actingAs($user)->get('/cabinet');
+
+        $response->assertRedirect('/login');
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest();
+    }
+
     public function test_logout_ends_current_session(): void
     {
         $user = User::factory()->create();

@@ -282,7 +282,7 @@ class SiteNavigationTest extends TestCase
     public static function cabinetAdminRoutes(): array
     {
         return [
-            'dashboard' => ['/cabinet/admin', 'Admin tools live inside the cabinet'],
+            'dashboard' => ['/cabinet/admin', 'Admin operations dashboard'],
             'users' => ['/cabinet/admin/users', 'Users'],
             'content' => ['/cabinet/admin/content', 'Content'],
         ];

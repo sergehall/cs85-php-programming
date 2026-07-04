@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
     'email_verified_at',
     'password',
     'role',
+    'login_enabled',
     'github_id',
     'github_username',
     'github_avatar_url',
@@ -44,6 +45,10 @@ class User extends Authenticatable
             if (! $user->getAttribute('public_uuid')) {
                 $user->setAttribute('public_uuid', (string) Str::uuid());
             }
+
+            if ($user->getAttribute('login_enabled') === null) {
+                $user->setAttribute('login_enabled', true);
+            }
         });
     }
 
@@ -56,6 +61,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'login_enabled' => 'boolean',
             'mfa_confirmed_at' => 'datetime',
             'mfa_recovery_codes' => 'encrypted:array',
             'mfa_secret' => 'encrypted',
@@ -71,6 +77,11 @@ class User extends Authenticatable
     public function hasMfaEnabled(): bool
     {
         return is_string($this->mfa_secret) && $this->mfa_confirmed_at !== null;
+    }
+
+    public function canLogIn(): bool
+    {
+        return (bool) $this->getAttribute('login_enabled');
     }
 
     public function profilePhotoUrl(): ?string

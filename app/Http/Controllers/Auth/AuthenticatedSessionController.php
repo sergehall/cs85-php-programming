@@ -33,6 +33,14 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
         $user = $request->user();
 
+        if ($user instanceof User && ! $user->canLogIn()) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'This account is not allowed to sign in right now. Contact an administrator.',
+            ]);
+        }
+
         if ($user instanceof User && $user->hasMfaEnabled()) {
             Auth::logout();
             $request->session()->put('auth.mfa.user_id', $user->getKey());

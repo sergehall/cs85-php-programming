@@ -104,6 +104,115 @@ class AdminAccessRequestTest extends TestCase
         $response->assertSee('Current admin');
     }
 
+    public function test_admin_users_page_filters_accounts_by_search_role_security_and_request_state(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin', 'name' => 'Admin User']);
+        $pendingUser = User::factory()->create([
+            'role' => 'user',
+            'name' => 'Pending Student',
+            'email' => 'pending@example.com',
+            'github_id' => 'github-123',
+            'github_username' => 'pendinghub',
+        ]);
+        $mfaUser = User::factory()->create([
+            'role' => 'user',
+            'name' => 'Mfa Student',
+            'email' => 'mfa@example.com',
+            'mfa_secret' => 'secret',
+            'mfa_confirmed_at' => now(),
+        ]);
+
+        AdminAccessRequest::factory()->create(['user_id' => $pendingUser->id]);
+
+        $response = $this->actingAs($admin)->get(route('cabinet.admin.users', [
+            'search' => 'pendinghub',
+            'role' => 'user',
+            'security' => 'github_connected',
+            'request' => AdminAccessRequest::STATUS_PENDING,
+        ]));
+
+        $response->assertOk();
+        $response->assertSee('User directory');
+        $response->assertSee('1 matching');
+        $response->assertSee('Pending Student');
+        $response->assertSee('pending@example.com');
+        $response->assertSee('GitHub connected');
+        $response->assertSee('Request: Pending');
+        $response->assertDontSee('Mfa Student');
+        $response->assertDontSee('mfa@example.com');
+
+        $this->actingAs($admin)->get(route('cabinet.admin.users', [
+            'security' => 'mfa_enabled',
+            'request' => 'none',
+        ]))
+            ->assertOk()
+            ->assertSee('1 matching')
+            ->assertSee('Mfa Student')
+            ->assertSee('MFA enabled')
+            ->assertDontSee('pendinghub');
+    }
+
+    public function test_admin_can_disable_and_restore_standard_user_login_access(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'user', 'name' => 'Blocked Student']);
+
+        $disableResponse = $this->actingAs($admin)
+            ->patch(route('cabinet.admin.users.disable-login', $user));
+
+        $disableResponse->assertRedirect(route('cabinet.admin.users'));
+        $disableResponse->assertSessionHas('status', 'User login access disabled.');
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'login_enabled' => false,
+        ]);
+        $this->assertDatabaseHas('activity_logs', [
+            'subject_user_id' => $user->id,
+            'actor_user_id' => $admin->id,
+            'event' => 'user_login.disabled',
+            'title' => 'User login disabled',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('cabinet.admin.users', ['security' => 'login_blocked']))
+            ->assertOk()
+            ->assertSee('Blocked Student')
+            ->assertSee('Login blocked')
+            ->assertSee('Allow login');
+
+        $enableResponse = $this->actingAs($admin)
+            ->patch(route('cabinet.admin.users.enable-login', $user));
+
+        $enableResponse->assertRedirect(route('cabinet.admin.users'));
+        $enableResponse->assertSessionHas('status', 'User login access enabled.');
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'login_enabled' => true,
+        ]);
+        $this->assertDatabaseHas('activity_logs', [
+            'subject_user_id' => $user->id,
+            'actor_user_id' => $admin->id,
+            'event' => 'user_login.enabled',
+            'title' => 'User login enabled',
+        ]);
+    }
+
+    public function test_admin_login_access_action_does_not_disable_admin_accounts(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $targetAdmin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)
+            ->patch(route('cabinet.admin.users.disable-login', $targetAdmin));
+
+        $response->assertRedirect(route('cabinet.admin.users'));
+        $response->assertSessionHasErrors('login');
+        $this->assertDatabaseHas('users', [
+            'id' => $targetAdmin->id,
+            'login_enabled' => true,
+        ]);
+    }
+
     public function test_admin_can_revoke_another_admin_role(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
