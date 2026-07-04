@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Cabinet;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminAccessRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
@@ -14,10 +15,14 @@ class SecurityController extends Controller
         $user = $request->user();
         $githubConfigured = (bool) config('services.github.client_id') && (bool) config('services.github.client_secret');
         $githubConnected = (bool) $user?->github_id;
+        $adminAccessRequest = $user
+            ? AdminAccessRequest::query()->where('user_id', $user->getKey())->first()
+            : null;
 
         return view('cabinet.security', [
             'section' => config('cabinet.sections.security'),
             'user' => $user,
+            'adminAccessRequest' => $adminAccessRequest,
             'githubConfigured' => $githubConfigured,
             'githubConnected' => $githubConnected,
             'githubRedirectRouteReady' => Route::has('auth.github.redirect'),

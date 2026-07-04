@@ -6,6 +6,9 @@ use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Cabinet\Admin\AdminUserRoleController;
+use App\Http\Controllers\Cabinet\Admin\AdminUsersController;
+use App\Http\Controllers\Cabinet\AdminAccessRequestController;
 use App\Http\Controllers\Cabinet\CourseworkController;
 use App\Http\Controllers\Cabinet\ProfileController;
 use App\Http\Controllers\Cabinet\SecurityController;
@@ -122,6 +125,7 @@ Route::prefix('cabinet')->middleware('auth')->name('cabinet.')->group(function (
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/coursework', CourseworkController::class)->name('coursework');
     Route::get('/security', SecurityController::class)->name('security');
+    Route::post('/security/admin-access-request', AdminAccessRequestController::class)->name('security.admin-access-request');
 
     foreach (array_diff(array_keys(config('cabinet.sections', [])), ['profile', 'coursework', 'security']) as $sectionKey) {
         Route::get("/{$sectionKey}", function () use ($sectionKey) {
@@ -139,7 +143,13 @@ Route::prefix('cabinet')->middleware('auth')->name('cabinet.')->group(function (
             ]);
         })->name('dashboard');
 
-        foreach (array_keys(config('cabinet.admin.sections', [])) as $sectionKey) {
+        Route::get('/users', AdminUsersController::class)->name('users');
+        Route::patch('/access-requests/{adminAccessRequest}/approve', [AdminUserRoleController::class, 'approve'])
+            ->name('access-requests.approve');
+        Route::patch('/users/{user}/revoke-admin', [AdminUserRoleController::class, 'revoke'])
+            ->name('users.revoke-admin');
+
+        foreach (array_diff(array_keys(config('cabinet.admin.sections', [])), ['users']) as $sectionKey) {
             Route::get("/{$sectionKey}", function () use ($sectionKey) {
                 return view('cabinet.admin-section', [
                     'section' => config("cabinet.admin.sections.{$sectionKey}"),

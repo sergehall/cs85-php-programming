@@ -76,6 +76,48 @@
             </article>
 
             <article class="rounded-lg border border-stone-300 bg-white p-6">
+                @php
+                    $adminRequestStatus = $adminAccessRequest?->status;
+                    $adminRequestLabel = [
+                        'pending' => 'Pending admin review',
+                        'approved' => 'Approved',
+                        'revoked' => 'Revoked',
+                    ][$adminRequestStatus] ?? 'Not requested';
+                @endphp
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-950">Admin access</h2>
+                        <p class="mt-2 leading-7 text-slate-600">
+                            Request admin privileges for coursework management. An existing admin must review and grant the role before admin routes unlock.
+                        </p>
+                    </div>
+                    @if ($user->isAdmin())
+                        <span class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-center text-sm font-bold text-emerald-800">Admin active</span>
+                    @elseif ($adminAccessRequest?->isPending())
+                        <span class="rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-center text-sm font-bold text-orange-800">Request pending</span>
+                    @else
+                        <form method="POST" action="{{ route('cabinet.security.admin-access-request') }}">
+                            @csrf
+                            <button class="rounded-lg bg-teal-700 px-4 py-3 text-sm font-bold text-white transition hover:bg-teal-800" type="submit">
+                                Request admin access
+                            </button>
+                        </form>
+                    @endif
+                </div>
+
+                <dl class="mt-5 grid gap-3 text-sm md:grid-cols-2">
+                    <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
+                        <dt class="font-bold text-slate-500">Current role</dt>
+                        <dd class="mt-1 font-bold {{ $user->isAdmin() ? 'text-teal-800' : 'text-slate-950' }}">{{ $user->isAdmin() ? 'Admin' : 'User' }}</dd>
+                    </div>
+                    <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
+                        <dt class="font-bold text-slate-500">Access request</dt>
+                        <dd class="mt-1 font-bold {{ $adminAccessRequest?->isPending() ? 'text-orange-700' : 'text-slate-950' }}">{{ $adminRequestLabel }}</dd>
+                    </div>
+                </dl>
+            </article>
+
+            <article class="rounded-lg border border-stone-300 bg-white p-6">
                 <h2 class="text-2xl font-bold text-slate-950">Security checks</h2>
                 <div class="mt-5 grid gap-3">
                     @foreach ($checks as $check)

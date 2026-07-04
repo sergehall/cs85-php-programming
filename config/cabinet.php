@@ -195,9 +195,9 @@ return [
             'users' => [
                 'eyebrow' => 'Admin Users',
                 'title' => 'User Management',
-                'description' => 'Prepared operational surface for user accounts, roles, status review, and future policy-protected edits.',
-                'items' => ['Search users', 'Review role', 'Check profile completion', 'Inspect recent activity'],
-                'tasks' => ['Add users table fields', 'Create admin middleware', 'Add audit records for role changes'],
+                'description' => 'Operational surface for user accounts, admin access requests, role review, and protected role changes.',
+                'items' => ['Review admin access requests', 'Grant admin role', 'Revoke admin role', 'Check profile identity'],
+                'tasks' => ['Add audit records for role changes', 'Add searchable user filters', 'Require confirmation for sensitive role actions'],
             ],
             'content' => [
                 'eyebrow' => 'Admin Content',
