@@ -11,7 +11,13 @@ return [
     'roles' => [
         'user' => [
             'label' => 'User',
-            'description' => 'Standard cabinet role for profile, coursework, account security, MFA, and personal activity.',
+            'description' => 'Standard student workspace role for personal profile management, coursework access, account security, MFA, and personal activity history.',
+            'capabilities' => [
+                'Open the cabinet overview, profile, coursework, security, and activity pages.',
+                'Edit personal identity fields, portfolio links, bio, skills, and profile photo URL.',
+                'Connect GitHub, enable application MFA, and request admin access from the security page.',
+                'Review personal activity evidence without access to other users or admin tools.',
+            ],
             'abilities' => [
                 'view_cabinet',
                 'manage_own_profile',
@@ -24,7 +30,13 @@ return [
         ],
         'admin' => [
             'label' => 'Admin',
-            'description' => 'Administrative cabinet role for user oversight, admin access review, and protected role changes.',
+            'description' => 'Protected administrative role for user oversight, admin access review, login access control, role changes, and administrative activity review.',
+            'capabilities' => [
+                'Open the admin overview and user management workspace.',
+                'Review pending admin access requests and grant or revoke admin privileges.',
+                'Allow or block user login access without deleting the user account.',
+                'Review administrative activity signals while coursework remains in the shared coursework page.',
+            ],
             'abilities' => [
                 'view_cabinet',
                 'manage_users',

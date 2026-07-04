@@ -38,6 +38,8 @@ class ProjectConfigurationTest extends TestCase
             $this->assertIsArray($roles[$role]);
             $this->assertNotEmpty($roles[$role]['label']);
             $this->assertNotEmpty($roles[$role]['description']);
+            $this->assertIsArray($roles[$role]['capabilities']);
+            $this->assertNotEmpty($roles[$role]['capabilities']);
             $this->assertIsArray($roles[$role]['abilities']);
             $this->assertContains('view_cabinet', $roles[$role]['abilities']);
         }

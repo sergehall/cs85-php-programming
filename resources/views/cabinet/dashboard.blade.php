@@ -61,15 +61,18 @@
             <h2 class="text-xl font-bold text-slate-950">Access roles</h2>
             <div class="mt-5 grid gap-4 md:grid-cols-2">
                 @foreach ($roles as $role)
-                    <div class="grid content-start gap-3 rounded-lg border border-stone-200 bg-stone-50 p-5">
-                        <span class="text-xs font-bold uppercase tracking-normal text-slate-500">Active role</span>
+                    <div class="grid content-start gap-4 rounded-lg border border-stone-200 bg-stone-50 p-5">
+                        <span class="text-xs font-bold uppercase tracking-normal text-slate-500">Configured role</span>
                         <strong class="text-lg text-slate-950">{{ $role['label'] }}</strong>
-                        <p class="leading-7 text-slate-600">{{ $role['description'] }}</p>
-                        <ul class="grid gap-2 pl-5 leading-7 text-slate-600">
-                            @foreach ($role['abilities'] as $ability)
-                                <li>{{ $ability }}</li>
-                            @endforeach
-                        </ul>
+                        <p class="max-w-prose text-sm leading-6 text-slate-600">{{ $role['description'] }}</p>
+                        <div class="border-t border-stone-200 pt-4">
+                            <p class="text-xs font-bold uppercase tracking-normal text-teal-800">Current access</p>
+                            <ul class="mt-3 list-disc space-y-3 pl-5 text-sm leading-6 text-slate-600">
+                                @foreach ($role['capabilities'] ?? $role['abilities'] as $capability)
+                                    <li>{{ $capability }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
                     </div>
                 @endforeach
             </div>
