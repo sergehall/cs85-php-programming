@@ -49,13 +49,11 @@ class AuthorizationMatrixTest extends TestCase
             'dashboard' => ['/cabinet'],
             'profile' => ['/cabinet/profile'],
             'coursework' => ['/cabinet/coursework'],
-            'messages' => ['/cabinet/messages'],
             'security' => ['/cabinet/security'],
             'activity' => ['/cabinet/activity'],
             'admin-dashboard' => ['/cabinet/admin'],
             'admin-users' => ['/cabinet/admin/users'],
             'admin-content' => ['/cabinet/admin/content'],
-            'admin-messages' => ['/cabinet/admin/messages'],
         ];
     }
 
@@ -68,7 +66,6 @@ class AuthorizationMatrixTest extends TestCase
             'dashboard' => ['/cabinet/admin'],
             'users' => ['/cabinet/admin/users'],
             'content' => ['/cabinet/admin/content'],
-            'messages' => ['/cabinet/admin/messages'],
         ];
     }
 }

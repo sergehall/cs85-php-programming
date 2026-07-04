@@ -43,6 +43,9 @@ class ProjectConfigurationTest extends TestCase
         }
 
         $this->assertContains('manage_users', $roles['admin']['abilities']);
+        $this->assertNotContains('manage_content', $roles['admin']['abilities']);
+        $this->assertNotContains('review_messages', $roles['admin']['abilities']);
+        $this->assertNotContains('send_messages', $roles['user']['abilities']);
         $this->assertNotContains('manage_users', $roles['user']['abilities']);
     }
 
@@ -118,9 +121,10 @@ class ProjectConfigurationTest extends TestCase
         $this->assertIsArray($adminSections);
         $this->assertArrayHasKey('profile', $sections);
         $this->assertArrayHasKey('coursework', $sections);
-        $this->assertArrayHasKey('messages', $sections);
         $this->assertArrayHasKey('security', $sections);
         $this->assertArrayHasKey('activity', $sections);
+        $this->assertArrayNotHasKey('messages', $sections);
+        $this->assertArrayNotHasKey('messages', $adminSections);
 
         foreach ($sections as $section) {
             $this->assertIsArray($section);
@@ -162,6 +166,9 @@ class ProjectConfigurationTest extends TestCase
             $this->assertTrue(Route::has("cabinet.admin.{$sectionKey}"));
             $this->assertContains($sectionKey, $this->cabinetNavigationSectionKeys('admin'));
         }
+
+        $this->assertFalse(Route::has('cabinet.messages'));
+        $this->assertFalse(Route::has('cabinet.admin.messages'));
     }
 
     public function test_css_entrypoint_stays_tailwind_only(): void

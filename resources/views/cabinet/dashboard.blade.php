@@ -9,8 +9,7 @@
             <h1 class="max-w-4xl text-4xl font-bold leading-none text-slate-950 md:text-6xl">Manage CS85 from one focused workspace.</h1>
             <p class="max-w-3xl text-lg leading-8 text-slate-600">
                 The cabinet is organized like a professional account portal: profile, coursework,
-                messages, security, and activity each have a clear place before authentication and
-                database-backed CRUD are added.
+                security, and activity each have a clear place before database-backed CRUD is added.
             </p>
         </div>
 

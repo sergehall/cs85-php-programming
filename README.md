@@ -30,6 +30,8 @@ The project currently includes:
 - Session authentication with email/password registration and login.
 - GitHub OAuth authentication scaffolding.
 - A protected user cabinet and admin-only cabinet area.
+- Editable profile fields for first name, last name, portfolio links, bio, and
+  technical skills.
 - Security headers and a strict Content Security Policy.
 - Docker Compose services for MySQL, Redis, Mailpit, and Adminer.
 - Assignment pages served through Laravel routes.
@@ -257,8 +259,8 @@ Supported entry points:
 Roles are configured in `config/navigation.php` and enforced for admin routes
 with the `admin` middleware.
 
-- `user`: can view the cabinet and user coursework areas
-- `admin`: can access future admin tools for users, content, and messages
+- `user`: can view the cabinet, manage profile readiness, and track coursework
+- `admin`: can access protected user-management and admin-only coursework tools
 
 Newly registered and GitHub-created users receive the `user` role by default.
 Admin access must be assigned intentionally.
@@ -274,7 +276,6 @@ Prepared user areas:
 - Overview
 - Profile
 - Coursework
-- Messages
 - Security
 - Activity
 
@@ -282,7 +283,6 @@ Prepared admin areas:
 
 - Users
 - Content
-- Messages
 
 When database-backed coursework begins, these config-backed panels should move
 into migrations, models, seeders, policies, controllers, and Blade workflows.
@@ -537,6 +537,8 @@ The test suite currently verifies:
 - public pages render successfully
 - roadmap modules and assignment links stay registered
 - assignment PHP pages render through Laravel
+- authenticated users can edit profile identity, portfolio links, bio, and
+  technical skills
 - Module 2A pricing rules and escaping behavior
 - security headers and CSP expectations
 - registration, login, logout, and GitHub OAuth callback behavior
@@ -575,7 +577,7 @@ Mid-course improvements:
 
 - Add Form Request validation for write workflows.
 - Add policies for user-owned cabinet records.
-- Persist coursework, profile, messages, and activity in MySQL.
+- Persist coursework, profile, and activity in MySQL.
 - Add CRUD flows for assignments, labs, notes, and final project milestones.
 - Add admin audit logging for protected operations.
 

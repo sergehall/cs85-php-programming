@@ -6,6 +6,8 @@ use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Cabinet\CourseworkController;
+use App\Http\Controllers\Cabinet\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -115,7 +117,11 @@ Route::prefix('cabinet')->middleware('auth')->name('cabinet.')->group(function (
         ]);
     })->name('dashboard');
 
-    foreach (array_keys(config('cabinet.sections', [])) as $sectionKey) {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/coursework', CourseworkController::class)->name('coursework');
+
+    foreach (array_diff(array_keys(config('cabinet.sections', [])), ['profile', 'coursework']) as $sectionKey) {
         Route::get("/{$sectionKey}", function () use ($sectionKey) {
             return view('cabinet.section', [
                 'section' => config("cabinet.sections.{$sectionKey}"),

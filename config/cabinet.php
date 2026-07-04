@@ -18,7 +18,6 @@ return [
             ['label' => 'Overview', 'route' => 'cabinet.dashboard'],
             ['label' => 'Profile', 'route' => 'cabinet.profile', 'section' => 'profile'],
             ['label' => 'Coursework', 'route' => 'cabinet.coursework', 'section' => 'coursework'],
-            ['label' => 'Messages', 'route' => 'cabinet.messages', 'section' => 'messages'],
             ['label' => 'Security', 'route' => 'cabinet.security', 'section' => 'security'],
             ['label' => 'Activity', 'route' => 'cabinet.activity', 'section' => 'activity'],
         ],
@@ -27,7 +26,6 @@ return [
             ['label' => 'Admin Overview', 'route' => 'cabinet.admin.dashboard'],
             ['label' => 'Users', 'route' => 'cabinet.admin.users', 'section' => 'users'],
             ['label' => 'Content', 'route' => 'cabinet.admin.content', 'section' => 'content'],
-            ['label' => 'Messages', 'route' => 'cabinet.admin.messages', 'section' => 'messages'],
         ],
     ],
 
@@ -95,7 +93,7 @@ return [
         'profile' => [
             'eyebrow' => 'User Profile',
             'title' => 'Profile Overview',
-            'description' => 'A prepared user profile surface inspired by the CS79D cabinet: account summary, portfolio identity, skills, and profile completion signals.',
+            'description' => 'A focused profile workspace for account details, portfolio links, short bio, technical skills, and profile completion signals.',
             'summary' => [
                 ['label' => 'Name', 'value' => 'Serge Hall'],
                 ['label' => 'Email', 'value' => 'serge.hall.dev@gmail.com'],
@@ -103,14 +101,14 @@ return [
                 ['label' => 'Role', 'value' => 'User'],
             ],
             'panels' => [
-                ['title' => 'Editable profile fields', 'items' => ['First and last name', 'User ID', 'GitHub and LinkedIn links', 'Short bio', 'Technical skills']],
+                ['title' => 'Editable profile fields', 'items' => ['First and last name', 'GitHub and LinkedIn links', 'Short bio', 'Technical skills']],
                 ['title' => 'Portfolio links', 'items' => ['GitHub: SergeHall', 'Instagram: @sergioartg', 'Project repository: cs85-php-programming']],
-                ['title' => 'Future persistence', 'items' => ['users table', 'profiles table', 'Form Request validation', 'Policy-protected updates']],
+                ['title' => 'Profile persistence', 'items' => ['users table profile columns', 'Form Request validation', 'Authenticated user-only updates']],
             ],
             'tasks' => [
                 ['label' => 'Add auth scaffolding', 'status' => 'Done'],
-                ['label' => 'Create profile migration', 'status' => 'Upcoming'],
-                ['label' => 'Validate profile URLs', 'status' => 'Upcoming'],
+                ['label' => 'Create profile migration', 'status' => 'Done'],
+                ['label' => 'Validate profile URLs', 'status' => 'Done'],
             ],
         ],
 
@@ -133,28 +131,6 @@ return [
                 ['label' => 'Create assignment records', 'status' => 'Model later'],
                 ['label' => 'Track weekly milestones', 'status' => 'Prepared'],
                 ['label' => 'Connect final project AI idea', 'status' => 'Planned'],
-            ],
-        ],
-
-        'messages' => [
-            'eyebrow' => 'Communication',
-            'title' => 'Messages and Feedback',
-            'description' => 'A prepared inbox for course questions, project feedback, and future contact form submissions.',
-            'summary' => [
-                ['label' => 'Inbox', 'value' => 'Prepared'],
-                ['label' => 'Reviewed', 'value' => 'Planned'],
-                ['label' => 'Archived', 'value' => 'Planned'],
-                ['label' => 'Notifications', 'value' => 'Mailpit-ready'],
-            ],
-            'panels' => [
-                ['title' => 'Message types', 'items' => ['Course question', 'Assignment feedback', 'Contact request', 'Final project review note']],
-                ['title' => 'Future states', 'items' => ['New', 'Reviewed', 'Waiting for response', 'Archived']],
-                ['title' => 'Local email flow', 'items' => ['Mailpit captures outgoing mail', 'No real SMTP secrets in local development', 'Admin can review submissions later']],
-            ],
-            'tasks' => [
-                ['label' => 'Add contact form validation', 'status' => 'Upcoming'],
-                ['label' => 'Persist messages in MySQL', 'status' => 'Upcoming'],
-                ['label' => 'Build admin review filters', 'status' => 'Prepared'],
             ],
         ],
 
@@ -192,7 +168,7 @@ return [
             ],
             'panels' => [
                 ['title' => 'Recent project events', 'items' => ['Laravel scaffold created', 'Docker infrastructure added', 'Quality gates configured', 'Cabinet expanded into focused sections']],
-                ['title' => 'Future tracked events', 'items' => ['Profile updated', 'Assignment submitted', 'Message reviewed', 'Admin content changed']],
+                ['title' => 'Future tracked events', 'items' => ['Profile updated', 'Assignment submitted', 'Admin content changed', 'Security setting changed']],
                 ['title' => 'Operational value', 'items' => ['Supports debugging', 'Shows project progress', 'Creates portfolio evidence', 'Prepares audit logging']],
             ],
             'tasks' => [
@@ -208,13 +184,11 @@ return [
             'summary' => [
                 ['label' => 'Users', 'value' => 'Prepared'],
                 ['label' => 'Content', 'value' => 'Prepared'],
-                ['label' => 'Messages', 'value' => 'Prepared'],
                 ['label' => 'Policies', 'value' => 'Planned'],
             ],
             'sections' => [
                 ['title' => 'Users', 'route' => 'cabinet.admin.users', 'status' => 'Prepared', 'description' => 'User accounts, roles, profile status, and access review.'],
                 ['title' => 'Content', 'route' => 'cabinet.admin.content', 'status' => 'Prepared', 'description' => 'Assignments, labs, notes, roadmap content, and project pages.'],
-                ['title' => 'Messages', 'route' => 'cabinet.admin.messages', 'status' => 'Prepared', 'description' => 'Contact requests, feedback, reviewed states, and admin response workflow.'],
             ],
         ],
         'sections' => [
@@ -231,13 +205,6 @@ return [
                 'description' => 'Prepared editorial surface for course modules, assignments, labs, notes, and final project milestones.',
                 'items' => ['Manage roadmap entries', 'Publish assignment notes', 'Track lab resources', 'Highlight final project requirements'],
                 'tasks' => ['Create content migrations', 'Build CRUD controllers', 'Add validation tests for mutations'],
-            ],
-            'messages' => [
-                'eyebrow' => 'Admin Messages',
-                'title' => 'Message Review',
-                'description' => 'Prepared review queue for user contact requests, course feedback, and project communication.',
-                'items' => ['Filter new messages', 'Mark reviewed', 'Archive resolved threads', 'Send local test email through Mailpit'],
-                'tasks' => ['Create messages table', 'Add reviewed and archived states', 'Protect status changes with policies'],
             ],
         ],
     ],

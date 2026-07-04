@@ -19,6 +19,7 @@ return [
                     'description' => 'Create the first Laravel route and render a clean Blade page.',
                     'status' => 'Ready',
                     'route' => 'assignments.module1.assignment1a',
+                    'source' => 'resources/views/pages/assignments/module1/assignment1a.blade.php',
                 ],
             ],
             'resources' => ['PHP local setup', 'Laravel project structure', 'Blade view basics'],
@@ -42,6 +43,7 @@ return [
                     'status' => 'Ready',
                     'type' => 'PHP',
                     'url' => '/assignments/module2a/price_engine.php',
+                    'source' => 'assignments/module2a/price_engine.php',
                 ],
                 [
                     'label' => 'Assignment 2A Refactor',
@@ -50,6 +52,7 @@ return [
                     'status' => 'Ready',
                     'type' => 'PHP',
                     'url' => '/assignments/module2a/price_engine_refactored.php',
+                    'source' => 'assignments/module2a/price_engine_refactored.php',
                 ],
                 [
                     'label' => 'Assignment 2B',
@@ -58,6 +61,7 @@ return [
                     'status' => 'Ready',
                     'type' => 'Laravel',
                     'route' => 'assignments.module2.cosmic-calendar',
+                    'source' => 'app/Http/Controllers/Assignments/Module2BCosmicCalendarController.php',
                 ],
             ],
             'resources' => ['Conditionals', 'Loops', 'Date and time data'],
@@ -81,6 +85,7 @@ return [
                     'status' => 'Ready',
                     'type' => 'PHP',
                     'url' => '/assignments/module3a/ContactForm.php',
+                    'source' => 'assignments/module3a/ContactForm.php',
                 ],
                 [
                     'label' => 'Assignment 3B',
@@ -89,6 +94,7 @@ return [
                     'status' => 'Ready',
                     'type' => 'PHP',
                     'url' => '/assignments/module3b/SecureProductContactForm.php',
+                    'source' => 'assignments/module3b/SecureProductContactForm.php',
                 ],
                 [
                     'label' => 'Quiz',
@@ -119,6 +125,7 @@ return [
                     'status' => 'Ready',
                     'type' => 'PHP + MySQL',
                     'url' => '/assignments/module4a/database-setup.php',
+                    'source' => 'assignments/module4a/database-setup.php',
                 ],
                 [
                     'label' => 'Assignment 4B',
@@ -127,6 +134,7 @@ return [
                     'status' => 'Ready',
                     'type' => 'PDO + MYSQL',
                     'url' => '/assignments/module4b/show_inventory.php',
+                    'source' => 'assignments/module4b/show_inventory.php',
                 ],
             ],
             'resources' => ['SQL basics', 'MySQL', 'phpMyAdmin', 'Laravel Herd or XAMPP'],

@@ -141,6 +141,27 @@ class SiteNavigationTest extends TestCase
         $response->assertSee($expectedText);
     }
 
+    public function test_cabinet_coursework_links_to_real_assignment_architecture(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/cabinet/coursework');
+
+        $response->assertOk();
+        $response->assertSee('Coursework Control Center');
+        $response->assertSee('Source root');
+        $response->assertSee('assignments/');
+        $response->assertSee('Laravel Hello World');
+        $response->assertSee(route('assignments.module1.assignment1a'), false);
+        $response->assertSee(url('/assignments/module2a/price_engine.php'), false);
+        $response->assertSee(url('/assignments/module4b/show_inventory.php'), false);
+        $response->assertSee('Open assignment');
+        $response->assertDontSee('<code', false);
+        $response->assertDontSee('block font-bold text-slate-500">Source</span>', false);
+        $response->assertDontSee('resources/views/pages/assignments/module1/assignment1a.blade.php');
+        $response->assertDontSee('Create assignment records');
+    }
+
     #[DataProvider('cabinetAdminRoutes')]
     public function test_admin_rule_pages_render_inside_cabinet(string $path, string $expectedText): void
     {
@@ -184,7 +205,6 @@ class SiteNavigationTest extends TestCase
             'dashboard' => ['/cabinet', 'Manage CS85 from one focused workspace'],
             'profile' => ['/cabinet/profile', 'Profile'],
             'coursework' => ['/cabinet/coursework', 'Coursework'],
-            'messages' => ['/cabinet/messages', 'Messages'],
             'security' => ['/cabinet/security', 'Security Foundation'],
             'activity' => ['/cabinet/activity', 'Activity Timeline'],
         ];
@@ -199,7 +219,6 @@ class SiteNavigationTest extends TestCase
             'dashboard' => ['/cabinet/admin', 'Admin tools live inside the cabinet'],
             'users' => ['/cabinet/admin/users', 'Users'],
             'content' => ['/cabinet/admin/content', 'Content'],
-            'messages' => ['/cabinet/admin/messages', 'Messages'],
         ];
     }
 }
