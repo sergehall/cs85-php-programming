@@ -2,79 +2,204 @@
 
 Expandable Laravel workspace for Santa Monica College CS85, Summer 2026.
 
-This project is intentionally structured as more than a disposable course sandbox. It starts with the CS85 syllabus requirements, then leaves clean extension points for database-backed CRUD, user cabinet workflows, admin-only operations, and an AI-powered final project.
+This repository is more than a disposable course sandbox. It is a single Laravel
+application that keeps weekly coursework, labs, notes, project experiments, and
+the final project in one organized codebase while preserving professional
+Laravel boundaries.
 
-## Goals
+## Project Goals
 
-- Practice PHP fundamentals, object-oriented PHP, forms, Composer, Laravel routing, Blade views, and MySQL-backed web development.
-- Keep assignments, labs, notes, projects, and final-project work in one organized repository.
-- Build toward a three-tier Laravel application with a public area, user cabinet, prepared admin rules, database persistence, tests, and AI integration.
-- Maintain portfolio-quality habits from the beginning: readable structure, reproducible commands, documented architecture, and quality gates.
+- Practice PHP fundamentals, forms, Composer, routing, Blade, databases,
+  authentication, authorization, and Laravel application structure.
+- Keep all CS85 work in one versioned repository instead of separate loose
+  folders.
+- Make each assignment easy to submit with a stable local URL and a GitHub file
+  link.
+- Protect the Laravel `public/` directory so source code, configuration,
+  templates, and domain classes are not web-served directly.
+- Grow the coursework into a portfolio-quality application with tests, static
+  analysis, CI, Docker-backed infrastructure, and security controls.
+
+## Current Status
+
+The project currently includes:
+
+- Public Laravel pages for home, roadmap, stack, and contact.
+- A 12-module CS85 roadmap driven by `config/course.php`.
+- Session authentication with email/password registration and login.
+- GitHub OAuth authentication scaffolding.
+- A protected user cabinet and admin-only cabinet area.
+- Security headers and a strict Content Security Policy.
+- Docker Compose services for MySQL, Redis, Mailpit, and Adminer.
+- Assignment pages served through Laravel routes.
+- PHPUnit feature and unit tests.
+- Laravel Pint, Larastan/PHPStan, Prettier, Vite build checks, and GitHub
+  Actions CI.
 
 ## Stack
 
-- PHP 8.5 via Homebrew
+- PHP 8.5 locally through Homebrew
+- PHP 8.4 in GitHub Actions CI
 - Laravel 13
 - Composer 2
 - Blade templates
 - Tailwind CSS 4 through Vite
 - Docker Compose local infrastructure
-- MySQL 9 for local database persistence
-- Redis for cache-ready local development
+- MySQL 9 for local persistent development data
+- SQLite for fast testing and default Laravel startup
+- Redis prepared for future cache and queue work
 - Mailpit for local email testing
-- Adminer for database inspection
-- SQLite for fast default Laravel startup
-- PHPUnit feature tests
-- Laravel Pint formatting
-- Larastan and PHPStan static analysis
-- Prettier formatting for JavaScript and project documentation
-- Laravel Debugbar for local debugging
-- Laravel Tinker for interactive exploration
-- OpenAI PHP client for the final project
+- Adminer for local database inspection
+- PHPUnit for tests
+- Laravel Pint for PHP formatting
+- Larastan/PHPStan for static analysis
+- Prettier for project documentation, JavaScript, and workflow formatting
+- OpenAI PHP client reserved for the final project
 
 ## Architecture
 
 ```text
-app/                    Laravel application code
-app/Http/Controllers    Auth and future workflow controllers
-app/Http/Middleware     Role middleware for protected cabinet areas
-app/Services/Modules    Coursework service and domain classes that should not be publicly served
-config/course.php        CS85 roadmap, stack, and contact data
-config/navigation.php    Public, cabinet, admin, and role navigation rules
-database/migrations      Users, sessions, jobs, cache, and auth profile schema
-routes/web.php           Public, auth, cabinet, and admin routes
-resources/views/layouts  Shared Blade application layout
-resources/views/pages    Public pages
-resources/views/cabinet  User cabinet and admin-rule pages
-resources/views/partials Shared Blade partials
-resources/css/app.css    Tailwind entrypoint only
-public/                  Laravel front controller, compiled assets, favicons, robots, and static brand assets
-scripts/                 Local app and infrastructure automation
-compose.yaml             Persistent Docker Compose infrastructure
-tests/Feature            Route, navigation, and access-surface tests
-tests/Unit               Configuration and project invariant tests
-.github/workflows        GitHub Actions quality automation
-assignments/             Weekly assignment work
-labs/                    Practice exercises
-notes/                   Course notes and reading summaries
-projects/                Larger module projects
-final-project/           AI-powered final project work
+app/                         Laravel application code
+app/Http/Controllers         Auth, assignment, cabinet, and workflow controllers
+app/Http/Middleware          Security and role middleware
+app/Models                   Eloquent models
+app/Services/Modules         Reusable coursework services and domain classes
+assignments/                 Course assignment source files outside public web root
+bootstrap/                   Laravel application bootstrap
+config/                      Application, course, security, navigation, and cabinet config
+database/factories           Test and seed factories
+database/migrations          Database schema changes
+database/seeders             Seed data
+final-project/               Future AI-powered final project workspace
+labs/                        Practice exercises
+notes/                       Course notes and reading summaries
+projects/                    Larger module projects
+public/                      Laravel front controller, compiled assets, favicons, robots, sitemap
+resources/css                Tailwind CSS entrypoint
+resources/js                 Vite JavaScript entrypoint
+resources/views              Blade pages, layouts, cabinet screens, and partials
+routes/web.php               Public, assignment, auth, cabinet, and admin web routes
+scripts/                     Local development and infrastructure automation
+storage/                     Laravel runtime storage
+tests/Feature                Route, security, auth, cabinet, and workflow tests
+tests/Unit                   Configuration, pricing, and project invariant tests
 ```
 
-Assignment source files live outside `public/`. Laravel routes expose each completed PHP assignment through `/assignments/...` URLs, while the actual files stay in `assignments/` so source code, configuration, templates, and domain classes are not directly web-served.
+## Public Directory Policy
+
+`public/` is intentionally limited to browser-safe files:
+
+- `index.php`
+- compiled Vite assets under `public/build`
+- brand images and favicons
+- `robots.txt`, `sitemap.xml`, and web manifests
+
+Coursework PHP source files do not live in `public/`. Assignment source files
+live in `assignments/`, and reusable PHP classes live under `app/Services`.
+Laravel routes expose only allowlisted assignment pages.
+
+This keeps the project closer to production Laravel conventions:
+
+- source code is not directly web-browsable
+- configuration is not exposed as public files
+- templates and domain classes remain inside application-controlled paths
+- URLs are registered explicitly in `routes/web.php`
+
+## Assignment Structure
+
+Current assignment source layout:
 
 ```text
-assignments/module2a/     Raw PHP assignment pages and assignment-specific templates
-assignments/module3a/     Contact form review assignment
-assignments/module3b/     Secure product contact form assignment
-assignments/module4a/     Database setup assignment
-assignments/module4b/     Personal inventory database assignment
-app/Services/Modules/     Reusable module services, domain objects, and presentation helpers
+assignments/module2a/
+  order.php
+  price_engine.php
+  price_engine_refactored.php
+  receipt.php
+
+assignments/module3a/
+  ContactForm.php
+
+assignments/module3b/
+  SecureProductContactForm.php
+
+assignments/module4a/
+  database-setup.php
+
+assignments/module4b/
+  show_inventory.php
 ```
+
+Reusable Module 2A classes:
+
+```text
+app/Services/Modules/Module2A/
+  Application/
+  Domain/
+  Presentation/
+```
+
+Canonical assignment URLs:
+
+| Assignment                            | Local URL                                                                 |
+| ------------------------------------- | ------------------------------------------------------------------------- |
+| Module 2A price engine                | `http://127.0.0.1:8000/assignments/module2a/price_engine.php`             |
+| Module 2A refactor                    | `http://127.0.0.1:8000/assignments/module2a/price_engine_refactored.php`  |
+| Module 3A contact form review         | `http://127.0.0.1:8000/assignments/module3a/ContactForm.php`              |
+| Module 3B secure product contact form | `http://127.0.0.1:8000/assignments/module3b/SecureProductContactForm.php` |
+| Module 4A database setup              | `http://127.0.0.1:8000/assignments/module4a/database-setup.php`           |
+| Module 4B personal inventory database | `http://127.0.0.1:8000/assignments/module4b/show_inventory.php`           |
+
+Legacy URLs such as `/module4b/show_inventory.php` are still routed through
+Laravel for compatibility, but new submissions should use `/assignments/...`
+URLs and GitHub links under the `assignments/` directory.
+
+Example submission link:
+
+```text
+https://github.com/sergehall/cs85-php-programming/blob/main/assignments/module4b/show_inventory.php
+```
+
+## Assignment Routing
+
+`App\Http\Controllers\Assignments\AssignmentPhpPageController` is a transitional
+bridge for early course assignments that are still written as single PHP files.
+It only serves files listed in its allowlist.
+
+The professional target is:
+
+```text
+Route -> Controller -> Form Request -> Service/Action -> Blade View -> Tests
+```
+
+Use the bridge for course-required single-file PHP assignments. For larger or
+newer assignments, prefer Laravel controllers, services, Blade templates,
+database migrations, models, and tests.
+
+## Adding New Coursework
+
+For a simple course-required PHP file:
+
+1. Create a folder under `assignments/`, for example `assignments/module5a/`.
+2. Add the assignment PHP file there.
+3. Register the file in the assignment controller allowlist.
+4. Add a route entry in `routes/web.php`.
+5. Add the assignment to `config/course.php`.
+6. Add a feature test that verifies the assignment URL returns `200`.
+7. Run `composer quality` and `npm run quality`.
+
+For a Laravel-native assignment:
+
+1. Add a controller under `app/Http/Controllers/Assignments`.
+2. Put business logic in `app/Services/Modules/ModuleX`.
+3. Put the Blade view under `resources/views/pages/assignments`.
+4. Register a named route in `routes/web.php`.
+5. Add the named route to `config/course.php`.
+6. Add feature and unit tests.
 
 ## Runtime Architecture
 
-The Laravel application runs on the host machine through PHP, Composer, Node.js, and Vite. Project infrastructure runs in Docker Compose and is reused between sessions.
+The Laravel application runs on macOS through PHP, Composer, Node.js, and Vite.
+Project infrastructure runs in Docker Compose and persists between sessions.
 
 ```mermaid
 flowchart LR
@@ -83,7 +208,7 @@ flowchart LR
     Script --> Migrate["npm run db:migrate:local"]
     Script --> Laravel["Laravel dev server\n127.0.0.1:8000"]
     Script --> Vite["Vite dev server\n127.0.0.1:5173"]
-    Script --> Browser["Browser opens\n127.0.0.1:8000"]
+    Script --> Browser["Browser\n127.0.0.1:8000"]
 
     Infra --> Compose["Docker Compose\ncompose.yaml"]
     Compose --> MySQL["MySQL 9\n127.0.0.1:3307"]
@@ -97,57 +222,97 @@ flowchart LR
     Adminer --> MySQL
 ```
 
-The application layer and infrastructure layer are intentionally separated:
-
-| Layer       | Runs on    | Responsibility                                               |
-| ----------- | ---------- | ------------------------------------------------------------ |
-| Laravel app | macOS host | Routes, Blade views, PHP application code, migrations, tests |
-| Vite        | macOS host | Tailwind CSS and frontend asset development                  |
-| MySQL       | Docker     | Persistent local database for course CRUD work               |
-| Redis       | Docker     | Prepared cache/queue service for future Laravel features     |
-| Mailpit     | Docker     | Local email capture without real SMTP credentials            |
-| Adminer     | Docker     | Lightweight database browser for the Docker MySQL service    |
-
-Homebrew MySQL is not required for this project. The app connects to Docker MySQL on `127.0.0.1:3307`, which avoids conflicts with other local database installations.
+Homebrew MySQL is not required. The app connects to Docker MySQL on
+`127.0.0.1:3307`, which avoids conflicts with other local database installations.
 
 ## Application Areas
 
-| Area        | Route                 | Purpose                                                        |
-| ----------- | --------------------- | -------------------------------------------------------------- |
-| Home        | `/`                   | Project entry point and current readiness overview             |
-| Roadmap     | `/roadmap`            | CS85 eight-module path with links to module workspaces         |
-| Stack       | `/stack`              | Installed tooling and technical foundation                     |
-| Contact     | `/contact`            | Course and project contact channels                            |
-| Login       | `/login`              | Session login with email/password and GitHub OAuth             |
-| Register    | `/register`           | Create one standard user account for cabinet access            |
-| Cabinet     | `/cabinet`            | Authenticated user workspace                                   |
-| Profile     | `/cabinet/profile`    | Prepared user profile area                                     |
-| Coursework  | `/cabinet/coursework` | Prepared assignments, labs, notes, and final-project workspace |
-| Messages    | `/cabinet/messages`   | Prepared user message area                                     |
-| Security    | `/cabinet/security`   | Prepared account protection and authorization planning area    |
-| Activity    | `/cabinet/activity`   | Prepared project and future user activity timeline             |
-| Admin Tools | `/cabinet/admin`      | Admin-only operational area inside the cabinet                 |
+| Area          | Route               | Purpose                                            |
+| ------------- | ------------------- | -------------------------------------------------- |
+| Home          | `/`                 | Project entry point and readiness overview         |
+| Roadmap       | `/roadmap`          | CS85 module path with assignment links             |
+| Module detail | `/roadmap/{module}` | Module-specific assignments, notes, and resources  |
+| Stack         | `/stack`            | Installed tooling and technical foundation         |
+| Contact       | `/contact`          | Course and project contact channels                |
+| Register      | `/register`         | Create a standard user account                     |
+| Login         | `/login`            | Session login with email/password and GitHub OAuth |
+| Cabinet       | `/cabinet`          | Authenticated user workspace                       |
+| Admin cabinet | `/cabinet/admin`    | Admin-only operational workspace                   |
+| Health        | `/up`               | Laravel health route                               |
 
-`/admin` is kept as a legacy convenience route and redirects to `/cabinet`.
+`/admin` redirects to `/cabinet` as a legacy convenience route.
 
-Each roadmap module has its own public page under `/roadmap/{module-slug}`. These pages are intentionally empty workspaces for now and will collect assignments, notes, and resources as the course progresses.
-
-## Authentication
+## Authentication And Roles
 
 The cabinet is protected with Laravel session authentication.
 
 Supported entry points:
 
-- Email and password login through `/login`
-- Account creation through `/register`
+- Email/password registration through `/register`
+- Email/password login through `/login`
 - GitHub OAuth through `/auth/github/redirect`
 - Logout through `POST /logout`
 
-Google OAuth is intentionally not registered in this project.
+Roles are configured in `config/navigation.php` and enforced for admin routes
+with the `admin` middleware.
 
-GitHub OAuth uses a session-backed state value before redirecting to GitHub and validates the state on callback. User records store the GitHub id, username, avatar URL, verified email, and the local role.
+- `user`: can view the cabinet and user coursework areas
+- `admin`: can access future admin tools for users, content, and messages
 
-Configure GitHub OAuth in `.env`:
+Newly registered and GitHub-created users receive the `user` role by default.
+Admin access must be assigned intentionally.
+
+## Cabinet Foundation
+
+The cabinet is config-driven while the project is still early in the course.
+Content lives in `config/cabinet.php`, and routes are generated from section
+keys.
+
+Prepared user areas:
+
+- Overview
+- Profile
+- Coursework
+- Messages
+- Security
+- Activity
+
+Prepared admin areas:
+
+- Users
+- Content
+- Messages
+
+When database-backed coursework begins, these config-backed panels should move
+into migrations, models, seeders, policies, controllers, and Blade workflows.
+
+## Environment
+
+Create a local environment file:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Default quick-start storage is SQLite. Docker-backed local development uses
+MySQL:
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3307
+DB_DATABASE=cs85_php_programming
+DB_USERNAME=cs85
+DB_PASSWORD=cs85_password
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=1025
+```
+
+GitHub OAuth:
 
 ```dotenv
 GITHUB_CLIENT_ID=
@@ -155,41 +320,13 @@ GITHUB_CLIENT_SECRET=
 GITHUB_REDIRECT_URI="${APP_URL}/auth/github/callback"
 ```
 
-## Roles
+Final project AI integration:
 
-Role intent lives in `config/navigation.php` and is enforced for admin routes by middleware.
-
-- `user`: can view the cabinet, manage their own profile, track coursework, and send messages.
-- `admin`: can access future operational tools for users, content, and message review.
-
-Newly registered and GitHub-created users receive the `user` role by default. Admin access must be assigned intentionally in the database or a future admin workflow.
-
-## Cabinet Foundation
-
-The cabinet follows the focused-section pattern used in the CS79D final project, adapted for Laravel and CS85:
-
-- `Overview`: account summary, metrics, prepared roles, and activity preview
-- `Profile`: user identity, portfolio links, editable profile fields, and persistence path
-- `Coursework`: assignments, labs, notes, projects, and final-project workspace planning
-- `Messages`: future inbox, contact requests, reviewed states, and Mailpit-ready email flow
-- `Security`: authentication, policies, MFA/OAuth ideas, and audit-readiness notes
-- `Activity`: project evidence stream and future database-backed event log
-- `Admin`: users, content, and message review surfaces protected by admin middleware
-
-The content currently lives in `config/cabinet.php` so the pages can grow without duplicating arrays across Blade views. When database work starts, these config-backed panels should move into models, migrations, seeders, policies, and controllers.
-
-Cabinet extensibility is intentionally config-first:
-
-```text
-config/cabinet.php
-  navigation.user       User cabinet navigation registry
-  navigation.admin      Admin cabinet navigation registry
-  sections              User section registry; routes are generated from keys
-  admin.sections        Admin section registry; routes are generated from keys
-  extension_points      Notes for future auth, CRUD, and database-backed upgrades
+```dotenv
+OPENAI_API_KEY=
 ```
 
-To add a user cabinet section, add a new key under `sections`, add a navigation item under `navigation.user`, and the `/cabinet/{key}` route will be registered automatically. Admin sections work the same way under `admin.sections` and `navigation.admin`.
+Never commit real secrets.
 
 ## Commands
 
@@ -208,32 +345,29 @@ php artisan key:generate
 php artisan migrate
 ```
 
-Start the full local application:
+Start the full local stack:
 
 ```bash
 npm run dev-local
 ```
 
-This command runs Docker infrastructure first, then starts Laravel, Vite, and opens the app in the browser.
-It also runs local MySQL migrations before the Laravel server starts.
-
-Alias:
+Aliases:
 
 ```bash
 npm run dev
 npm run start:app
 ```
 
-Run only the frontend asset dev server:
-
-```bash
-npm run dev:assets
-```
-
-Run only the Laravel server:
+Run only Laravel:
 
 ```bash
 php artisan serve --host=127.0.0.1 --port=8000
+```
+
+Run only Vite:
+
+```bash
+npm run dev:assets
 ```
 
 Build frontend assets:
@@ -242,13 +376,55 @@ Build frontend assets:
 npm run build
 ```
 
-Run local MySQL migrations against Docker infrastructure:
+Run Docker MySQL migrations:
 
 ```bash
 npm run db:migrate:local
 ```
 
-Run tests:
+## Docker Infrastructure
+
+| Service      | URL / Port              | Purpose                   |
+| ------------ | ----------------------- | ------------------------- |
+| MySQL        | `127.0.0.1:3307`        | Local Laravel database    |
+| Redis        | `127.0.0.1:6379`        | Cache-ready local service |
+| Mailpit UI   | `http://127.0.0.1:8025` | Local email inbox         |
+| Mailpit SMTP | `127.0.0.1:1025`        | Local SMTP endpoint       |
+| Adminer      | `http://127.0.0.1:8081` | Database browser          |
+
+Default MySQL credentials:
+
+```text
+database: cs85_php_programming
+username: cs85
+password: cs85_password
+```
+
+Start infrastructure:
+
+```bash
+npm run infra:up
+```
+
+Stop infrastructure but keep containers and volumes:
+
+```bash
+npm run infra:down
+```
+
+Remove Compose containers without deleting data volumes:
+
+```bash
+npm run infra:destroy
+```
+
+Use `npm run infra:down` for normal shutdown. Use `npm run infra:destroy` only
+when you want Docker Desktop to remove the stopped containers. Avoid deleting
+Docker volumes unless you intentionally want to reset local data.
+
+## Quality Gates
+
+Run PHP tests:
 
 ```bash
 php artisan test
@@ -272,228 +448,139 @@ Run PHP static analysis:
 composer lint
 ```
 
-Auto-fix PHP style and then run static analysis:
-
-```bash
-composer lint-fix
-```
-
-VS Code npm script alias:
-
-```bash
-npm run lint-fix
-```
-
-Run the PHP quality gate:
+Run PHP quality gate:
 
 ```bash
 composer quality
 ```
 
-Run frontend/documentation formatting:
+Run documentation, workflow, and frontend formatting:
 
 ```bash
 npm run format
 ```
 
-Run frontend/documentation formatting check:
-
-```bash
-npm run format:check
-```
-
-Run frontend quality gate:
+Run frontend/documentation quality gate:
 
 ```bash
 npm run quality
 ```
 
-Check that GitHub Actions workflows do not contain hardcoded Laravel app keys:
+Run the full local gate:
 
 ```bash
-npm run security:ci
+npm run test:all
 ```
 
-## Docker Infrastructure
-
-The local infrastructure is managed with Docker Compose:
-
-| Service      | URL / Port              | Purpose                   |
-| ------------ | ----------------------- | ------------------------- |
-| MySQL        | `127.0.0.1:3307`        | Local Laravel database    |
-| Redis        | `127.0.0.1:6379`        | Cache-ready local service |
-| Mailpit UI   | `http://127.0.0.1:8025` | Local email inbox         |
-| Mailpit SMTP | `127.0.0.1:1025`        | Local SMTP endpoint       |
-| Adminer      | `http://127.0.0.1:8081` | Database browser          |
-
-Docker Compose uses the project name `cs85-php-programming`, so containers and volumes are namespaced for this repository:
-
-```text
-cs85-mysql
-cs85-redis
-cs85-mailpit
-cs85-adminer
-cs85-php-programming_mysql-data
-cs85-php-programming_redis-data
-```
-
-Default database credentials:
-
-```text
-database: cs85_php_programming
-username: cs85
-password: cs85_password
-```
-
-Start infrastructure:
+Run dependency audits when network access is available:
 
 ```bash
-npm run infra:up
+npm run test:all:audit
 ```
-
-Stop infrastructure:
-
-```bash
-npm run infra:down
-```
-
-Remove infrastructure containers from Docker Desktop without deleting data volumes:
-
-```bash
-npm run infra:destroy
-```
-
-Alias:
-
-```bash
-npm run stop:infra
-```
-
-`infra:up` starts Docker Compose services with `--no-recreate`, waits until MySQL accepts connections inside the container, and reuses the same project environment after the first creation.
-If Docker Desktop is not running on macOS, the script opens it and waits for Docker to become ready.
-`infra:down` runs `docker compose stop`, so containers stay visible in Docker Desktop as stopped containers and Docker volumes are preserved.
-`infra:destroy` runs `docker compose down`, which removes containers and the Compose network from Docker Desktop but still preserves Docker volumes.
-
-The environment is intentionally persistent:
-
-- existing containers are reused on every `npm run infra:up`
-- MySQL data is stored in the `cs85-php-programming_mysql-data` Docker volume
-- Redis data is stored in the `cs85-php-programming_redis-data` Docker volume
-- containers are removed only if you intentionally run `npm run infra:destroy` or recreate Compose definitions manually
-
-Full local startup flow:
-
-```text
-npm run dev-local
-  -> npm run infra:up
-     -> open Docker Desktop if needed
-     -> docker compose up -d --no-recreate
-     -> wait for Docker MySQL health
-  -> npm run db:migrate:local
-     -> run Laravel migrations against Docker MySQL
-  -> start Laravel on 127.0.0.1:8000
-  -> start Vite on 127.0.0.1:5173
-  -> open http://127.0.0.1:8000
-```
-
-Use `npm run infra:down` when you want to stop local services and keep the containers visible in Docker Desktop. Use `npm run infra:destroy` only when you want to remove the stopped containers from Docker Desktop. Avoid deleting Docker volumes unless you intentionally want to reset the local database.
-
-## Environment
-
-The default Laravel database is SQLite for quick startup.
-
-For MySQL, update `.env`:
-
-```dotenv
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3307
-DB_DATABASE=cs85_php_programming
-DB_USERNAME=cs85
-DB_PASSWORD=cs85_password
-CACHE_STORE=database
-QUEUE_CONNECTION=database
-MAIL_MAILER=smtp
-MAIL_HOST=127.0.0.1
-MAIL_PORT=1025
-```
-
-For the AI-powered final project, keep the API key local:
-
-```dotenv
-OPENAI_API_KEY=
-```
-
-For GitHub OAuth, keep client credentials local:
-
-```dotenv
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
-GITHUB_REDIRECT_URI="${APP_URL}/auth/github/callback"
-```
-
-Never commit real secrets.
-
-## Security Headers
-
-The application sends MDN Observatory-friendly security headers through `App\Http\Middleware\SecurityHeaders`.
-
-- `Content-Security-Policy` denies by default with `default-src 'none'`
-- `script-src` and `style-src` do not allow `unsafe-inline` or `unsafe-eval`
-- `object-src 'none'`, `base-uri 'none'`, `form-action 'self'`, and `frame-ancestors 'none'`
-- `upgrade-insecure-requests` and `block-all-mixed-content`
-- `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, and `Referrer-Policy`
-- Vite production assets receive `sha384` Subresource Integrity hashes in `public/build/manifest.json`
-
-Local development keeps Vite usable by allowing the dev server only when `APP_ENV=local` and `APP_DEBUG=true`.
-
-## Quality Gates
 
 Recommended before committing:
 
 ```bash
 composer quality
 npm run quality
-composer audit
-npm audit
 ```
 
-Current test coverage verifies:
+## CI
 
-- public routes render successfully
-- guests are redirected from the cabinet to login
-- login and registration pages render the GitHub-only auth entry point
-- registration creates a standard user account and enters the cabinet
-- email/password login and logout work
-- GitHub OAuth callback creates a user with fake HTTP responses
-- `/admin` redirects to `/cabinet`
-- user cabinet routes render successfully
-- admin-rule routes render only for admin users
-- standard users cannot open admin cabinet routes
-- the old phrase `A minimal Laravel project` does not appear
+GitHub Actions runs on pushes and pull requests to `main`.
+
+The CI workflow:
+
+- validates Composer configuration
+- installs PHP dependencies
+- creates a testing `.env`
+- generates a Laravel app key during the run
+- runs migrations against SQLite
+- runs `composer quality`
+- audits PHP dependencies
+- installs Node.js dependencies
+- runs `npm run quality`
+- audits Node.js dependencies
+
+The workflow should never store a real `APP_KEY`, OAuth secret, database
+password, or API key in repository files.
+
+## Security Controls
+
+The app sends security headers through `App\Http\Middleware\SecurityHeaders`.
+
+Current controls:
+
+- strict Content Security Policy with `default-src 'none'`
+- `script-src 'self'` and `style-src 'self'`
+- no `unsafe-inline` or `unsafe-eval` in production policy
+- `object-src 'none'`
+- `base-uri 'none'`
+- `form-action 'self'`
+- `frame-ancestors 'none'`
+- HSTS outside local development
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Cross-Origin-Resource-Policy: same-origin`
+- `Cross-Origin-Opener-Policy: same-origin`
+- Vite production assets with Subresource Integrity hashes
+
+Local development allows the Vite dev server only when `APP_ENV=local` and
+`APP_DEBUG=true`.
+
+## Test Coverage
+
+The test suite currently verifies:
+
+- public pages render successfully
+- roadmap modules and assignment links stay registered
+- assignment PHP pages render through Laravel
+- Module 2A pricing rules and escaping behavior
+- security headers and CSP expectations
+- registration, login, logout, and GitHub OAuth callback behavior
+- guests are redirected from protected cabinet pages
+- user and admin cabinet access boundaries
+- standard users cannot access admin cabinet pages
 - navigation config points only to registered routes
-- user and admin role rules remain separated
-- the roadmap exposes eight clickable module workspaces
-- starter stack and contact data are ready for Blade views
-- `resources/css/app.css` stays Tailwind-only
-- CSP and security headers match the strict application policy
+- role rules keep user and admin abilities separated
+- SEO assets, robots, sitemap, and brand files exist
+- CSS entrypoint remains Tailwind-only
 
-GitHub Actions runs the same quality gates on pushes and pull requests to `main`.
-The workflow generates its Laravel `APP_KEY` during the CI run and does not store it in repository files.
+## Development Standards
 
-## Development Notes
+- Keep new source code, configuration, templates, and domain classes out of
+  `public/`.
+- Prefer named routes over hardcoded URLs for Laravel-native pages.
+- Keep controllers thin; move business logic into services or actions.
+- Use Form Request classes when an assignment becomes a real Laravel form.
+- Escape output in raw PHP assignments with `htmlspecialchars`.
+- Use Laravel CSRF protection for POST forms.
+- Add tests for every new public route and important business rule.
+- Keep `resources/css/app.css` as a Tailwind entrypoint only.
+- Keep secrets in `.env`, not in repository files.
 
-- Blade views use Tailwind utility classes only.
-- `resources/css/app.css` is a Tailwind entrypoint, not a place for raw project CSS.
-- Course data and navigation rules live in config files so pages can grow without duplicating arrays across views.
-- Admin screens are protected by the `admin` middleware and remain ready for future policies and audit logging.
-- Contact details are adapted from the Lavoval contact surface.
+## Professional Upgrade Path
 
-## Roadmap
+Near-term improvements:
 
-- Persist profile, coursework, content, and messages in MySQL.
-- Replace route closures with controllers as workflows become more complex.
-- Add Form Request validation for write operations.
-- Add policies for cabinet user ownership and admin-only actions.
-- Build CRUD flows for assignments, labs, notes, and final project milestones.
-- Add OpenAI-powered final project features with server-side API calls and safe key handling.
+- Move the assignment allowlist into `config/assignments.php`.
+- Replace raw PHP assignment routes with named routes where possible.
+- Add POST feature tests for Module 3A, Module 3B, and Module 4A forms.
+- Convert Module 4B from raw PDO to Laravel migrations, seeders, Eloquent, a
+  controller, and a Blade table.
+
+Mid-course improvements:
+
+- Add Form Request validation for write workflows.
+- Add policies for user-owned cabinet records.
+- Persist coursework, profile, messages, and activity in MySQL.
+- Add CRUD flows for assignments, labs, notes, and final project milestones.
+- Add admin audit logging for protected operations.
+
+Final project improvements:
+
+- Add server-side OpenAI API calls with environment-only API keys.
+- Track AI request cost and usage.
+- Add rate limiting and abuse protection.
+- Add deployment documentation.
