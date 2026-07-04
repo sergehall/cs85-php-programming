@@ -36,18 +36,22 @@ $wordCount = 0;
 
 // escapeOutput() centralizes output sanitization so all user-controlled values
 // are escaped consistently before being printed into HTML.
-function escapeOutput(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+if (! function_exists('escapeOutput')) {
+    function escapeOutput(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    }
 }
 
 // countMessageWords() validates the assignment's 50-150 word textarea rule.
 // preg_split() handles repeated spaces and line breaks more reliably than explode().
-function countMessageWords(string $value): int
-{
-    $words = preg_split('/\s+/', trim($value), -1, PREG_SPLIT_NO_EMPTY);
+if (! function_exists('countMessageWords')) {
+    function countMessageWords(string $value): int
+    {
+        $words = preg_split('/\s+/', trim($value), -1, PREG_SPLIT_NO_EMPTY);
 
-    return $words === false ? 0 : count($words);
+        return $words === false ? 0 : count($words);
+    }
 }
 
 if ($submitted) {
@@ -333,6 +337,7 @@ $isSuccessful = $submitted && $errors === [];
         <?php } ?>
 
         <form action="" method="POST">
+            <?php echo csrf_field(); ?>
             <label for="full_name">
                 Full Name
                 <?php // Sticky value: keep the submitted full name after a validation error.?>

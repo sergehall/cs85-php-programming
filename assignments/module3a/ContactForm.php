@@ -194,75 +194,81 @@
 
 // validateInput() handles required text fields such as name, subject, and message.
 // It receives the submitted value and a readable field name used in error output.
-function validateInput($data, $fieldName)
-{
-    // The function updates the shared counter so the main script can decide
-    // whether the form has validation errors after all fields are checked.
-    global $errorCount;
+if (! function_exists('validateInput')) {
+    function validateInput($data, $fieldName)
+    {
+        // The function updates the shared counter so the main script can decide
+        // whether the form has validation errors after all fields are checked.
+        global $errorCount;
 
-    // empty() catches missing values, empty strings, and other empty-like input.
-    // If the field is empty, the script prints an error and returns an empty value.
-    if (empty($data)) {
-        echo "<p class=\"form-alert error\">\"$fieldName\" is a required field.</p>\n";
-        $errorCount++;
-        $retval = '';
-    } else {
-        // Only clean up the input if it is not empty.
-        // trim() removes extra spaces from the beginning and end of the value.
-        $retval = trim($data);
+        // empty() catches missing values, empty strings, and other empty-like input.
+        // If the field is empty, the script prints an error and returns an empty value.
+        if (empty($data)) {
+            echo "<p class=\"form-alert error\">\"$fieldName\" is a required field.</p>\n";
+            $errorCount++;
+            $retval = '';
+        } else {
+            // Only clean up the input if it is not empty.
+            // trim() removes extra spaces from the beginning and end of the value.
+            $retval = trim($data);
 
-        // stripslashes() removes backslashes that may have been added before quotes.
-        // This is older PHP-form cleanup logic, but it helps explain the data flow.
-        $retval = stripslashes($retval);
+            // stripslashes() removes backslashes that may have been added before quotes.
+            // This is older PHP-form cleanup logic, but it helps explain the data flow.
+            $retval = stripslashes($retval);
+        }
+
+        // The cleaned value is returned so it can be reused in the sticky form or email.
+        return $retval;
     }
-
-    // The cleaned value is returned so it can be reused in the sticky form or email.
-    return $retval;
 }
 
 // validateEmail() is similar to validateInput(), but it adds e-mail-specific checks.
 // It confirms the field is not empty, sanitizes the address, then validates its format.
-function validateEmail($data, $fieldName)
-{
-    // This shared counter lets the main script know if any validation step failed.
-    global $errorCount;
+if (! function_exists('validateEmail')) {
+    function validateEmail($data, $fieldName)
+    {
+        // This shared counter lets the main script know if any validation step failed.
+        global $errorCount;
 
-    // An empty e-mail cannot be used as a sender address, so it is a required field.
-    if (empty($data)) {
-        echo "<p class=\"form-alert error\">\"$fieldName\" is a required field.</p>\n";
-        $errorCount++;
-        $retval = '';
-    } else {
-        // FILTER_SANITIZE_EMAIL removes characters that do not belong in e-mail input.
-        $retval = filter_var($data, FILTER_SANITIZE_EMAIL);
-
-        // FILTER_VALIDATE_EMAIL checks whether the sanitized value looks like a real
-        // e-mail address. Invalid format should count as a validation error too.
-        if (! filter_var($retval, FILTER_VALIDATE_EMAIL)) {
-            echo "<p class=\"form-alert error\">\"$fieldName\" is not a valid e-mail address.</p>\n";
+        // An empty e-mail cannot be used as a sender address, so it is a required field.
+        if (empty($data)) {
+            echo "<p class=\"form-alert error\">\"$fieldName\" is a required field.</p>\n";
             $errorCount++;
-        }
-    }
+            $retval = '';
+        } else {
+            // FILTER_SANITIZE_EMAIL removes characters that do not belong in e-mail input.
+            $retval = filter_var($data, FILTER_SANITIZE_EMAIL);
 
-    // The sanitized e-mail value is returned for sticky display and mail headers.
-    return $retval;
+            // FILTER_VALIDATE_EMAIL checks whether the sanitized value looks like a real
+            // e-mail address. Invalid format should count as a validation error too.
+            if (! filter_var($retval, FILTER_VALIDATE_EMAIL)) {
+                echo "<p class=\"form-alert error\">\"$fieldName\" is not a valid e-mail address.</p>\n";
+                $errorCount++;
+            }
+        }
+
+        // The sanitized e-mail value is returned for sticky display and mail headers.
+        return $retval;
+    }
 }
 
 // displayForm() renders the HTML form and receives one value for each field.
 // Passing the current values back into the form creates "sticky" form behavior:
 // if validation fails, the user does not have to retype every field.
-function displayForm($Sender, $Email, $Subject, $Message)
-{
-    // htmlspecialchars() safely displays sticky user values inside HTML.
-    // ENT_QUOTES also protects attribute values that use quotes.
-    $safeSender = htmlspecialchars($Sender, ENT_QUOTES, 'UTF-8');
-    $safeEmail = htmlspecialchars($Email, ENT_QUOTES, 'UTF-8');
-    $safeSubject = htmlspecialchars($Subject, ENT_QUOTES, 'UTF-8');
-    $safeMessage = htmlspecialchars($Message, ENT_QUOTES, 'UTF-8');
-    ?>
+if (! function_exists('displayForm')) {
+    function displayForm($Sender, $Email, $Subject, $Message)
+    {
+        // htmlspecialchars() safely displays sticky user values inside HTML.
+        // ENT_QUOTES also protects attribute values that use quotes.
+        $safeSender = htmlspecialchars($Sender, ENT_QUOTES, 'UTF-8');
+        $safeEmail = htmlspecialchars($Email, ENT_QUOTES, 'UTF-8');
+        $safeSubject = htmlspecialchars($Subject, ENT_QUOTES, 'UTF-8');
+        $safeMessage = htmlspecialchars($Message, ENT_QUOTES, 'UTF-8');
+        ?>
     <div class="form-card">
     <h2 class="form-title">Contact Me</h2>
-    <form name="contact" action="ContactForm.php" method="post">
+    <form name="contact" action="" method="post">
+        <?php echo csrf_field(); ?>
         <p>
             <label>
                 Your Name:
@@ -301,6 +307,7 @@ function displayForm($Sender, $Email, $Subject, $Message)
     </form>
     </div>
     <?php
+    }
 }
 
 // These variables define the starting state before any form submission happens.

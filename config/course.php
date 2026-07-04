@@ -41,7 +41,7 @@ return [
                     'description' => 'Use conditionals to calculate a final custom shirt price.',
                     'status' => 'Ready',
                     'type' => 'PHP',
-                    'url' => '/module2a/price_engine.php',
+                    'url' => '/assignments/module2a/price_engine.php',
                 ],
                 [
                     'label' => 'Assignment 2A Refactor',
@@ -49,7 +49,7 @@ return [
                     'description' => 'Clean up repeated logic with clearer branching.',
                     'status' => 'Ready',
                     'type' => 'PHP',
-                    'url' => '/module2a/price_engine_refactored.php',
+                    'url' => '/assignments/module2a/price_engine_refactored.php',
                 ],
                 [
                     'label' => 'Assignment 2B',
@@ -80,7 +80,7 @@ return [
                     'description' => 'Analyze a PHP contact form, explain validation and sticky form behavior, and add a reflection.',
                     'status' => 'Ready',
                     'type' => 'PHP',
-                    'url' => '/module3a/ContactForm.php',
+                    'url' => '/assignments/module3a/ContactForm.php',
                 ],
                 [
                     'label' => 'Assignment 3B',
@@ -88,7 +88,7 @@ return [
                     'description' => 'Build the next contact form with stronger request handling and security controls.',
                     'status' => 'Ready',
                     'type' => 'PHP',
-                    'url' => '/module3/SecureProductContactForm.php',
+                    'url' => '/assignments/module3b/SecureProductContactForm.php',
                 ],
                 [
                     'label' => 'Quiz',
@@ -118,7 +118,7 @@ return [
                     'description' => 'Confirm PHP, MySQL, and phpMyAdmin are ready with a setup report and optional live connection check.',
                     'status' => 'Ready',
                     'type' => 'PHP + MySQL',
-                    'url' => '/module4/database-setup.php',
+                    'url' => '/assignments/module4a/database-setup.php',
                 ],
                 [
                     'label' => 'Assignment 4B',
@@ -126,7 +126,7 @@ return [
                     'description' => 'Display personal inventory records from MySQL using PDO, prepared statements, and escaped table output.',
                     'status' => 'Ready',
                     'type' => 'PDO + MYSQL',
-                    'url' => '/module4b/show_inventory.php',
+                    'url' => '/assignments/module4b/show_inventory.php',
                 ],
             ],
             'resources' => ['SQL basics', 'MySQL', 'phpMyAdmin', 'Laravel Herd or XAMPP'],

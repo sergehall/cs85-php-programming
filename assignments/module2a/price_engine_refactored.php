@@ -7,9 +7,9 @@ use Cs85\Module2A\Domain\Pricing\TShirtPriceCalculator;
 use Cs85\Module2A\Presentation\OrderInputFactory;
 use Cs85\Module2A\Presentation\ReceiptViewModel;
 
-require_once dirname(__DIR__).'/bootstrap/autoload.php';
+require_once dirname(__DIR__, 2).'/vendor/autoload.php';
 
-$defaults = require dirname(__DIR__).'/config/order.php';
+$defaults = require __DIR__.'/order.php';
 $hasSubmittedOrder = isset($_GET['calculate']);
 $config = (new OrderInputFactory)->fromQuery($defaults, $_GET);
 
@@ -18,7 +18,7 @@ $viewModel = new ReceiptViewModel($quote);
 $pageTitle = 'T-Shirt Price Engine Refactored';
 $eyebrow = 'Part B - professional refactor';
 
-require dirname(__DIR__).'/templates/receipt.php';
+require __DIR__.'/receipt.php';
 
 /*
 MY DEBUGGING LOG:

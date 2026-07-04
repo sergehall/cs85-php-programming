@@ -10,13 +10,11 @@ use Cs85\Module2A\Presentation\OrderInputFactory;
 use Cs85\Module2A\Presentation\ReceiptViewModel;
 use Tests\TestCase;
 
-require_once __DIR__.'/../../public/bootstrap/autoload.php';
-
 class Module2ASecurityTest extends TestCase
 {
     public function test_order_input_factory_rejects_untrusted_option_values(): void
     {
-        $defaults = require public_path('config/order.php');
+        $defaults = require base_path('assignments/module2a/order.php');
         $inputFactory = new OrderInputFactory;
 
         $config = $inputFactory->fromQuery($defaults, [
@@ -35,7 +33,7 @@ class Module2ASecurityTest extends TestCase
 
     public function test_missing_customization_checkbox_is_handled_as_false(): void
     {
-        $defaults = require public_path('config/order.php');
+        $defaults = require base_path('assignments/module2a/order.php');
         $inputFactory = new OrderInputFactory;
 
         $config = $inputFactory->fromQuery($defaults, [
@@ -64,7 +62,7 @@ class Module2ASecurityTest extends TestCase
         $hasSubmittedOrder = true;
 
         ob_start();
-        require public_path('templates/receipt.php');
+        require base_path('assignments/module2a/receipt.php');
         $html = ob_get_clean();
 
         $this->assertIsString($html);

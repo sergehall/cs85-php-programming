@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Assignments\AssignmentPhpPageController;
 use App\Http\Controllers\Assignments\Module1Assignment1AController;
 use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -27,6 +28,25 @@ Route::get('/roadmap/module-1/assignment-1a', Module1Assignment1AController::cla
 
 Route::get('/roadmap/module-2/cosmic-calendar', Module2BCosmicCalendarController::class)
     ->name('assignments.module2.cosmic-calendar');
+
+$phpAssignments = [
+    'module2a/price_engine.php' => 'module2a/price_engine.php',
+    'module2a/price_engine_refactored.php' => 'module2a/price_engine_refactored.php',
+    'module3a/ContactForm.php' => 'module3a/ContactForm.php',
+    'module3/SecureProductContactForm.php' => 'module3b/SecureProductContactForm.php',
+    'module3b/SecureProductContactForm.php' => 'module3b/SecureProductContactForm.php',
+    'module4/database-setup.php' => 'module4a/database-setup.php',
+    'module4a/database-setup.php' => 'module4a/database-setup.php',
+    'module4b/show_inventory.php' => 'module4b/show_inventory.php',
+];
+
+foreach ($phpAssignments as $publicPath => $assignmentPath) {
+    Route::match(['GET', 'POST'], "/{$publicPath}", AssignmentPhpPageController::class)
+        ->defaults('assignmentPath', $assignmentPath);
+
+    Route::match(['GET', 'POST'], "/assignments/{$assignmentPath}", AssignmentPhpPageController::class)
+        ->defaults('assignmentPath', $assignmentPath);
+}
 
 Route::get('/roadmap/{module}', function (string $module) {
     $modules = collect(config('course.modules'));

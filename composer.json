@@ -25,7 +25,7 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
-            "Cs85\\Module2A\\": "public/src/",
+            "Cs85\\Module2A\\": "app/Services/Modules/Module2A/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }
@@ -59,7 +59,7 @@
             "@php vendor/bin/pint --test"
         ],
         "lint": [
-            "@php vendor/bin/phpstan analyse --memory-limit=512M"
+            "@php vendor/bin/phpstan analyse -c phpstan.neon app config routes tests --memory-limit=512M"
         ],
         "lint-fix": [
             "@format",

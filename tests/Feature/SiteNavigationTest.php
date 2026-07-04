@@ -103,8 +103,16 @@ class SiteNavigationTest extends TestCase
             ->assertSee('Cosmic Day Number Calendar')
             ->assertSee('First Name');
 
-        $this->assertFileExists(public_path('module2a/price_engine.php'));
-        $this->assertFileExists(public_path('module2a/price_engine_refactored.php'));
+        $this->assertFileExists(base_path('assignments/module2a/price_engine.php'));
+        $this->assertFileExists(base_path('assignments/module2a/price_engine_refactored.php'));
+
+        $this->get('/assignments/module2a/price_engine.php')
+            ->assertOk()
+            ->assertSee('Order Summary');
+
+        $this->get('/assignments/module2a/price_engine_refactored.php')
+            ->assertOk()
+            ->assertSee('T-Shirt Price Engine Refactored');
     }
 
     public function test_unknown_roadmap_module_returns_not_found(): void

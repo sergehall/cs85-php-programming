@@ -20,9 +20,11 @@ $evidence = [];
 $connectionStatus = 'Not checked yet.';
 $connectionDetails = '';
 
-function h(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+if (! function_exists('h')) {
+    function h(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    }
 }
 
 if ($submitted) {
@@ -343,6 +345,7 @@ $isReady = $submitted && $errors === [];
         <?php } ?>
 
         <form action="" method="POST">
+            <?php echo csrf_field(); ?>
             <fieldset>
                 <legend>Development Environment</legend>
 

@@ -38,6 +38,7 @@ This project is intentionally structured as more than a disposable course sandbo
 app/                    Laravel application code
 app/Http/Controllers    Auth and future workflow controllers
 app/Http/Middleware     Role middleware for protected cabinet areas
+app/Services/Modules    Coursework service and domain classes that should not be publicly served
 config/course.php        CS85 roadmap, stack, and contact data
 config/navigation.php    Public, cabinet, admin, and role navigation rules
 database/migrations      Users, sessions, jobs, cache, and auth profile schema
@@ -47,6 +48,7 @@ resources/views/pages    Public pages
 resources/views/cabinet  User cabinet and admin-rule pages
 resources/views/partials Shared Blade partials
 resources/css/app.css    Tailwind entrypoint only
+public/                  Laravel front controller, compiled assets, favicons, robots, and static brand assets
 scripts/                 Local app and infrastructure automation
 compose.yaml             Persistent Docker Compose infrastructure
 tests/Feature            Route, navigation, and access-surface tests
@@ -57,6 +59,17 @@ labs/                    Practice exercises
 notes/                   Course notes and reading summaries
 projects/                Larger module projects
 final-project/           AI-powered final project work
+```
+
+Assignment source files live outside `public/`. Laravel routes expose each completed PHP assignment through `/assignments/...` URLs, while the actual files stay in `assignments/` so source code, configuration, templates, and domain classes are not directly web-served.
+
+```text
+assignments/module2a/     Raw PHP assignment pages and assignment-specific templates
+assignments/module3a/     Contact form review assignment
+assignments/module3b/     Secure product contact form assignment
+assignments/module4a/     Database setup assignment
+assignments/module4b/     Personal inventory database assignment
+app/Services/Modules/     Reusable module services, domain objects, and presentation helpers
 ```
 
 ## Runtime Architecture

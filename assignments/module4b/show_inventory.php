@@ -140,16 +140,20 @@ try {
     $connectionError = $exception->getMessage();
 }
 
-function h(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+if (! function_exists('h')) {
+    function h(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    }
 }
 
-function formatPurchaseDate(string $value): string
-{
-    $timestamp = strtotime($value);
+if (! function_exists('formatPurchaseDate')) {
+    function formatPurchaseDate(string $value): string
+    {
+        $timestamp = strtotime($value);
 
-    return $timestamp === false ? $value : date('M j, Y', $timestamp);
+        return $timestamp === false ? $value : date('M j, Y', $timestamp);
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -460,7 +464,7 @@ function formatPurchaseDate(string $value): string
 
             <div class="filter-actions">
                 <button class="button" type="submit">Apply Filters</button>
-                <a class="button-secondary" href="/module4b/show_inventory.php">Reset</a>
+                <a class="button-secondary" href="/assignments/module4b/show_inventory.php">Reset</a>
             </div>
         </form>
 
