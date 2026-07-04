@@ -132,6 +132,128 @@ class GitHubOAuthSecurityTest extends TestCase
         ]);
     }
 
+    public function test_github_callback_rejects_identity_and_email_conflict_between_users(): void
+    {
+        User::factory()->create([
+            'github_id' => '12345',
+            'email' => 'github-owner@example.com',
+        ]);
+        User::factory()->create([
+            'email' => 'email-owner@example.com',
+        ]);
+
+        Http::fake([
+            'github.com/login/oauth/access_token' => Http::response(['access_token' => 'github-token'], 200),
+            'api.github.com/user' => Http::response([
+                'id' => 12345,
+                'login' => 'sergehall',
+                'name' => 'Serge Hall',
+                'email' => 'email-owner@example.com',
+                'avatar_url' => 'https://avatars.githubusercontent.com/u/12345',
+            ], 200),
+        ]);
+
+        $response = $this
+            ->withSession(['oauth.github_state' => 'known-state'])
+            ->get('/auth/github/callback?state=known-state&code=github-code');
+
+        $response->assertSessionHasErrors('github');
+        $this->assertGuest();
+        $this->assertDatabaseHas('users', [
+            'github_id' => '12345',
+            'email' => 'github-owner@example.com',
+        ]);
+        $this->assertDatabaseHas('users', [
+            'github_id' => null,
+            'email' => 'email-owner@example.com',
+        ]);
+    }
+
+    public function test_authenticated_user_can_start_github_account_linking(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/auth/github/redirect');
+
+        $response->assertRedirectContains('https://github.com/login/oauth/authorize');
+        $response->assertSessionHas('oauth.github_state');
+        $response->assertSessionHas('oauth.github_link_user_id', $user->getKey());
+    }
+
+    public function test_authenticated_user_can_link_github_identity_without_replacing_local_email(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'local@example.com',
+        ]);
+
+        Http::fake([
+            'github.com/login/oauth/access_token' => Http::response(['access_token' => 'github-token'], 200),
+            'api.github.com/user' => Http::response([
+                'id' => 67890,
+                'login' => 'sergehall',
+                'name' => 'Serge Hall',
+                'email' => 'github@example.com',
+                'avatar_url' => 'https://avatars.githubusercontent.com/u/67890',
+            ], 200),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->withSession([
+                'oauth.github_state' => 'known-state',
+                'oauth.github_link_user_id' => $user->getKey(),
+            ])
+            ->get('/auth/github/callback?state=known-state&code=github-code');
+
+        $response->assertRedirect(route('cabinet.security'));
+        $response->assertSessionHas('status', 'GitHub account connected successfully.');
+        $this->assertAuthenticatedAs($user);
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'email' => 'local@example.com',
+            'github_id' => '67890',
+            'github_username' => 'sergehall',
+            'github_avatar_url' => 'https://avatars.githubusercontent.com/u/67890',
+        ]);
+    }
+
+    public function test_authenticated_user_cannot_link_github_identity_owned_by_another_account(): void
+    {
+        User::factory()->create([
+            'github_id' => '67890',
+            'email' => 'owner@example.com',
+        ]);
+        $user = User::factory()->create([
+            'email' => 'local@example.com',
+        ]);
+
+        Http::fake([
+            'github.com/login/oauth/access_token' => Http::response(['access_token' => 'github-token'], 200),
+            'api.github.com/user' => Http::response([
+                'id' => 67890,
+                'login' => 'sergehall',
+                'name' => 'Serge Hall',
+                'email' => 'github@example.com',
+                'avatar_url' => 'https://avatars.githubusercontent.com/u/67890',
+            ], 200),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->withSession([
+                'oauth.github_state' => 'known-state',
+                'oauth.github_link_user_id' => $user->getKey(),
+            ])
+            ->get('/auth/github/callback?state=known-state&code=github-code');
+
+        $response->assertSessionHasErrors('github');
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'email' => 'local@example.com',
+            'github_id' => null,
+        ]);
+    }
+
     private function configureGithubOAuth(): void
     {
         config([

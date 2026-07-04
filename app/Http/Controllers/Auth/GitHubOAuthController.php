@@ -10,20 +10,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class GitHubOAuthController extends Controller
 {
     public function redirect(Request $request): RedirectResponse
     {
+        $failureRoute = $request->user() ? 'cabinet.security' : 'login';
+
         if (! config('services.github.client_id') || ! config('services.github.client_secret')) {
             return redirect()
-                ->route('login')
+                ->route($failureRoute)
                 ->withErrors(['github' => 'GitHub OAuth is not configured yet.']);
         }
 
         $state = Str::random(40);
         $request->session()->put('oauth.github_state', $state);
+
+        if ($request->user()) {
+            $request->session()->put('oauth.github_link_user_id', $request->user()->getKey());
+        } else {
+            $request->session()->forget('oauth.github_link_user_id');
+        }
 
         $query = http_build_query([
             'client_id' => config('services.github.client_id'),
@@ -41,16 +48,14 @@ class GitHubOAuthController extends Controller
         $expectedState = $request->session()->pull('oauth.github_state');
 
         if (! $expectedState || ! hash_equals($expectedState, (string) $request->query('state'))) {
-            throw ValidationException::withMessages([
-                'github' => 'GitHub sign-in state could not be verified.',
-            ]);
+            return $this->fail($request, 'GitHub sign-in state could not be verified.');
         }
 
         if ($request->filled('error')) {
-            throw ValidationException::withMessages([
-                'github' => 'GitHub sign-in was cancelled or denied.',
-            ]);
+            return $this->fail($request, 'GitHub sign-in was cancelled or denied.');
         }
+
+        $linkUserId = $request->session()->pull('oauth.github_link_user_id');
 
         $tokenResponse = Http::asForm()
             ->acceptJson()
@@ -62,9 +67,7 @@ class GitHubOAuthController extends Controller
             ]);
 
         if ($tokenResponse->failed() || ! $tokenResponse->json('access_token')) {
-            throw ValidationException::withMessages([
-                'github' => 'GitHub token exchange failed.',
-            ]);
+            return $this->fail($request, 'GitHub token exchange failed.');
         }
 
         $token = (string) $tokenResponse->json('access_token');
@@ -72,24 +75,15 @@ class GitHubOAuthController extends Controller
         $profileResponse = $github->get('https://api.github.com/user');
 
         if ($profileResponse->failed()) {
-            throw ValidationException::withMessages([
-                'github' => 'GitHub profile could not be loaded.',
-            ]);
+            return $this->fail($request, 'GitHub profile could not be loaded.');
         }
 
         $profile = $profileResponse->json();
         $email = $profile['email'] ?? $this->primaryEmail($github);
 
         if (! $email) {
-            throw ValidationException::withMessages([
-                'github' => 'GitHub did not return a usable email address.',
-            ]);
+            return $this->fail($request, 'GitHub did not return a usable email address.');
         }
-
-        $user = User::query()
-            ->where('github_id', (string) $profile['id'])
-            ->orWhere('email', $email)
-            ->first();
 
         $userData = [
             'name' => $profile['name'] ?: $profile['login'],
@@ -99,6 +93,23 @@ class GitHubOAuthController extends Controller
             'github_avatar_url' => $profile['avatar_url'] ?? null,
             'email_verified_at' => now(),
         ];
+
+        if ($request->user() && $linkUserId === $request->user()->getKey()) {
+            return $this->linkCurrentUser($request, $userData['github_id'], $email, $userData);
+        }
+
+        $githubUser = User::query()
+            ->where('github_id', $userData['github_id'])
+            ->first();
+        $emailUser = User::query()
+            ->where('email', $email)
+            ->first();
+
+        if ($githubUser && $emailUser && ! $githubUser->is($emailUser)) {
+            return $this->fail($request, 'GitHub identity and email match different local users.');
+        }
+
+        $user = $githubUser ?: $emailUser;
 
         if ($user) {
             $user->forceFill($userData)->save();
@@ -113,6 +124,58 @@ class GitHubOAuthController extends Controller
         $request->session()->regenerate();
 
         return redirect()->intended(route('cabinet.dashboard'));
+    }
+
+    /**
+     * @param  array{name:mixed,email:string,github_id:string,github_username:mixed,github_avatar_url:mixed,email_verified_at:mixed}  $userData
+     */
+    private function linkCurrentUser(Request $request, string $githubId, string $email, array $userData): RedirectResponse
+    {
+        $currentUser = $request->user();
+
+        if (! $currentUser instanceof User) {
+            return $this->fail($request, 'You must be signed in before connecting GitHub.');
+        }
+
+        $githubOwner = User::query()
+            ->where('github_id', $githubId)
+            ->whereKeyNot($currentUser->getKey())
+            ->first();
+
+        if ($githubOwner) {
+            return $this->fail($request, 'This GitHub account is already connected to another user.');
+        }
+
+        $emailOwner = User::query()
+            ->where('email', $email)
+            ->whereKeyNot($currentUser->getKey())
+            ->first();
+
+        if ($emailOwner) {
+            return $this->fail($request, 'This GitHub email belongs to another user in this application.');
+        }
+
+        $currentUser->forceFill([
+            'github_id' => $userData['github_id'],
+            'github_username' => $userData['github_username'],
+            'github_avatar_url' => $userData['github_avatar_url'],
+            'email_verified_at' => $currentUser->email === $email ? now() : $currentUser->email_verified_at,
+        ])->save();
+
+        $request->session()->regenerate();
+
+        return redirect()
+            ->route('cabinet.security')
+            ->with('status', 'GitHub account connected successfully.');
+    }
+
+    private function fail(Request $request, string $message): RedirectResponse
+    {
+        $route = $request->user() ? 'cabinet.security' : 'login';
+
+        return redirect()
+            ->route($route)
+            ->withErrors(['github' => $message]);
     }
 
     private function githubClient(string $token): PendingRequest

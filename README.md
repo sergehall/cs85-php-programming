@@ -28,7 +28,7 @@ The project currently includes:
 - Public Laravel pages for home, roadmap, stack, and contact.
 - A 12-module CS85 roadmap driven by `config/course.php`.
 - Session authentication with email/password registration and login.
-- GitHub OAuth authentication scaffolding.
+- GitHub OAuth login and authenticated account connection.
 - A protected user cabinet and admin-only cabinet area.
 - Editable profile fields for first name, last name, portfolio links, bio, and
   technical skills.
@@ -255,6 +255,15 @@ Supported entry points:
 - Email/password login through `/login`
 - GitHub OAuth through `/auth/github/redirect`
 - Logout through `POST /logout`
+
+GitHub OAuth supports two flows:
+
+- guest sign-in from `/login`
+- authenticated account connection from `/cabinet/security`
+
+GitHub account MFA is managed inside GitHub. This app can connect the GitHub
+identity provider, but GitHub OAuth does not expose a personal 2FA-enabled flag
+to this application. App-level MFA is tracked as a future Laravel feature.
 
 Roles are configured in `config/navigation.php` and enforced for admin routes
 with the `admin` middleware.
@@ -512,6 +521,9 @@ The app sends security headers through `App\Http\Middleware\SecurityHeaders`.
 
 Current controls:
 
+- authenticated cabinet security hub at `/cabinet/security`
+- GitHub OAuth login and account linking with state validation
+- GitHub account ownership checks before linking an authenticated user
 - strict Content Security Policy with `default-src 'none'`
 - `script-src 'self'` and `style-src 'self'`
 - no `unsafe-inline` or `unsafe-eval` in production policy
@@ -541,7 +553,7 @@ The test suite currently verifies:
   technical skills
 - Module 2A pricing rules and escaping behavior
 - security headers and CSP expectations
-- registration, login, logout, and GitHub OAuth callback behavior
+- registration, login, logout, GitHub OAuth, and GitHub account linking behavior
 - guests are redirected from protected cabinet pages
 - user and admin cabinet access boundaries
 - standard users cannot access admin cabinet pages

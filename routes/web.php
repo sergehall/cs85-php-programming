@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Cabinet\CourseworkController;
 use App\Http\Controllers\Cabinet\ProfileController;
+use App\Http\Controllers\Cabinet\SecurityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -81,10 +82,10 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
-
-    Route::get('/auth/github/redirect', [GitHubOAuthController::class, 'redirect'])->name('auth.github.redirect');
-    Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])->name('auth.github.callback');
 });
+
+Route::get('/auth/github/redirect', [GitHubOAuthController::class, 'redirect'])->name('auth.github.redirect');
+Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])->name('auth.github.callback');
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
@@ -120,8 +121,9 @@ Route::prefix('cabinet')->middleware('auth')->name('cabinet.')->group(function (
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/coursework', CourseworkController::class)->name('coursework');
+    Route::get('/security', SecurityController::class)->name('security');
 
-    foreach (array_diff(array_keys(config('cabinet.sections', [])), ['profile', 'coursework']) as $sectionKey) {
+    foreach (array_diff(array_keys(config('cabinet.sections', [])), ['profile', 'coursework', 'security']) as $sectionKey) {
         Route::get("/{$sectionKey}", function () use ($sectionKey) {
             return view('cabinet.section', [
                 'section' => config("cabinet.sections.{$sectionKey}"),

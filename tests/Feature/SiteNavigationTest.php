@@ -162,6 +162,32 @@ class SiteNavigationTest extends TestCase
         $response->assertDontSee('Create assignment records');
     }
 
+    public function test_cabinet_security_page_shows_real_security_controls(): void
+    {
+        config([
+            'services.github.client_id' => 'client-id',
+            'services.github.client_secret' => 'client-secret',
+        ]);
+
+        $user = User::factory()->create([
+            'github_id' => '12345',
+            'github_username' => 'sergehall',
+        ]);
+
+        $response = $this->actingAs($user)->get('/cabinet/security');
+
+        $response->assertOk();
+        $response->assertSee('Security Foundation');
+        $response->assertSee('GitHub identity');
+        $response->assertSee('Reconnect GitHub');
+        $response->assertSee('sergehall');
+        $response->assertSee('Session authentication');
+        $response->assertSee('GitHub OAuth configuration');
+        $response->assertSee('Application MFA');
+        $response->assertSee('GitHub MFA');
+        $response->assertSee('Managed in GitHub');
+    }
+
     #[DataProvider('cabinetAdminRoutes')]
     public function test_admin_rule_pages_render_inside_cabinet(string $path, string $expectedText): void
     {

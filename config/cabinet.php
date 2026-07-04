@@ -72,7 +72,7 @@ return [
             [
                 'title' => 'Security foundation',
                 'status' => 'Active',
-                'description' => 'Password, sessions, roles, GitHub OAuth, MFA, and audit ideas are staged in one security surface.',
+                'description' => 'Password, sessions, roles, GitHub OAuth connection, MFA planning, and audit ideas are staged in one security surface.',
                 'route' => 'cabinet.security',
             ],
             [
@@ -137,7 +137,7 @@ return [
         'security' => [
             'eyebrow' => 'Account Security',
             'title' => 'Security Foundation',
-            'description' => 'A protection center for password login, GitHub OAuth, role checks, sessions, MFA planning, and cabinet-only access.',
+            'description' => 'A protection center for password login, GitHub OAuth account connection, role checks, sessions, MFA planning, and cabinet-only access.',
             'summary' => [
                 ['label' => 'Auth', 'value' => 'Active'],
                 ['label' => 'Roles', 'value' => 'Configured'],
@@ -145,13 +145,13 @@ return [
                 ['label' => 'Audit', 'value' => 'Prepared'],
             ],
             'panels' => [
-                ['title' => 'Prepared controls', 'items' => ['Password update workflow', 'Session logout', 'Admin-only middleware', 'User-owned profile policy']],
-                ['title' => 'Future advanced controls', 'items' => ['Authenticator app MFA', 'GitHub OAuth connection', 'Recovery codes', 'Security event log']],
-                ['title' => 'Current protection', 'items' => ['CSRF-protected Laravel forms', 'Session auth protects cabinet routes', 'GitHub OAuth uses state validation', 'Secrets stay in .env', 'CI blocks hardcoded APP_KEY in workflows']],
+                ['title' => 'Current controls', 'items' => ['Session auth protects cabinet routes', 'Admin-only middleware', 'GitHub OAuth account connection', 'CSRF-protected Laravel forms']],
+                ['title' => 'MFA boundary', 'items' => ['GitHub MFA is managed in GitHub', 'App MFA planned later', 'Recovery codes planned later', 'Sensitive actions need confirmation later']],
+                ['title' => 'Current protection', 'items' => ['GitHub OAuth uses state validation', 'GitHub linking checks account ownership', 'Secrets stay in .env', 'CI blocks hardcoded APP_KEY in workflows']],
             ],
             'tasks' => [
                 ['label' => 'Move cabinet behind auth middleware', 'status' => 'Done'],
-                ['label' => 'Add role-based policies', 'status' => 'Upcoming'],
+                ['label' => 'Add GitHub account connection', 'status' => 'Done'],
                 ['label' => 'Record sensitive account activity', 'status' => 'Planned'],
             ],
         ],
