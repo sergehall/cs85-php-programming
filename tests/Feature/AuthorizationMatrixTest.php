@@ -53,7 +53,6 @@ class AuthorizationMatrixTest extends TestCase
             'activity' => ['/cabinet/activity'],
             'admin-dashboard' => ['/cabinet/admin'],
             'admin-users' => ['/cabinet/admin/users'],
-            'admin-content' => ['/cabinet/admin/content'],
         ];
     }
 
@@ -65,7 +64,6 @@ class AuthorizationMatrixTest extends TestCase
         return [
             'dashboard' => ['/cabinet/admin'],
             'users' => ['/cabinet/admin/users'],
-            'content' => ['/cabinet/admin/content'],
         ];
     }
 }

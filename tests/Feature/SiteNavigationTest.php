@@ -284,7 +284,6 @@ class SiteNavigationTest extends TestCase
         return [
             'dashboard' => ['/cabinet/admin', 'Admin operations dashboard'],
             'users' => ['/cabinet/admin/users', 'Users'],
-            'content' => ['/cabinet/admin/content', 'Content'],
         ];
     }
 }

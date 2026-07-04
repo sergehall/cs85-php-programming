@@ -33,7 +33,6 @@ return [
                 'revoke_admin_access',
                 'manage_user_login_access',
                 'view_admin_activity',
-                'view_admin_content_workspace',
             ],
         ],
     ],

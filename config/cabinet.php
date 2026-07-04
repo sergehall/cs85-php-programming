@@ -25,7 +25,6 @@ return [
         'admin' => [
             ['label' => 'Admin Overview', 'route' => 'cabinet.admin.dashboard'],
             ['label' => 'Users', 'route' => 'cabinet.admin.users', 'section' => 'users'],
-            ['label' => 'Content', 'route' => 'cabinet.admin.content', 'section' => 'content'],
         ],
     ],
 
@@ -183,12 +182,11 @@ return [
         'dashboard' => [
             'summary' => [
                 ['label' => 'Users', 'value' => 'Prepared'],
-                ['label' => 'Content', 'value' => 'Prepared'],
-                ['label' => 'Policies', 'value' => 'Planned'],
+                ['label' => 'Access', 'value' => 'Live'],
+                ['label' => 'Security', 'value' => 'Active'],
             ],
             'sections' => [
-                ['title' => 'Users', 'route' => 'cabinet.admin.users', 'status' => 'Prepared', 'description' => 'User accounts, roles, profile status, and access review.'],
-                ['title' => 'Content', 'route' => 'cabinet.admin.content', 'status' => 'Prepared', 'description' => 'Assignments, labs, notes, roadmap content, and project pages.'],
+                ['title' => 'Users', 'route' => 'cabinet.admin.users', 'status' => 'Live', 'description' => 'User accounts, roles, login access, profile status, and access review.'],
             ],
         ],
         'sections' => [
@@ -198,13 +196,6 @@ return [
                 'description' => 'Operational surface for user accounts, admin access requests, role review, and protected role changes.',
                 'items' => ['Review admin access requests', 'Grant admin role', 'Revoke admin role', 'Check profile identity'],
                 'tasks' => ['Add audit records for role changes', 'Add searchable user filters', 'Require confirmation for sensitive role actions'],
-            ],
-            'content' => [
-                'eyebrow' => 'Admin Content',
-                'title' => 'Content Management',
-                'description' => 'Prepared editorial surface for course modules, assignments, labs, notes, and final project milestones.',
-                'items' => ['Manage roadmap entries', 'Publish assignment notes', 'Track lab resources', 'Highlight final project requirements'],
-                'tasks' => ['Create content migrations', 'Build CRUD controllers', 'Add validation tests for mutations'],
             ],
         ],
     ],

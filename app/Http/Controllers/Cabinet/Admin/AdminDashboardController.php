@@ -75,13 +75,7 @@ class AdminDashboardController extends Controller
                     'description' => 'Review users, approve admin access requests, and revoke admin roles.',
                 ],
                 [
-                    'title' => 'Open content workspace',
-                    'route' => 'cabinet.admin.content',
-                    'status' => 'Prepared',
-                    'description' => 'Course content management area for roadmap, assignments, labs, and project milestones.',
-                ],
-                [
-                    'title' => 'Audit activity',
+                    'title' => 'Review activity',
                     'route' => 'cabinet.activity',
                     'status' => 'Live',
                     'description' => 'Review user and administrative events recorded by the activity timeline.',

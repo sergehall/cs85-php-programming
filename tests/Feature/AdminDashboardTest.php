@@ -61,9 +61,7 @@ class AdminDashboardTest extends TestCase
         $response->assertSee('0 blocked');
         $response->assertSee('Review users');
         $response->assertSee(route('cabinet.admin.users'), false);
-        $response->assertSee('Open content workspace');
-        $response->assertSee(route('cabinet.admin.content'), false);
-        $response->assertSee('Audit activity');
+        $response->assertSee('Review activity');
         $response->assertSee(route('cabinet.activity'), false);
         $response->assertSee('Recent admin activity');
         $response->assertSee('Admin access granted');
