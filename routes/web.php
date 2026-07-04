@@ -5,12 +5,14 @@ use App\Http\Controllers\Assignments\Module1Assignment1AController;
 use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\GitHubOAuthController;
+use App\Http\Controllers\Auth\MfaChallengeController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Cabinet\ActivityController;
 use App\Http\Controllers\Cabinet\Admin\AdminUserRoleController;
 use App\Http\Controllers\Cabinet\Admin\AdminUsersController;
 use App\Http\Controllers\Cabinet\AdminAccessRequestController;
 use App\Http\Controllers\Cabinet\CourseworkController;
+use App\Http\Controllers\Cabinet\MfaController;
 use App\Http\Controllers\Cabinet\ProfileController;
 use App\Http\Controllers\Cabinet\SecurityController;
 use Illuminate\Http\Request;
@@ -88,6 +90,9 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
 });
 
+Route::get('/mfa-challenge', [MfaChallengeController::class, 'create'])->name('mfa.challenge');
+Route::post('/mfa-challenge', [MfaChallengeController::class, 'store'])->name('mfa.challenge.store');
+
 Route::get('/auth/github/redirect', [GitHubOAuthController::class, 'redirect'])->name('auth.github.redirect');
 Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])->name('auth.github.callback');
 
@@ -127,6 +132,9 @@ Route::prefix('cabinet')->middleware('auth')->name('cabinet.')->group(function (
     Route::get('/coursework', CourseworkController::class)->name('coursework');
     Route::get('/security', SecurityController::class)->name('security');
     Route::post('/security/admin-access-request', AdminAccessRequestController::class)->name('security.admin-access-request');
+    Route::post('/security/mfa/start', [MfaController::class, 'start'])->name('security.mfa.start');
+    Route::post('/security/mfa/confirm', [MfaController::class, 'confirm'])->name('security.mfa.confirm');
+    Route::delete('/security/mfa', [MfaController::class, 'destroy'])->name('security.mfa.destroy');
 
     Route::get('/activity', ActivityController::class)->name('activity');
 

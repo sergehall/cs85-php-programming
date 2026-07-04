@@ -21,6 +21,9 @@ use Illuminate\Support\Str;
     'github_id',
     'github_username',
     'github_avatar_url',
+    'mfa_secret',
+    'mfa_recovery_codes',
+    'mfa_confirmed_at',
     'first_name',
     'last_name',
     'github_profile_url',
@@ -52,6 +55,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'mfa_confirmed_at' => 'datetime',
+            'mfa_recovery_codes' => 'encrypted:array',
+            'mfa_secret' => 'encrypted',
             'password' => 'hashed',
         ];
     }
@@ -59,6 +65,11 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function hasMfaEnabled(): bool
+    {
+        return is_string($this->mfa_secret) && $this->mfa_confirmed_at !== null;
     }
 
     /**

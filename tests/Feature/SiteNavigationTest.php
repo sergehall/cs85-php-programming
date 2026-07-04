@@ -192,6 +192,7 @@ class SiteNavigationTest extends TestCase
         $response->assertSee('GitHub does not look up this email automatically.');
         $response->assertSee('A GitHub identity can be connected to only one CS85 user at a time.');
         $response->assertSee('For privacy, CS85 does not reveal whether a GitHub identity is connected to another profile.');
+        $response->assertDontSee('Security roadmap');
     }
 
     #[DataProvider('cabinetAdminRoutes')]

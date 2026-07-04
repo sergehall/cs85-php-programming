@@ -4,17 +4,19 @@ namespace App\Http\Controllers\Cabinet;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminAccessRequest;
+use App\Services\QrCodeRenderer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 
 class SecurityController extends Controller
 {
-    public function __invoke(Request $request): View
+    public function __invoke(Request $request, QrCodeRenderer $qrCode): View
     {
         $user = $request->user();
         $githubConfigured = (bool) config('services.github.client_id') && (bool) config('services.github.client_secret');
         $githubConnected = (bool) $user?->github_id;
+        $mfaProvisioningUri = $request->session()->get('mfa_setup.provisioning_uri');
         $adminAccessRequest = $user
             ? AdminAccessRequest::query()->where('user_id', $user->getKey())->first()
             : null;
@@ -23,6 +25,12 @@ class SecurityController extends Controller
             'section' => config('cabinet.sections.security'),
             'user' => $user,
             'adminAccessRequest' => $adminAccessRequest,
+            'mfaSetup' => [
+                'secret' => $request->session()->get('mfa_setup.secret'),
+                'provisioning_uri' => $mfaProvisioningUri,
+            ],
+            'mfaQrCode' => is_string($mfaProvisioningUri) ? $qrCode->dataUri($mfaProvisioningUri) : null,
+            'mfaRecoveryCodes' => $request->session()->get('mfa_recovery_codes', []),
             'githubConfigured' => $githubConfigured,
             'githubConnected' => $githubConnected,
             'githubRedirectRouteReady' => Route::has('auth.github.redirect'),
@@ -69,9 +77,11 @@ class SecurityController extends Controller
                 ],
                 [
                     'label' => 'Application MFA',
-                    'status' => 'Planned',
-                    'tone' => 'neutral',
-                    'detail' => 'App-level authenticator codes and recovery codes are planned as a later database-backed feature.',
+                    'status' => $user?->hasMfaEnabled() ? 'Enabled' : 'Available',
+                    'tone' => $user?->hasMfaEnabled() ? 'success' : 'warning',
+                    'detail' => $user?->hasMfaEnabled()
+                        ? 'Authenticator app MFA is enabled for this account.'
+                        : 'Authenticator app MFA can be enabled from this security page.',
                 ],
                 [
                     'label' => 'GitHub MFA visibility',

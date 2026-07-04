@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,15 @@ class AuthenticatedSessionController extends Controller
         }
 
         $request->session()->regenerate();
+        $user = $request->user();
+
+        if ($user instanceof User && $user->hasMfaEnabled()) {
+            Auth::logout();
+            $request->session()->put('auth.mfa.user_id', $user->getKey());
+            $request->session()->put('auth.mfa.remember', $request->boolean('remember'));
+
+            return redirect()->route('mfa.challenge');
+        }
 
         return redirect()->intended(route('cabinet.dashboard'));
     }
