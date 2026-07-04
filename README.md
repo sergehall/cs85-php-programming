@@ -15,8 +15,9 @@ Laravel boundaries.
   folders.
 - Make each assignment easy to submit with a stable local URL and a GitHub file
   link.
-- Protect the Laravel `public/` directory so source code, configuration,
-  templates, and domain classes are not web-served directly.
+- Keep the Laravel `public/` directory limited to the front controller and
+  browser-safe assets, so source code, configuration, templates, and domain
+  classes are not web-served directly.
 - Grow the coursework into a portfolio-quality application with tests, static
   analysis, CI, Docker-backed infrastructure, and security controls.
 
