@@ -31,9 +31,9 @@ return [
 
     'metrics' => [
         ['label' => 'Course Weeks', 'value' => '6', 'detail' => 'Summer sprint structure'],
-        ['label' => 'Prepared Routes', 'value' => '20+', 'detail' => 'Public, auth, user, admin, and legacy pages'],
-        ['label' => 'Quality Gate', 'value' => '30+', 'detail' => 'Automated tests currently passing'],
-        ['label' => 'Infra Services', 'value' => '4', 'detail' => 'MySQL, Redis, Mailpit, Adminer'],
+        ['label' => 'Tracked Areas', 'value' => '4', 'detail' => 'Profile, coursework, security, activity'],
+        ['label' => 'Quality Gate', 'value' => '100+', 'detail' => 'Automated tests currently passing'],
+        ['label' => 'Security Controls', 'value' => 'MFA', 'detail' => 'GitHub OAuth, roles, sessions, and app MFA'],
     ],
 
     'extension_points' => [
@@ -59,33 +59,33 @@ return [
         'focus' => [
             [
                 'title' => 'Profile readiness',
-                'status' => 'Prepared',
-                'description' => 'Identity, course role, portfolio links, and editable profile fields are grouped into one account surface.',
+                'status' => 'Active',
+                'description' => 'Identity, portfolio links, skills, bio, GitHub avatar fallback, and custom photo URL are managed in one account surface.',
                 'route' => 'cabinet.profile',
             ],
             [
                 'title' => 'Coursework control',
-                'status' => 'In progress',
-                'description' => 'Assignments, labs, notes, and final project milestones are organized for future CRUD workflows.',
+                'status' => 'Linked',
+                'description' => 'The coursework cabinet points to real assignment routes while source files stay outside the public web root.',
                 'route' => 'cabinet.coursework',
             ],
             [
                 'title' => 'Security foundation',
                 'status' => 'Active',
-                'description' => 'Password, sessions, roles, GitHub OAuth connection, MFA planning, and audit ideas are staged in one security surface.',
+                'description' => 'Password login, sessions, roles, GitHub OAuth connection, app MFA, and admin access requests are handled in one security surface.',
                 'route' => 'cabinet.security',
             ],
             [
                 'title' => 'Activity evidence',
-                'status' => 'Prepared',
-                'description' => 'A timeline records important project actions and will later move to database-backed event logs.',
+                'status' => 'Logged',
+                'description' => 'A database-backed timeline records profile, coursework, security, MFA, and admin role events with five-at-a-time browsing.',
                 'route' => 'cabinet.activity',
             ],
         ],
         'activity' => [
-            ['time' => 'Now', 'title' => 'Docker local environment ready', 'detail' => 'MySQL, Redis, Mailpit, and Adminer run through persistent Docker Compose services.'],
-            ['time' => 'Now', 'title' => 'Authentication milestone', 'detail' => 'Cabinet routes run behind middleware, session auth, and user/admin role checks.'],
-            ['time' => 'Later', 'title' => 'AI final project surface', 'detail' => 'OpenAI features will be connected server-side with safe environment configuration.'],
+            ['time' => 'Now', 'title' => 'Profile identity is editable', 'detail' => 'Name, portfolio links, bio, skills, and profile photo URL are stored on the user account.'],
+            ['time' => 'Now', 'title' => 'Application MFA is available', 'detail' => 'Authenticator app setup uses QR codes, encrypted secrets, and one-time recovery codes.'],
+            ['time' => 'Now', 'title' => 'Activity timeline is database-backed', 'detail' => 'User and admin events are recorded with paginated activity browsing.'],
         ],
     ],
 

@@ -26,7 +26,7 @@ class ProjectConfigurationTest extends TestCase
         }
     }
 
-    public function test_role_rules_prepare_user_and_admin_boundaries(): void
+    public function test_role_rules_describe_real_user_and_admin_boundaries(): void
     {
         $roles = config('navigation.roles');
 
@@ -43,6 +43,16 @@ class ProjectConfigurationTest extends TestCase
         }
 
         $this->assertContains('manage_users', $roles['admin']['abilities']);
+        $this->assertContains('review_admin_access_requests', $roles['admin']['abilities']);
+        $this->assertContains('grant_admin_access', $roles['admin']['abilities']);
+        $this->assertContains('revoke_admin_access', $roles['admin']['abilities']);
+        $this->assertContains('view_admin_activity', $roles['admin']['abilities']);
+        $this->assertContains('manage_own_profile', $roles['user']['abilities']);
+        $this->assertContains('track_coursework', $roles['user']['abilities']);
+        $this->assertContains('manage_own_security', $roles['user']['abilities']);
+        $this->assertContains('use_application_mfa', $roles['user']['abilities']);
+        $this->assertContains('request_admin_access', $roles['user']['abilities']);
+        $this->assertContains('view_own_activity', $roles['user']['abilities']);
         $this->assertNotContains('manage_content', $roles['admin']['abilities']);
         $this->assertNotContains('review_messages', $roles['admin']['abilities']);
         $this->assertNotContains('send_messages', $roles['user']['abilities']);

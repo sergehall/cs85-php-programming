@@ -6,17 +6,21 @@
     <section class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div class="grid content-start gap-4 py-3">
             <p class="text-xs font-bold uppercase tracking-normal text-orange-700">User Cabinet</p>
-            <h1 class="max-w-4xl text-4xl font-bold leading-none text-slate-950 md:text-6xl">Manage CS85 from one focused workspace.</h1>
+            <h1 class="max-w-4xl text-4xl font-bold leading-none text-slate-950 md:text-6xl">Overview for your CS85 Laravel workspace.</h1>
             <p class="max-w-3xl text-lg leading-8 text-slate-600">
-                The cabinet is organized like a professional account portal: profile, coursework,
-                security, and activity each have a clear place before database-backed CRUD is added.
+                A single cabinet for profile identity, coursework links, account security, activity evidence,
+                and admin access workflows.
             </p>
         </div>
 
         <aside class="grid content-start gap-4 rounded-lg border border-stone-300 bg-white p-6">
             <div class="flex items-center gap-4">
-                <div class="grid h-16 w-16 shrink-0 place-items-center rounded-lg bg-teal-800 text-xl font-bold text-white">
-                    {{ $account['initials'] }}
+                <div class="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-lg bg-teal-800 text-xl font-bold text-white">
+                    @if ($account['photo_url'])
+                        <img class="h-full w-full object-cover" src="{{ $account['photo_url'] }}" alt="" referrerpolicy="no-referrer">
+                    @else
+                        {{ $account['initials'] }}
+                    @endif
                 </div>
                 <div class="min-w-0">
                     <p class="truncate text-lg font-bold text-slate-950">{{ $account['name'] }}</p>
@@ -54,11 +58,11 @@
 
     <section class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
         <article class="rounded-lg border border-stone-300 bg-white p-6">
-            <h2 class="text-xl font-bold text-slate-950">Prepared access roles</h2>
+            <h2 class="text-xl font-bold text-slate-950">Access roles</h2>
             <div class="mt-5 grid gap-4 md:grid-cols-2">
                 @foreach ($roles as $role)
                     <div class="grid content-start gap-3 rounded-lg border border-stone-200 bg-stone-50 p-5">
-                        <span class="text-xs font-bold uppercase tracking-normal text-slate-500">Prepared role</span>
+                        <span class="text-xs font-bold uppercase tracking-normal text-slate-500">Active role</span>
                         <strong class="text-lg text-slate-950">{{ $role['label'] }}</strong>
                         <p class="leading-7 text-slate-600">{{ $role['description'] }}</p>
                         <ul class="grid gap-2 pl-5 leading-7 text-slate-600">

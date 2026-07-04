@@ -117,8 +117,11 @@ Route::prefix('cabinet')->middleware('auth')->name('cabinet.')->group(function (
                 'name' => $user->name,
                 'initials' => $initials ?: 'U',
                 'email' => $user->email,
+                'photo_url' => $user->profilePhotoUrl(),
                 'role' => config("navigation.roles.{$user->role}.label", Str::headline($user->role)),
-                'status' => $user->github_id ? 'GitHub connected' : 'Password account',
+                'status' => $user->hasMfaEnabled()
+                    ? 'MFA protected'
+                    : ($user->github_id ? 'GitHub connected' : 'Password account'),
             ]),
             'metrics' => config('cabinet.metrics'),
             'roles' => config('navigation.roles'),

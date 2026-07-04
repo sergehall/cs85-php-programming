@@ -130,6 +130,22 @@ class ProfileManagementTest extends TestCase
         $this->assertSame('https://avatars.githubusercontent.com/u/12345', $user->profilePhotoUrl());
     }
 
+    public function test_profile_photo_placeholder_explains_github_and_custom_url_options(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'Serge Hall',
+            'github_avatar_url' => null,
+            'profile_photo_url' => null,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('cabinet.profile'))
+            ->assertOk()
+            ->assertSee('Profile photo')
+            ->assertSee('Connect GitHub or add a photo URL')
+            ->assertSee('Connect GitHub in Security to sync your GitHub avatar, or paste a custom HTTPS image link in the profile form.');
+    }
+
     public function test_profile_update_validates_portfolio_links(): void
     {
         $user = User::factory()->create();

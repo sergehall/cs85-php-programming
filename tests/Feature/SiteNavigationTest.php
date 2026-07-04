@@ -162,6 +162,39 @@ class SiteNavigationTest extends TestCase
         $response->assertDontSee('Create assignment records');
     }
 
+    public function test_cabinet_dashboard_shows_current_overview_controls(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'Serge Hall',
+            'profile_photo_url' => 'https://cdn.example.com/profile.jpg',
+            'github_id' => '12345',
+        ]);
+
+        $response = $this->actingAs($user)->get('/cabinet');
+
+        $response->assertOk();
+        $response->assertSee('Overview for your CS85 Laravel workspace.');
+        $response->assertSee('profile identity, coursework links, account security');
+        $response->assertSee('activity evidence');
+        $response->assertSee('https://cdn.example.com/profile.jpg', false);
+        $response->assertSee('GitHub connected');
+        $response->assertSee('Tracked Areas');
+        $response->assertSee('Security Controls');
+        $response->assertSee('custom photo URL');
+        $response->assertSee('app MFA');
+        $response->assertSee('five-at-a-time browsing');
+        $response->assertSee('Application MFA is available');
+        $response->assertSee('Access roles');
+        $response->assertSee('Active role');
+        $response->assertSee('request_admin_access');
+        $response->assertSee('grant_admin_access');
+        $response->assertSee('view_admin_activity');
+        $response->assertDontSee('MFA planning');
+        $response->assertDontSee('30+');
+        $response->assertDontSee('Prepared access roles');
+        $response->assertDontSee('Prepared role');
+    }
+
     public function test_cabinet_security_page_shows_real_security_controls(): void
     {
         config([
@@ -235,7 +268,7 @@ class SiteNavigationTest extends TestCase
     public static function cabinetRoutes(): array
     {
         return [
-            'dashboard' => ['/cabinet', 'Manage CS85 from one focused workspace'],
+            'dashboard' => ['/cabinet', 'Overview for your CS85 Laravel workspace'],
             'profile' => ['/cabinet/profile', 'Profile'],
             'coursework' => ['/cabinet/coursework', 'Coursework'],
             'security' => ['/cabinet/security', 'Security Foundation'],

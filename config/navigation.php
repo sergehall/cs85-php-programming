@@ -11,13 +11,29 @@ return [
     'roles' => [
         'user' => [
             'label' => 'User',
-            'description' => 'User workspace for profile, coursework, account security, and final project progress.',
-            'abilities' => ['view_cabinet', 'manage_own_profile', 'track_coursework'],
+            'description' => 'Standard cabinet role for profile, coursework, account security, MFA, and personal activity.',
+            'abilities' => [
+                'view_cabinet',
+                'manage_own_profile',
+                'track_coursework',
+                'manage_own_security',
+                'use_application_mfa',
+                'request_admin_access',
+                'view_own_activity',
+            ],
         ],
         'admin' => [
             'label' => 'Admin',
-            'description' => 'Operational role for managing user access and protected admin-only coursework tools.',
-            'abilities' => ['view_cabinet', 'manage_users'],
+            'description' => 'Administrative cabinet role for user oversight, admin access review, and protected role changes.',
+            'abilities' => [
+                'view_cabinet',
+                'manage_users',
+                'review_admin_access_requests',
+                'grant_admin_access',
+                'revoke_admin_access',
+                'view_admin_activity',
+                'view_admin_content_workspace',
+            ],
         ],
     ],
 ];

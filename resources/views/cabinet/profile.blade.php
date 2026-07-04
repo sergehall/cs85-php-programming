@@ -143,22 +143,24 @@
             @php($profileInitials = collect(explode(' ', trim($user->name)))->filter()->map(fn (string $name): string => Str::upper(Str::substr($name, 0, 1)))->take(2)->implode('') ?: 'U')
             @php($profilePhotoUrl = $user->profilePhotoUrl())
 
-            <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
-                @if ($profilePhotoUrl)
-                    <img class="h-32 w-32 rounded-lg object-cover" src="{{ $profilePhotoUrl }}" alt="Profile photo" referrerpolicy="no-referrer">
-                @else
+            @if ($profilePhotoUrl)
+                <div class="grid place-items-center rounded-lg border border-stone-200 bg-white p-4">
+                    <img class="h-40 w-40 rounded-lg object-cover" src="{{ $profilePhotoUrl }}" alt="Profile photo" referrerpolicy="no-referrer">
+                </div>
+            @else
+                <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
                     <div class="flex items-center gap-3">
                         <span class="grid h-16 w-16 place-items-center rounded-lg bg-slate-950 text-lg font-bold text-white">{{ $profileInitials }}</span>
                         <div class="min-w-0">
                             <p class="text-xs font-bold uppercase tracking-normal text-slate-500">Profile photo</p>
-                            <p class="mt-1 font-bold text-slate-950">Connect GitHub to sync photo</p>
+                            <p class="mt-1 font-bold text-slate-950">Connect GitHub or add a photo URL</p>
                         </div>
                     </div>
                     <p class="mt-3 text-sm leading-6 text-slate-600">
-                        After you connect GitHub in Security, your GitHub profile photo appears here automatically.
+                        Connect GitHub in Security to sync your GitHub avatar, or paste a custom HTTPS image link in the profile form.
                     </p>
-                @endif
-            </div>
+                </div>
+            @endif
 
             <dl class="grid gap-3 text-sm">
                 <div class="border-t border-stone-200 pt-3">
