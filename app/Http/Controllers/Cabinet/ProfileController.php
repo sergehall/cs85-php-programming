@@ -24,6 +24,7 @@ class ProfileController extends Controller
         $user = $request->user();
         $attributes = $request->validated();
         $attributes['name'] = trim($attributes['first_name'].' '.$attributes['last_name']);
+        $attributes['profile_photo_url'] = ($attributes['profile_photo_url'] ?? null) ?: null;
 
         $user->forceFill($attributes)->save();
 

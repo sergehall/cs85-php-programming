@@ -89,6 +89,21 @@
                 @enderror
             </label>
 
+            <label class="grid gap-2 font-bold text-slate-700" for="profile_photo_url">
+                Profile photo URL
+                <input
+                    class="rounded-lg border border-stone-300 px-3 py-2 font-normal text-slate-950"
+                    id="profile_photo_url"
+                    name="profile_photo_url"
+                    type="url"
+                    value="{{ old('profile_photo_url', $user->profile_photo_url) }}"
+                    placeholder="https://example.com/profile-photo.jpg"
+                >
+                @error('profile_photo_url')
+                    <span class="text-sm text-red-700">{{ $message }}</span>
+                @enderror
+            </label>
+
             <label class="grid gap-2 font-bold text-slate-700" for="bio">
                 Short bio
                 <textarea
@@ -126,22 +141,23 @@
             <h2 class="text-xl font-bold text-slate-950">Account summary</h2>
             @php($emptyProfileValue = 'Not provided yet')
             @php($profileInitials = collect(explode(' ', trim($user->name)))->filter()->map(fn (string $name): string => Str::upper(Str::substr($name, 0, 1)))->take(2)->implode('') ?: 'U')
+            @php($profilePhotoUrl = $user->profilePhotoUrl())
 
-            <div class="grid gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4">
-                <div class="flex items-center gap-3">
-                    @if ($user->github_avatar_url)
-                        <img class="h-16 w-16 rounded-lg object-cover" src="{{ $user->github_avatar_url }}" alt="" referrerpolicy="no-referrer">
-                    @else
+            <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
+                @if ($profilePhotoUrl)
+                    <img class="h-32 w-32 rounded-lg object-cover" src="{{ $profilePhotoUrl }}" alt="Profile photo" referrerpolicy="no-referrer">
+                @else
+                    <div class="flex items-center gap-3">
                         <span class="grid h-16 w-16 place-items-center rounded-lg bg-slate-950 text-lg font-bold text-white">{{ $profileInitials }}</span>
-                    @endif
-                    <div class="min-w-0">
-                        <p class="text-xs font-bold uppercase tracking-normal text-slate-500">Profile photo</p>
-                        <p class="mt-1 font-bold text-slate-950">{{ $user->github_avatar_url ? 'Synced from GitHub' : 'Connect GitHub to sync photo' }}</p>
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold uppercase tracking-normal text-slate-500">Profile photo</p>
+                            <p class="mt-1 font-bold text-slate-950">Connect GitHub to sync photo</p>
+                        </div>
                     </div>
-                </div>
-                <p class="text-sm leading-6 text-slate-600">
-                    After you connect GitHub in Security, your GitHub profile photo appears here automatically.
-                </p>
+                    <p class="mt-3 text-sm leading-6 text-slate-600">
+                        After you connect GitHub in Security, your GitHub profile photo appears here automatically.
+                    </p>
+                @endif
             </div>
 
             <dl class="grid gap-3 text-sm">

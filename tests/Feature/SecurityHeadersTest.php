@@ -35,6 +35,7 @@ class SecurityHeadersTest extends TestCase
         $this->assertStringContainsString("default-src 'none'", $policy);
         $this->assertStringContainsString("script-src 'self'", $policy);
         $this->assertStringContainsString("style-src 'self'", $policy);
+        $this->assertStringContainsString("img-src 'self' data: https:", $policy);
         $this->assertStringContainsString("object-src 'none'", $policy);
         $this->assertStringContainsString("frame-ancestors 'none'", $policy);
         $this->assertStringContainsString("base-uri 'none'", $policy);

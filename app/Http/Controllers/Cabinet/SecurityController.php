@@ -83,12 +83,6 @@ class SecurityController extends Controller
                         ? 'Authenticator app MFA is enabled for this account.'
                         : 'Authenticator app MFA can be enabled from this security page.',
                 ],
-                [
-                    'label' => 'GitHub MFA visibility',
-                    'status' => 'Managed by GitHub',
-                    'tone' => 'neutral',
-                    'detail' => 'GitHub does not expose a personal 2FA-enabled flag to this OAuth app; users manage GitHub 2FA in GitHub account settings.',
-                ],
             ],
         ]);
     }

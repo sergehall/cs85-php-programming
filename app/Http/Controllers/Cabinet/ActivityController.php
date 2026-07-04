@@ -10,6 +10,8 @@ use Illuminate\View\View;
 
 class ActivityController extends Controller
 {
+    private const USER_ACTIVITY_PER_PAGE = 5;
+
     public function __invoke(Request $request): View
     {
         $user = $request->user();
@@ -18,12 +20,15 @@ class ActivityController extends Controller
             abort(403);
         }
 
-        $userActivities = ActivityLog::query()
-            ->with(['actorUser', 'subjectUser'])
+        $userActivityQuery = ActivityLog::query()
             ->where('subject_user_id', $user->getKey())
+            ->whereIn('visibility', [ActivityLog::VISIBILITY_USER, ActivityLog::VISIBILITY_BOTH]);
+
+        $userActivities = (clone $userActivityQuery)
+            ->with(['actorUser', 'subjectUser'])
             ->latest()
-            ->limit(40)
-            ->get();
+            ->paginate(self::USER_ACTIVITY_PER_PAGE, ['*'], 'my_activity_page')
+            ->withQueryString();
 
         $adminActivities = $user->isAdmin()
             ? ActivityLog::query()
@@ -39,10 +44,10 @@ class ActivityController extends Controller
             'userActivities' => $userActivities,
             'adminActivities' => $adminActivities,
             'activityCounts' => [
-                'user' => $userActivities->count(),
-                'profile' => $userActivities->where('category', 'profile')->count(),
-                'coursework' => $userActivities->where('category', 'coursework')->count(),
-                'security' => $userActivities->where('category', 'security')->count(),
+                'user' => (clone $userActivityQuery)->count(),
+                'profile' => (clone $userActivityQuery)->where('category', 'profile')->count(),
+                'coursework' => (clone $userActivityQuery)->where('category', 'coursework')->count(),
+                'security' => (clone $userActivityQuery)->where('category', 'security')->count(),
                 'admin' => $adminActivities->count(),
             ],
         ]);

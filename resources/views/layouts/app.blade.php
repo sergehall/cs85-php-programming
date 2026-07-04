@@ -65,12 +65,13 @@
                         $displayName = $currentUser->name ?: explode('@', $currentUser->email)[0];
                         $roleLabel = config("navigation.roles.{$currentUser->role}.label", ucfirst($currentUser->role));
                         $initial = strtoupper(substr($displayName, 0, 1)) ?: 'U';
+                        $profilePhotoUrl = $currentUser->profilePhotoUrl();
                     @endphp
                     <details class="group relative" data-account-menu>
                         <summary class="flex max-w-[calc(100vw_-_2rem)] cursor-pointer list-none items-center gap-2 rounded-lg border border-stone-300 bg-white px-2 py-2 text-left transition hover:border-teal-700 hover:shadow-lg hover:shadow-slate-900/10 group-open:border-teal-700 group-open:shadow-lg group-open:shadow-slate-900/10 sm:gap-3 sm:px-3 [&::-webkit-details-marker]:hidden">
                             <span class="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-lg bg-slate-950 text-base font-bold text-white sm:h-12 sm:w-12">
-                                @if ($currentUser->github_avatar_url)
-                                    <img class="h-full w-full object-cover" src="{{ $currentUser->github_avatar_url }}" alt="" referrerpolicy="no-referrer">
+                                @if ($profilePhotoUrl)
+                                    <img class="h-full w-full object-cover" src="{{ $profilePhotoUrl }}" alt="" referrerpolicy="no-referrer">
                                 @else
                                     {{ $initial }}
                                 @endif

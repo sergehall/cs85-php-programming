@@ -184,8 +184,6 @@ class SiteNavigationTest extends TestCase
         $response->assertSee('Session authentication');
         $response->assertSee('GitHub OAuth configuration');
         $response->assertSee('Application MFA');
-        $response->assertSee('GitHub MFA');
-        $response->assertSee('Managed in GitHub');
         $response->assertSee('Admin access');
         $response->assertSee('Request admin access');
         $response->assertSee('Current Laravel account:');
@@ -193,6 +191,8 @@ class SiteNavigationTest extends TestCase
         $response->assertSee('A GitHub identity can be connected to only one CS85 user at a time.');
         $response->assertSee('For privacy, CS85 does not reveal whether a GitHub identity is connected to another profile.');
         $response->assertDontSee('Security roadmap');
+        $response->assertDontSee('GitHub MFA');
+        $response->assertDontSee('Managed in GitHub');
     }
 
     #[DataProvider('cabinetAdminRoutes')]

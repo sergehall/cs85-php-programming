@@ -26,6 +26,7 @@ class ProfileManagementTest extends TestCase
             'last_name' => 'Hall',
             'github_profile_url' => 'https://github.com/sergehall',
             'github_avatar_url' => 'https://avatars.githubusercontent.com/u/12345',
+            'profile_photo_url' => 'https://cdn.example.com/profile.jpg',
             'github_id' => '12345',
             'linkedin_profile_url' => 'https://www.linkedin.com/in/sergehall',
             'bio' => 'CS85 student building a Laravel coursework portfolio.',
@@ -48,9 +49,11 @@ class ProfileManagementTest extends TestCase
         $response->assertSee('Serge');
         $response->assertSee('Hall');
         $response->assertSee('https://github.com/sergehall');
-        $response->assertSee('https://avatars.githubusercontent.com/u/12345', false);
-        $response->assertSee('Synced from GitHub');
-        $response->assertSee('After you connect GitHub in Security, your GitHub profile photo appears here automatically.');
+        $response->assertSee('Profile photo URL');
+        $response->assertSee('https://cdn.example.com/profile.jpg', false);
+        $response->assertDontSee('https://avatars.githubusercontent.com/u/12345', false);
+        $response->assertDontSee('Synced from GitHub');
+        $response->assertDontSee('After you connect GitHub in Security, your GitHub profile photo appears here automatically.');
         $response->assertSee('https://www.linkedin.com/in/sergehall');
         $response->assertSee('CS85 student building a Laravel coursework portfolio.');
         $response->assertSee('PHP, Laravel, MySQL, Docker');
@@ -79,6 +82,7 @@ class ProfileManagementTest extends TestCase
             'last_name' => 'Hancharou',
             'github_profile_url' => 'https://github.com/sergehall',
             'linkedin_profile_url' => 'https://www.linkedin.com/in/sergehall',
+            'profile_photo_url' => 'https://cdn.example.com/siarhei.jpg',
             'bio' => 'CS85 PHP programming student building a Laravel coursework portfolio.',
             'technical_skills' => 'PHP, Laravel, MySQL, Docker, GitHub',
         ]);
@@ -93,8 +97,37 @@ class ProfileManagementTest extends TestCase
         $this->assertSame('Siarhei Hancharou', $user->name);
         $this->assertSame('https://github.com/sergehall', $user->github_profile_url);
         $this->assertSame('https://www.linkedin.com/in/sergehall', $user->linkedin_profile_url);
+        $this->assertSame('https://cdn.example.com/siarhei.jpg', $user->profile_photo_url);
         $this->assertSame('CS85 PHP programming student building a Laravel coursework portfolio.', $user->bio);
         $this->assertSame('PHP, Laravel, MySQL, Docker, GitHub', $user->technical_skills);
+    }
+
+    public function test_empty_profile_photo_url_falls_back_to_github_avatar(): void
+    {
+        $user = User::factory()->create([
+            'first_name' => 'Serge',
+            'last_name' => 'Hall',
+            'profile_photo_url' => 'https://cdn.example.com/custom.jpg',
+            'github_avatar_url' => 'https://avatars.githubusercontent.com/u/12345',
+        ]);
+
+        $response = $this->actingAs($user)->put(route('cabinet.profile.update'), [
+            'first_name' => 'Serge',
+            'last_name' => 'Hall',
+            'github_profile_url' => '',
+            'linkedin_profile_url' => '',
+            'profile_photo_url' => '',
+            'bio' => '',
+            'technical_skills' => '',
+        ]);
+
+        $response->assertRedirect(route('cabinet.profile'));
+        $response->assertSessionHasNoErrors();
+
+        $user->refresh();
+
+        $this->assertNull($user->profile_photo_url);
+        $this->assertSame('https://avatars.githubusercontent.com/u/12345', $user->profilePhotoUrl());
     }
 
     public function test_profile_update_validates_portfolio_links(): void
@@ -106,11 +139,12 @@ class ProfileManagementTest extends TestCase
             'last_name' => 'Hall',
             'github_profile_url' => 'not-a-url',
             'linkedin_profile_url' => 'also-not-a-url',
+            'profile_photo_url' => 'http://example.com/photo.jpg',
             'bio' => '',
             'technical_skills' => '',
         ]);
 
         $response->assertRedirect(route('cabinet.profile'));
-        $response->assertSessionHasErrors(['github_profile_url', 'linkedin_profile_url']);
+        $response->assertSessionHasErrors(['github_profile_url', 'linkedin_profile_url', 'profile_photo_url']);
     }
 }

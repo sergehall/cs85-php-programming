@@ -136,4 +136,42 @@ class ActivityTimelineTest extends TestCase
             ->assertSee('Admin access granted')
             ->assertSee('Admin access revoked');
     }
+
+    public function test_user_activity_is_paginated_in_groups_of_five(): void
+    {
+        $user = User::factory()->create();
+
+        foreach (range(1, 7) as $index) {
+            ActivityLog::factory()->create([
+                'subject_user_id' => $user->id,
+                'actor_user_id' => $user->id,
+                'category' => 'security',
+                'event' => "security.event_{$index}",
+                'visibility' => ActivityLog::VISIBILITY_USER,
+                'title' => "Activity event {$index}",
+                'description' => "Activity description {$index}",
+                'created_at' => now()->subMinutes(7 - $index),
+            ]);
+        }
+
+        $this->actingAs($user)
+            ->get(route('cabinet.activity'))
+            ->assertOk()
+            ->assertSee('Showing 1-5 of 7')
+            ->assertSee('Show next 5')
+            ->assertSee('Activity event 7')
+            ->assertSee('Activity event 3')
+            ->assertDontSee('Activity event 2')
+            ->assertDontSee('Activity event 1');
+
+        $this->actingAs($user)
+            ->get(route('cabinet.activity', ['my_activity_page' => 2]))
+            ->assertOk()
+            ->assertSee('Showing 6-7 of 7')
+            ->assertSee('Previous 5')
+            ->assertSee('All activity shown')
+            ->assertSee('Activity event 2')
+            ->assertSee('Activity event 1')
+            ->assertDontSee('Activity event 3');
+    }
 }

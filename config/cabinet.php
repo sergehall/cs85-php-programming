@@ -137,7 +137,7 @@ return [
         'security' => [
             'eyebrow' => 'Account Security',
             'title' => 'Security Foundation',
-            'description' => 'A protection center for password login, GitHub OAuth account connection, role checks, sessions, MFA planning, and cabinet-only access.',
+            'description' => 'A protection center for password login, GitHub OAuth account connection, role checks, sessions, application MFA, and cabinet-only access.',
             'summary' => [
                 ['label' => 'Auth', 'value' => 'Active'],
                 ['label' => 'Roles', 'value' => 'Configured'],
@@ -146,7 +146,7 @@ return [
             ],
             'panels' => [
                 ['title' => 'Current controls', 'items' => ['Session auth protects cabinet routes', 'Admin-only middleware', 'GitHub OAuth account connection', 'CSRF-protected Laravel forms']],
-                ['title' => 'MFA boundary', 'items' => ['GitHub MFA is managed in GitHub', 'App MFA planned later', 'Recovery codes planned later', 'Sensitive actions need confirmation later']],
+                ['title' => 'Application MFA', 'items' => ['Authenticator app codes protect cabinet login', 'Recovery codes are generated during setup', 'MFA secrets are encrypted at rest', 'Sensitive actions need confirmation later']],
                 ['title' => 'Current protection', 'items' => ['GitHub OAuth uses state validation', 'GitHub linking checks account ownership', 'Secrets stay in .env', 'CI blocks hardcoded APP_KEY in workflows']],
             ],
             'tasks' => [

@@ -163,7 +163,7 @@
                     </p>
                 </div>
 
-                <dl class="mt-5 grid gap-3 text-sm md:grid-cols-2">
+                <dl class="mt-5 grid gap-3 text-sm md:grid-cols-3">
                     <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
                         <dt class="font-bold text-slate-500">Connection</dt>
                         <dd class="mt-1 font-bold {{ $githubConnected ? 'text-teal-800' : 'text-orange-700' }}">{{ $githubConnected ? 'Connected' : 'Not connected' }}</dd>
@@ -175,10 +175,6 @@
                     <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
                         <dt class="font-bold text-slate-500">OAuth config</dt>
                         <dd class="mt-1 font-bold {{ $githubConfigured ? 'text-teal-800' : 'text-orange-700' }}">{{ $githubConfigured ? 'Configured' : 'Needs environment variables' }}</dd>
-                    </div>
-                    <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
-                        <dt class="font-bold text-slate-500">GitHub MFA</dt>
-                        <dd class="mt-1 font-bold text-slate-950">Managed in GitHub</dd>
                     </div>
                 </dl>
             </article>

@@ -21,6 +21,7 @@ use Illuminate\Support\Str;
     'github_id',
     'github_username',
     'github_avatar_url',
+    'profile_photo_url',
     'mfa_secret',
     'mfa_recovery_codes',
     'mfa_confirmed_at',
@@ -70,6 +71,19 @@ class User extends Authenticatable
     public function hasMfaEnabled(): bool
     {
         return is_string($this->mfa_secret) && $this->mfa_confirmed_at !== null;
+    }
+
+    public function profilePhotoUrl(): ?string
+    {
+        foreach (['profile_photo_url', 'github_avatar_url'] as $attribute) {
+            $value = $this->getAttribute($attribute);
+
+            if (is_string($value) && $value !== '') {
+                return $value;
+            }
+        }
+
+        return null;
     }
 
     /**

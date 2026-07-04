@@ -35,7 +35,13 @@
                     <h2 class="text-2xl font-bold text-slate-950">My activity</h2>
                     <p class="mt-2 leading-7 text-slate-600">Profile, coursework, and security actions tied to your account.</p>
                 </div>
-                <span class="rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm font-bold text-slate-700">{{ $userActivities->count() }} shown</span>
+                <span class="rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm font-bold text-slate-700">
+                    @if ($userActivities->total() > 0)
+                        Showing {{ $userActivities->firstItem() }}-{{ $userActivities->lastItem() }} of {{ $userActivities->total() }}
+                    @else
+                        0 shown
+                    @endif
+                </span>
             </div>
 
             <div class="mt-5 grid gap-3">
@@ -70,6 +76,25 @@
                     </p>
                 @endforelse
             </div>
+
+            @if ($userActivities->hasPages())
+                <nav class="mt-5 flex flex-col gap-3 border-t border-stone-200 pt-4 sm:flex-row sm:items-center sm:justify-between" aria-label="My activity pagination">
+                    <p class="text-sm font-bold text-slate-500">Page {{ $userActivities->currentPage() }} of {{ $userActivities->lastPage() }}</p>
+                    <div class="flex flex-col gap-2 sm:flex-row">
+                        @if ($userActivities->onFirstPage())
+                            <span class="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-center text-sm font-bold text-slate-400">Previous 5</span>
+                        @else
+                            <a class="rounded-lg border border-stone-300 bg-white px-4 py-3 text-center text-sm font-bold text-slate-700 no-underline transition hover:border-teal-700 hover:text-teal-800" href="{{ $userActivities->previousPageUrl() }}">Previous 5</a>
+                        @endif
+
+                        @if ($userActivities->hasMorePages())
+                            <a class="rounded-lg bg-teal-700 px-4 py-3 text-center text-sm font-bold text-white no-underline transition hover:bg-teal-800" href="{{ $userActivities->nextPageUrl() }}">Show next 5</a>
+                        @else
+                            <span class="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-center text-sm font-bold text-slate-400">All activity shown</span>
+                        @endif
+                    </div>
+                </nav>
+            @endif
         </article>
 
         <aside class="grid content-start gap-4 rounded-lg border border-stone-300 bg-white p-6">
@@ -85,7 +110,17 @@
                 </div>
                 <div class="border-t border-stone-200 pt-3">
                     <h3 class="font-bold text-slate-950">Security</h3>
-                    <p class="mt-1 leading-6 text-slate-600">GitHub connection and admin access requests are tracked.</p>
+                    <p class="mt-1 leading-6 text-slate-600">GitHub connection, application MFA, and admin access requests are tracked.</p>
+                </div>
+                @if (auth()->user()?->isAdmin())
+                    <div class="border-t border-stone-200 pt-3">
+                        <h3 class="font-bold text-slate-950">Admin</h3>
+                        <p class="mt-1 leading-6 text-slate-600">Role grants and revocations appear in the administrative timeline.</p>
+                    </div>
+                @endif
+                <div class="border-t border-stone-200 pt-3">
+                    <h3 class="font-bold text-slate-950">Pagination</h3>
+                    <p class="mt-1 leading-6 text-slate-600">My activity shows five events at a time so the timeline stays easy to scan.</p>
                 </div>
             </div>
         </aside>

@@ -21,7 +21,7 @@ return [
             'object-src' => ["'none'"],
             'script-src' => ["'self'"],
             'style-src' => ["'self'"],
-            'img-src' => ["'self'", 'data:', 'https://avatars.githubusercontent.com'],
+            'img-src' => ["'self'", 'data:', 'https:'],
             'font-src' => ["'self'"],
             'connect-src' => ["'self'"],
             'manifest-src' => ["'self'"],
