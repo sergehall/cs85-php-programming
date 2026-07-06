@@ -30,6 +30,7 @@
         "psr-4": {
             "App\\": "app/",
             "Cs85\\Module2A\\": "app/Services/Modules/Module2A/",
+            "Cs85\\Module6A\\": "assignments/module6a_mvc_project/src/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }

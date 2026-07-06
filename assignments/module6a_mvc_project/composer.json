@@ -1,0 +1,13 @@
+{
+    "name": "sergehall/cs85-module6a-mvcapp",
+    "description": "CS85 Module 6A MVC app for SERGIOARTG photography booking planning.",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Cs85\\Module6A\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.3"
+    }
+}
