@@ -113,6 +113,15 @@ class SiteNavigationTest extends TestCase
         $this->get('/assignments/module2a/price_engine_refactored.php')
             ->assertOk()
             ->assertSee('T-Shirt Price Engine Refactored');
+
+        $this->assertFileExists(base_path('assignments/module5a/MyObject.php'));
+        $this->assertFileExists(base_path('assignments/module5a/critique.md'));
+
+        $this->get('/assignments/module5a/MyObject.php')
+            ->assertOk()
+            ->assertSee('Designing Your Own Object Oriented World')
+            ->assertSee('Task Summary:')
+            ->assertSee('AI Method Critique');
     }
 
     public function test_unknown_roadmap_module_returns_not_found(): void
