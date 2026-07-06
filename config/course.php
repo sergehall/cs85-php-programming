@@ -148,11 +148,25 @@ return [
             'start' => 'Mon, Jul 6, 2026',
             'title' => 'Object Oriented Programming',
             'description' => 'Organize PHP code with classes, objects, properties, methods, visibility, and simple design boundaries.',
-            'status' => 'Scheduled',
+            'status' => 'Open',
             'accent' => 'violet',
-            'assignments' => [],
+            'assignments' => [
+                [
+                    'label' => 'Assignment 5A',
+                    'title' => 'Designing Your Own Object Oriented World',
+                    'description' => 'Build an interactive SERGIOARTG photography booking object with quote calculation, deposit tracking, status changes, decision logic, and an AI method critique.',
+                    'status' => 'Ready',
+                    'type' => 'PHP OOP',
+                    'url' => '/assignments/module5a/MyObject.php',
+                    'source' => 'assignments/module5a/MyObject.php',
+                ],
+            ],
             'resources' => ['Classes and objects', 'Methods and properties', 'Visibility'],
-            'notes' => ['This module prepares the project for service classes and clearer responsibilities.'],
+            'notes' => [
+                'This module prepares the project for service classes and clearer responsibilities.',
+                'Assignment 5A models the SERGIOARTG photography booking workflow with properties, methods, constructor initialization, object instances, and method-level decision logic.',
+                'The AI critique lives beside the PHP page at assignments/module5a/critique.md.',
+            ],
         ],
         [
             'module' => 'Module 6',
