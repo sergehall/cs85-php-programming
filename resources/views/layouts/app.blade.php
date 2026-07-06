@@ -49,9 +49,13 @@
 
             <nav class="flex flex-1 flex-wrap gap-2" aria-label="Main navigation">
                 @foreach (config('navigation.public') as $item)
+                    @php
+                        $isActiveNavigationItem = request()->routeIs($item['route'])
+                            || ($item['route'] === 'roadmap' && request()->routeIs('roadmap.*'));
+                    @endphp
                     <a
                         href="{{ route($item['route']) }}"
-                        class="rounded-lg border px-3 py-2 text-sm font-bold no-underline transition {{ request()->routeIs($item['route']) ? 'border-stone-300 bg-white text-slate-950' : 'border-transparent text-slate-500 hover:border-stone-300 hover:bg-white hover:text-slate-950' }}"
+                        class="rounded-lg border px-3 py-2 text-sm font-bold no-underline transition {{ $isActiveNavigationItem ? 'border-stone-300 bg-white text-slate-950' : 'border-transparent text-slate-500 hover:border-stone-300 hover:bg-white hover:text-slate-950' }}"
                     >
                         {{ $item['label'] }}
                     </a>
