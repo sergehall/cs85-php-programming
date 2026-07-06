@@ -17,7 +17,7 @@ Live site: https://sergioartg.com
 From the module folder:
 
 ```bash
-cd assignments/module6a_mvc_project
+cd assignments/module6a
 composer dump-autoload
 php -S 127.0.0.1:8086 -t public
 ```
@@ -25,7 +25,7 @@ php -S 127.0.0.1:8086 -t public
 Inside the Laravel coursework project, the assignment is also available through:
 
 ```text
-http://127.0.0.1:8000/assignments/module6a_mvc_project/public/index.php
+http://127.0.0.1:8000/assignments/module6a/public/index.php
 ```
 
 ## MVC Structure

@@ -127,13 +127,13 @@ class SiteNavigationTest extends TestCase
             ->assertSee('Task Summary:')
             ->assertSee('AI Method Critique');
 
-        $this->assertFileExists(base_path('assignments/module6a_mvc_project/public/index.php'));
-        $this->assertFileExists(base_path('assignments/module6a_mvc_project/src/Models/PhotographyProject.php'));
-        $this->assertFileExists(base_path('assignments/module6a_mvc_project/src/Controllers/BookingPlannerController.php'));
-        $this->assertFileExists(base_path('assignments/module6a_mvc_project/views/booking-planner.php'));
-        $this->assertFileExists(base_path('assignments/module6a_mvc_project/README.md'));
+        $this->assertFileExists(base_path('assignments/module6a/public/index.php'));
+        $this->assertFileExists(base_path('assignments/module6a/src/Models/PhotographyProject.php'));
+        $this->assertFileExists(base_path('assignments/module6a/src/Controllers/BookingPlannerController.php'));
+        $this->assertFileExists(base_path('assignments/module6a/views/booking-planner.php'));
+        $this->assertFileExists(base_path('assignments/module6a/README.md'));
 
-        $this->get('/assignments/module6a_mvc_project/public/index.php')
+        $this->get('/assignments/module6a/public/index.php')
             ->assertOk()
             ->assertSee('MVC-Based PHP Application')
             ->assertSee('PhotographyProject')
