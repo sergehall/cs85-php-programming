@@ -49,6 +49,7 @@ $phpAssignments = [
     'module4/database-setup.php' => 'module4a/database-setup.php',
     'module4a/database-setup.php' => 'module4a/database-setup.php',
     'module4b/show_inventory.php' => 'module4b/show_inventory.php',
+    'module5a/MyObject.php' => 'module5a/MyObject.php',
 ];
 
 foreach ($phpAssignments as $publicPath => $assignmentPath) {

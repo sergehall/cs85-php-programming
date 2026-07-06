@@ -20,6 +20,7 @@ final class AssignmentPhpPageController extends Controller
         'module3b/SecureProductContactForm.php' => true,
         'module4a/database-setup.php' => true,
         'module4b/show_inventory.php' => true,
+        'module5a/MyObject.php' => true,
     ];
 
     public function __invoke(Request $request, string $assignmentPath): Response
