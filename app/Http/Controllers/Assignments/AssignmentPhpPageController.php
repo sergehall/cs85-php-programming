@@ -21,6 +21,7 @@ final class AssignmentPhpPageController extends Controller
         'module4a/database-setup.php' => true,
         'module4b/show_inventory.php' => true,
         'module5a/MyObject.php' => true,
+        'module6a_mvc_project/public/index.php' => true,
     ];
 
     public function __invoke(Request $request, string $assignmentPath): Response

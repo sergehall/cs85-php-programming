@@ -86,6 +86,10 @@ class SiteNavigationTest extends TestCase
         $response->assertSee('Resources');
         $response->assertSee('Laravel Hello World');
         $response->assertSee(route('assignments.module1.assignment1a'), false);
+        $this->assertMatchesRegularExpression(
+            '/href="'.preg_quote(route('roadmap'), '/').'"\s+class="[^"]*bg-white text-slate-950[^"]*"/',
+            $response->getContent()
+        );
 
         foreach (config('course.modules') as $roadmapModule) {
             $response->assertSee(route('roadmap.module', $roadmapModule['slug']), false);
@@ -122,6 +126,19 @@ class SiteNavigationTest extends TestCase
             ->assertSee('Designing Your Own Object Oriented World')
             ->assertSee('Task Summary:')
             ->assertSee('AI Method Critique');
+
+        $this->assertFileExists(base_path('assignments/module6a_mvc_project/public/index.php'));
+        $this->assertFileExists(base_path('assignments/module6a_mvc_project/src/Models/PhotographyProject.php'));
+        $this->assertFileExists(base_path('assignments/module6a_mvc_project/src/Controllers/BookingPlannerController.php'));
+        $this->assertFileExists(base_path('assignments/module6a_mvc_project/views/booking-planner.php'));
+        $this->assertFileExists(base_path('assignments/module6a_mvc_project/README.md'));
+
+        $this->get('/assignments/module6a_mvc_project/public/index.php')
+            ->assertOk()
+            ->assertSee('MVC-Based PHP Application')
+            ->assertSee('PhotographyProject')
+            ->assertSee('BookingPlannerController')
+            ->assertSee('Quote total');
     }
 
     public function test_unknown_roadmap_module_returns_not_found(): void

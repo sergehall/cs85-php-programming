@@ -176,11 +176,25 @@ return [
             'start' => 'Mon, Jul 6, 2026',
             'title' => 'Autoloading, Composer & the MVC Pattern',
             'description' => 'Connect files, dependencies, controllers, views, and models into a clean application flow.',
-            'status' => 'Scheduled',
+            'status' => 'Open',
             'accent' => 'teal',
-            'assignments' => [],
+            'assignments' => [
+                [
+                    'label' => 'Assignment 6A',
+                    'title' => 'MVC-Based PHP Application',
+                    'description' => 'Build a SERGIOARTG booking planner using Composer PSR-4 autoloading, a Model, a Controller, a View, validation, reflection, and AI critique.',
+                    'status' => 'Ready',
+                    'type' => 'PHP MVC',
+                    'url' => '/assignments/module6a_mvc_project/public/index.php',
+                    'source' => 'assignments/module6a_mvc_project/public/index.php',
+                ],
+            ],
             'resources' => ['Composer autoloading', 'MVC', 'Package hygiene'],
-            'notes' => ['Composer and MVC explain why Laravel projects are not usually built as one-file scripts.'],
+            'notes' => [
+                'Composer and MVC explain why Laravel projects are not usually built as one-file scripts.',
+                'Assignment 6A separates the SERGIOARTG booking planner into Model, Controller, View, and public entry point files.',
+                'The README includes setup instructions, reflection, and the AI-generated method critique.',
+            ],
         ],
         [
             'module' => 'Module 7',
