@@ -141,6 +141,29 @@ class SiteNavigationTest extends TestCase
             ->assertSee('Quote total');
     }
 
+    public function test_module6a_mvc_assignment_validates_posted_input(): void
+    {
+        $response = $this->post('/assignments/module6a/public/index.php', [
+            'client_name' => 'A',
+            'service_type' => 'fashion',
+            'package' => 'premium',
+            'hours' => '12',
+            'edited_photos' => '100',
+            'location_type' => 'out_of_city',
+            'deposit_paid' => '-10',
+            'project_note' => '',
+            'rush_delivery' => '1',
+        ]);
+
+        $response->assertOk();
+        $response->assertSee('Validation adjusted the request');
+        $response->assertSee('Client name must be at least 2 characters.');
+        $response->assertSee('Session hours must be between 1 and 8.');
+        $response->assertSee('Edited photos must be between 5 and 80.');
+        $response->assertSee('Deposit paid must be between 0 and 5000.');
+        $response->assertSee('Project note is required.');
+    }
+
     public function test_unknown_roadmap_module_returns_not_found(): void
     {
         $response = $this->get('/roadmap/not-a-real-module');

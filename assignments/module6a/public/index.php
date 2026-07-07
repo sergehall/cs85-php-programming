@@ -28,8 +28,14 @@ if (is_file($localAutoload)) {
     });
 }
 
-$requestMethod = (string) ($_SERVER['REQUEST_METHOD'] ?? 'GET');
+$requestMethod = function_exists('request')
+    ? (string) request()->method()
+    : (string) ($_SERVER['REQUEST_METHOD'] ?? 'GET');
 $requestData = $requestMethod === 'POST' ? $_POST : [];
+
+if ($requestMethod === 'POST' && $requestData === [] && function_exists('request')) {
+    $requestData = request()->except('_token');
+}
 
 $controller = new BookingPlannerController();
 

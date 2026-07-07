@@ -55,7 +55,11 @@ final class BookingPlannerController
         $editedPhotos = filter_var($input['edited_photos'] ?? 20, FILTER_VALIDATE_INT);
         $locationType = (string) ($input['location_type'] ?? 'outdoor');
         $depositPaid = filter_var($input['deposit_paid'] ?? 0, FILTER_VALIDATE_FLOAT);
-        $projectNote = trim((string) ($input['project_note'] ?? 'Cinematic editorial portraits for a personal brand refresh.'));
+        $projectNote = trim((string) (
+            array_key_exists('project_note', $input)
+                ? $input['project_note']
+                : 'Cinematic editorial portraits for a personal brand refresh.'
+        ));
 
         $allowedServiceTypes = ['portrait', 'fashion', 'love_story', 'family', 'content', 'commercial'];
         $allowedPackages = ['mini', 'standard', 'premium'];
@@ -79,6 +83,8 @@ final class BookingPlannerController
         if (! is_float($hours) && ! is_int($hours)) {
             $errors['hours'] = 'Session hours must be a number.';
             $hours = 2.0;
+        } elseif ((float) $hours < 1.0 || (float) $hours > 8.0) {
+            $errors['hours'] = 'Session hours must be between 1 and 8.';
         }
 
         $hours = max(1.0, min((float) $hours, 8.0));
@@ -86,6 +92,8 @@ final class BookingPlannerController
         if (! is_int($editedPhotos)) {
             $errors['edited_photos'] = 'Edited photos must be a whole number.';
             $editedPhotos = 20;
+        } elseif ($editedPhotos < 5 || $editedPhotos > 80) {
+            $errors['edited_photos'] = 'Edited photos must be between 5 and 80.';
         }
 
         $editedPhotos = max(5, min($editedPhotos, 80));
@@ -98,7 +106,11 @@ final class BookingPlannerController
         if (! is_float($depositPaid) && ! is_int($depositPaid)) {
             $errors['deposit_paid'] = 'Deposit paid must be a number.';
             $depositPaid = 0.0;
+        } elseif ((float) $depositPaid < 0 || (float) $depositPaid > 5000) {
+            $errors['deposit_paid'] = 'Deposit paid must be between 0 and 5000.';
         }
+
+        $depositPaid = max(0.0, min((float) $depositPaid, 5000.0));
 
         if ($projectNote === '') {
             $errors['project_note'] = 'Project note is required.';
@@ -113,7 +125,7 @@ final class BookingPlannerController
             editedPhotos: $editedPhotos,
             locationType: $locationType,
             rushDelivery: isset($input['rush_delivery']),
-            depositPaidCents: (int) round(max(0, (float) $depositPaid) * 100),
+            depositPaidCents: (int) round($depositPaid * 100),
             projectNote: $projectNote
         );
 

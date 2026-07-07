@@ -28,6 +28,18 @@ Inside the Laravel coursework project, the assignment is also available through:
 http://127.0.0.1:8000/assignments/module6a/public/index.php
 ```
 
+Module roadmap URL:
+
+```text
+http://127.0.0.1:8000/roadmap/module-6
+```
+
+GitHub source URL:
+
+```text
+https://github.com/sergehall/cs85-php-programming/tree/main/assignments/module6a
+```
+
 ## MVC Structure
 
 ```text
@@ -92,3 +104,40 @@ public function workflowDecision() {
 The AI-generated method was useful because the decision logic matched the basic business rule I wanted. It was efficient because it used direct condition checks and did not use unnecessary loops or database queries. The security risk was low because the method does not process raw HTML or SQL. However, the raw output used loose comparison with `==`, did not include a return type, and the messages were too generic for my app.
 
 I changed the method to use `: string`, strict comparison style, clearer SERGIOARTG booking language, and more specific output. I also kept the deposit calculation inside the Model so the View does not need to know how deposits are computed.
+
+## Submission Checklist
+
+- Model: `src/Models/PhotographyProject.php`
+- Controller: `src/Controllers/BookingPlannerController.php`
+- View: `views/booking-planner.php`
+- Public entry point: `public/index.php`
+- Composer PSR-4 config: `composer.json`
+- README with setup, reflection, and AI critique: `README.md`
+- Laravel roadmap link: `/roadmap/module-6`
+- Assignment URL: `/assignments/module6a/public/index.php`
+
+## Suggested Screenshots
+
+Screenshot 1: Module 6 roadmap page showing Assignment 6A.
+
+Screenshot 2: MVC booking planner page in the browser.
+
+Screenshot 3: Form input showing Controller validation fields.
+
+Screenshot 4: Quote result showing total, deposit due, complexity, and workflow decision.
+
+Screenshot 5: Source code showing `PhotographyProject`, `BookingPlannerController`, and `booking-planner.php`.
+
+Screenshot 6: README section showing setup instructions, reflection, and AI critique.
+
+## Git Commit Evidence
+
+This assignment was developed with multiple meaningful commits:
+
+```text
+feat(module6a): configure psr4 model autoloading
+feat(module6a): add mvc booking planner ui
+docs(module6a): add setup reflection and ai critique
+feat(module6a): connect mvc assignment to roadmap
+refactor(module6a): simplify assignment folder name
+```

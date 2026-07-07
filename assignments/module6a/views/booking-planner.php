@@ -400,6 +400,10 @@ if (! function_exists('module6Checked')) {
                             <dt>Composer namespace</dt>
                             <dd><code>Cs85\Module6A\</code></dd>
                         </div>
+                        <div class="detail-row">
+                            <dt>Project note</dt>
+                            <dd><?= module6h($project->projectNote) ?></dd>
+                        </div>
                     </dl>
                 </section>
             </section>
