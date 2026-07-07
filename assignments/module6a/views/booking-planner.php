@@ -294,16 +294,16 @@ if (! function_exists('module6Checked')) {
         </section>
 
         <section class="content">
-            <?php if ($errors !== []): ?>
+            <?php if ($errors !== []) { ?>
                 <div class="notice">
                     <strong>Validation adjusted the request:</strong>
                     <ul>
-                        <?php foreach ($errors as $error): ?>
+                        <?php foreach ($errors as $error) { ?>
                             <li><?= module6h($error) ?></li>
-                        <?php endforeach; ?>
+                        <?php } ?>
                     </ul>
                 </div>
-            <?php endif; ?>
+            <?php } ?>
 
             <section class="summary-grid" aria-label="Quote summary">
                 <article class="metric">
@@ -322,9 +322,9 @@ if (! function_exists('module6Checked')) {
 
             <section class="workspace" aria-label="MVC application workspace">
                 <form class="panel" method="post">
-                    <?php if (function_exists('csrf_token')): ?>
+                    <?php if (function_exists('csrf_token')) { ?>
                         <input type="hidden" name="_token" value="<?= module6h((string) csrf_token()) ?>">
-                    <?php endif; ?>
+                    <?php } ?>
                     <h2>Controller Input</h2>
                     <label>
                         Client name
@@ -333,17 +333,17 @@ if (! function_exists('module6Checked')) {
                     <label>
                         Service type
                         <select name="service_type">
-                            <?php foreach ($serviceTypes as $value => $label): ?>
+                            <?php foreach ($serviceTypes as $value => $label) { ?>
                                 <option value="<?= module6h($value) ?>"<?= module6Selected($project->serviceType, $value) ?>><?= module6h($label) ?></option>
-                            <?php endforeach; ?>
+                            <?php } ?>
                         </select>
                     </label>
                     <label>
                         Package
                         <select name="package">
-                            <?php foreach ($packages as $value => $label): ?>
+                            <?php foreach ($packages as $value => $label) { ?>
                                 <option value="<?= module6h($value) ?>"<?= module6Selected($project->package, $value) ?>><?= module6h($label) ?></option>
-                            <?php endforeach; ?>
+                            <?php } ?>
                         </select>
                     </label>
                     <label>
@@ -357,9 +357,9 @@ if (! function_exists('module6Checked')) {
                     <label>
                         Location
                         <select name="location_type">
-                            <?php foreach ($locationTypes as $value => $label): ?>
+                            <?php foreach ($locationTypes as $value => $label) { ?>
                                 <option value="<?= module6h($value) ?>"<?= module6Selected($project->locationType, $value) ?>><?= module6h($label) ?></option>
-                            <?php endforeach; ?>
+                            <?php } ?>
                         </select>
                     </label>
                     <label>

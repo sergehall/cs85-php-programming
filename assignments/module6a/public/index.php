@@ -37,6 +37,6 @@ if ($requestMethod === 'POST' && $requestData === [] && function_exists('request
     $requestData = request()->except('_token');
 }
 
-$controller = new BookingPlannerController();
+$controller = new BookingPlannerController;
 
 echo $controller->handle($requestData);

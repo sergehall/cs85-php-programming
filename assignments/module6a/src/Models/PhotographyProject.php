@@ -34,8 +34,7 @@ final class PhotographyProject
         public readonly bool $rushDelivery,
         public readonly int $depositPaidCents,
         public readonly string $projectNote
-    ) {
-    }
+    ) {}
 
     public function summary(): string
     {

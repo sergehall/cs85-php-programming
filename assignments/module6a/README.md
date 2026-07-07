@@ -57,11 +57,11 @@ The module uses PSR-4 autoloading:
 
 ```json
 {
-  "autoload": {
-    "psr-4": {
-      "Cs85\\Module6A\\": "src/"
+    "autoload": {
+        "psr-4": {
+            "Cs85\\Module6A\\": "src/"
+        }
     }
-  }
 }
 ```
 
