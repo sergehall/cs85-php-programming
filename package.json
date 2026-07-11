@@ -4,10 +4,11 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "db:migrate:local": "DB_CONNECTION=mysql DB_HOST=127.0.0.1 DB_PORT=3307 DB_DATABASE=cs85_php_programming DB_USERNAME=cs85 DB_PASSWORD=cs85_password php artisan migrate --force",
+        "db:migrate:local": "node scripts/dev-local.mjs --migrate-only",
         "dev": "npm run dev-local",
         "dev:assets": "vite",
-        "dev-local": "npm run infra:up && npm run db:migrate:local && concurrently --kill-others-on-fail --names laravel,vite,open --prefix-colors blue,green,gray \"DB_CONNECTION=mysql DB_HOST=127.0.0.1 DB_PORT=3307 DB_DATABASE=cs85_php_programming DB_USERNAME=cs85 DB_PASSWORD=cs85_password QUEUE_CONNECTION=database MAIL_MAILER=smtp MAIL_HOST=127.0.0.1 MAIL_PORT=1025 php artisan serve --host=127.0.0.1 --port=8000\" \"vite --host 127.0.0.1\" \"node scripts/open-local-app.mjs\"",
+        "dev-local": "node scripts/dev-local.mjs",
+        "dev-local:no-open": "node scripts/dev-local.mjs --no-open",
         "format": "npm run format:audit && npm run format:assets && npm run format:php",
         "format:audit": "node scripts/format-audit.mjs",
         "format:assets": "prettier . --write --ignore-unknown",
@@ -20,13 +21,14 @@
         "infra:destroy": "node scripts/infra-destroy.mjs",
         "lint": "npm run format:check",
         "lint-fix": "npm run format && composer lint",
-        "quality": "npm run lint && npm run security:ci && npm run build",
+        "quality": "npm run lint && npm run test:node && npm run security:ci && npm run build",
         "security:ci": "node scripts/check-ci-secrets.mjs",
         "start:app": "npm run dev-local",
         "stop:infra": "npm run infra:down",
         "test": "php artisan test",
         "test:all": "./run-all-tests.sh",
-        "test:all:audit": "./run-all-tests.sh --with-audit"
+        "test:all:audit": "./run-all-tests.sh --with-audit",
+        "test:node": "node --test tests/node/*.test.mjs"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
