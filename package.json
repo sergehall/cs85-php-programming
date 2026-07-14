@@ -3,6 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "ai:server:start": "$HOME/.lmstudio/bin/lms server start --port 1234 --bind 127.0.0.1",
+        "ai:server:stop": "$HOME/.lmstudio/bin/lms server stop",
         "build": "vite build",
         "db:migrate:local": "node scripts/dev-local.mjs --migrate-only",
         "dev": "npm run dev-local",
