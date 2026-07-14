@@ -64,6 +64,23 @@ return [
             ]) : [],
         ],
 
+        'module8a' => [
+            'driver' => 'mysql',
+            'host' => env('MODULE8A_DB_HOST', '127.0.0.1'),
+            'port' => env('MODULE8A_DB_PORT', '3307'),
+            'database' => env('MODULE8A_DB_DATABASE', 'orm_practice_db'),
+            'username' => env('MODULE8A_DB_USERNAME', 'module8a'),
+            'password' => env('MODULE8A_DB_PASSWORD', ''),
+            'unix_socket' => '',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => [],
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),
