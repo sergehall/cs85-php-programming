@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
     'email',
     'email_verified_at',
     'password',
+    'password_login_enabled',
     'role',
     'login_enabled',
     'github_id',
@@ -27,6 +28,7 @@ use Illuminate\Support\Str;
     'mfa_secret',
     'mfa_recovery_codes',
     'mfa_confirmed_at',
+    'mfa_last_used_time_slice',
     'first_name',
     'last_name',
     'github_profile_url',
@@ -35,7 +37,7 @@ use Illuminate\Support\Str;
     'technical_skills',
 ])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -51,6 +53,14 @@ class User extends Authenticatable
                 $user->setAttribute('login_enabled', true);
             }
         });
+
+        static::saving(function (User $user): void {
+            $email = $user->getAttribute('email');
+
+            if (is_string($email)) {
+                $user->setAttribute('email', self::normalizeEmail($email));
+            }
+        });
     }
 
     /**
@@ -63,7 +73,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'login_enabled' => 'boolean',
+            'password_login_enabled' => 'boolean',
             'mfa_confirmed_at' => 'datetime',
+            'mfa_last_used_time_slice' => 'integer',
             'mfa_recovery_codes' => 'encrypted:array',
             'mfa_secret' => 'encrypted',
             'password' => 'hashed',
@@ -83,6 +95,11 @@ class User extends Authenticatable
     public function canLogIn(): bool
     {
         return (bool) $this->getAttribute('login_enabled');
+    }
+
+    public static function normalizeEmail(string $email): string
+    {
+        return Str::lower(trim($email));
     }
 
     public function profilePhotoUrl(): ?string
