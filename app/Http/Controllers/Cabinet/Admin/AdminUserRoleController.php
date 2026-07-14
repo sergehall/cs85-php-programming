@@ -7,14 +7,19 @@ use App\Models\ActivityLog;
 use App\Models\AdminAccessRequest;
 use App\Models\User;
 use App\Services\ActivityLogger;
+use App\Services\AuthSessionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminUserRoleController extends Controller
 {
-    public function approve(Request $request, AdminAccessRequest $adminAccessRequest, ActivityLogger $activity): RedirectResponse
-    {
+    public function approve(
+        Request $request,
+        AdminAccessRequest $adminAccessRequest,
+        ActivityLogger $activity,
+        AuthSessionService $sessions,
+    ): RedirectResponse {
         $admin = $request->user();
 
         if (! $admin instanceof User) {
@@ -43,13 +48,23 @@ class AdminUserRoleController extends Controller
             );
         });
 
+        $targetUser = $adminAccessRequest->user;
+
+        if ($targetUser instanceof User) {
+            $sessions->revokeAllSessions($targetUser);
+        }
+
         return redirect()
             ->route('cabinet.admin.users')
             ->with('status', 'Admin access granted.');
     }
 
-    public function revoke(Request $request, User $user, ActivityLogger $activity): RedirectResponse
-    {
+    public function revoke(
+        Request $request,
+        User $user,
+        ActivityLogger $activity,
+        AuthSessionService $sessions,
+    ): RedirectResponse {
         $admin = $request->user();
 
         if (! $admin instanceof User) {
@@ -85,6 +100,8 @@ class AdminUserRoleController extends Controller
                 visibility: ActivityLog::VISIBILITY_BOTH,
             );
         });
+
+        $sessions->revokeAllSessions($user);
 
         return redirect()
             ->route('cabinet.admin.users')

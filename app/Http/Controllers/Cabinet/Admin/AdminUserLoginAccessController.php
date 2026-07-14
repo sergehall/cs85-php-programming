@@ -6,14 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\User;
 use App\Services\ActivityLogger;
+use App\Services\AuthSessionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminUserLoginAccessController extends Controller
 {
-    public function disable(Request $request, User $user, ActivityLogger $activity): RedirectResponse
-    {
+    public function disable(
+        Request $request,
+        User $user,
+        ActivityLogger $activity,
+        AuthSessionService $sessions,
+    ): RedirectResponse {
         $admin = $request->user();
 
         if (! $admin instanceof User) {
@@ -39,6 +44,8 @@ class AdminUserLoginAccessController extends Controller
                 visibility: ActivityLog::VISIBILITY_BOTH,
             );
         });
+
+        $sessions->revokeAllSessions($user);
 
         return redirect()
             ->route('cabinet.admin.users')
