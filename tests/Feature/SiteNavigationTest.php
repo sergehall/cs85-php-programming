@@ -407,6 +407,7 @@ class SiteNavigationTest extends TestCase
             'coursework' => ['/cabinet/coursework', 'Coursework'],
             'security' => ['/cabinet/security', 'Security Foundation'],
             'activity' => ['/cabinet/activity', 'Activity Timeline'],
+            'ai' => ['/cabinet/ai', 'Learning assistant'],
         ];
     }
 

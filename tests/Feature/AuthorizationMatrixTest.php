@@ -51,6 +51,7 @@ class AuthorizationMatrixTest extends TestCase
             'coursework' => ['/cabinet/coursework'],
             'security' => ['/cabinet/security'],
             'activity' => ['/cabinet/activity'],
+            'ai' => ['/cabinet/ai'],
             'admin-dashboard' => ['/cabinet/admin'],
             'admin-users' => ['/cabinet/admin/users'],
         ];
