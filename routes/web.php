@@ -15,6 +15,7 @@ use App\Http\Controllers\Cabinet\Admin\AdminUserLoginAccessController;
 use App\Http\Controllers\Cabinet\Admin\AdminUserRoleController;
 use App\Http\Controllers\Cabinet\Admin\AdminUsersController;
 use App\Http\Controllers\Cabinet\AdminAccessRequestController;
+use App\Http\Controllers\Cabinet\AiAssistantController;
 use App\Http\Controllers\Cabinet\CourseworkController;
 use App\Http\Controllers\Cabinet\MfaController;
 use App\Http\Controllers\Cabinet\ProfileController;
@@ -256,7 +257,17 @@ Route::prefix('cabinet')->middleware(['auth', 'login.enabled'])->name('cabinet.'
 
     Route::get('/activity', ActivityController::class)->name('activity');
 
-    foreach (array_diff(array_keys(config('cabinet.sections', [])), ['profile', 'coursework', 'security', 'activity']) as $sectionKey) {
+    Route::get('/ai', [AiAssistantController::class, 'index'])->name('ai');
+    Route::prefix('ai')->name('ai.')->group(function () {
+        Route::post('/conversations', [AiAssistantController::class, 'store'])->name('conversations.store');
+        Route::get('/conversations/{conversation}', [AiAssistantController::class, 'show'])->name('conversations.show');
+        Route::delete('/conversations/{conversation}', [AiAssistantController::class, 'destroy'])->name('conversations.destroy');
+        Route::post('/conversations/{conversation}/messages', [AiAssistantController::class, 'stream'])
+            ->middleware('throttle:ai')
+            ->name('conversations.messages.stream');
+    });
+
+    foreach (array_diff(array_keys(config('cabinet.sections', [])), ['profile', 'coursework', 'security', 'activity', 'ai']) as $sectionKey) {
         Route::get("/{$sectionKey}", function () use ($sectionKey) {
             return view('cabinet.section', [
                 'section' => config("cabinet.sections.{$sectionKey}"),
