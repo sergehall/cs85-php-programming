@@ -17,6 +17,7 @@ return [
                 'Edit personal identity fields, portfolio links, bio, skills, and profile photo URL.',
                 'Connect GitHub, enable application MFA, and request admin access from the security page.',
                 'Review personal activity evidence without access to other users or admin tools.',
+                'Use the local AI tutor and manage personal conversation history.',
             ],
             'abilities' => [
                 'view_cabinet',
@@ -26,6 +27,7 @@ return [
                 'use_application_mfa',
                 'request_admin_access',
                 'view_own_activity',
+                'use_ai_assistant',
             ],
         ],
         'admin' => [
@@ -36,6 +38,7 @@ return [
                 'Review pending admin access requests and grant or revoke admin privileges.',
                 'Allow or block user login access without deleting the user account.',
                 'Review administrative activity signals while coursework remains in the shared coursework page.',
+                'Use the same local AI learning workspace available to standard users.',
             ],
             'abilities' => [
                 'view_cabinet',
@@ -45,6 +48,7 @@ return [
                 'revoke_admin_access',
                 'manage_user_login_access',
                 'view_admin_activity',
+                'use_ai_assistant',
             ],
         ],
     ],

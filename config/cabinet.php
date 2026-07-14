@@ -20,6 +20,7 @@ return [
             ['label' => 'Coursework', 'route' => 'cabinet.coursework', 'section' => 'coursework'],
             ['label' => 'Security', 'route' => 'cabinet.security', 'section' => 'security'],
             ['label' => 'Activity', 'route' => 'cabinet.activity', 'section' => 'activity'],
+            ['label' => 'AI Assistant', 'route' => 'cabinet.ai', 'section' => 'ai'],
         ],
 
         'admin' => [
@@ -30,7 +31,7 @@ return [
 
     'metrics' => [
         ['label' => 'Course Weeks', 'value' => '6', 'detail' => 'Summer sprint structure'],
-        ['label' => 'Tracked Areas', 'value' => '4', 'detail' => 'Profile, coursework, security, activity'],
+        ['label' => 'Tracked Areas', 'value' => '5', 'detail' => 'Profile, coursework, security, activity, AI'],
         ['label' => 'Quality Gate', 'value' => '100+', 'detail' => 'Automated tests currently passing'],
         ['label' => 'Security Controls', 'value' => 'MFA', 'detail' => 'GitHub OAuth, roles, sessions, and app MFA'],
     ],
@@ -79,6 +80,12 @@ return [
                 'status' => 'Logged',
                 'description' => 'A database-backed timeline records profile, coursework, security, MFA, and admin role events with five-at-a-time browsing.',
                 'route' => 'cabinet.activity',
+            ],
+            [
+                'title' => 'Local AI learning',
+                'status' => 'Streaming',
+                'description' => 'Multi-turn tutoring, coding, and architecture conversations run through local LM Studio models.',
+                'route' => 'cabinet.ai',
             ],
         ],
         'activity' => [
@@ -174,6 +181,28 @@ return [
                 ['label' => 'Create activity_logs migration', 'status' => 'Done'],
                 ['label' => 'Filter user versus admin events', 'status' => 'Done'],
                 ['label' => 'Render database-backed activity feed', 'status' => 'Done'],
+            ],
+        ],
+
+        'ai' => [
+            'eyebrow' => 'Local AI Platform',
+            'title' => 'AI Learning Assistant',
+            'description' => 'Private multi-turn conversations routed to specialized local models through LM Studio.',
+            'summary' => [
+                ['label' => 'Provider', 'value' => 'LM Studio'],
+                ['label' => 'History', 'value' => 'Multi-turn'],
+                ['label' => 'Delivery', 'value' => 'Streaming'],
+                ['label' => 'Access', 'value' => 'User/Admin'],
+            ],
+            'panels' => [
+                ['title' => 'Learning modes', 'items' => ['General tutor', 'Coding assistant', 'Architecture advisor']],
+                ['title' => 'Local-first', 'items' => ['Server-side provider calls', 'Database conversation history', 'No cloud fallback']],
+                ['title' => 'Safety boundaries', 'items' => ['Escaped output', 'Rate limiting', 'Read-only allowlisted course tools']],
+            ],
+            'tasks' => [
+                ['label' => 'Select a learning mode', 'status' => 'Ready'],
+                ['label' => 'Start a conversation', 'status' => 'Ready'],
+                ['label' => 'Load the configured LM Studio model', 'status' => 'Local setup'],
             ],
         ],
     ],
