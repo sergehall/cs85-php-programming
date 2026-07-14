@@ -4,6 +4,7 @@ use App\Http\Controllers\Assignments\AssignmentPhpPageController;
 use App\Http\Controllers\Assignments\Module1Assignment1AController;
 use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
 use App\Http\Controllers\Assignments\Module8aDatabaseEnvironmentController;
+use App\Http\Controllers\Assignments\Module8bInventoryController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\MfaChallengeController;
@@ -46,6 +47,11 @@ Route::get('/assignments/module8a/database-environment.php', [Module8aDatabaseEn
 Route::post('/assignments/module8a/database-environment.php', [Module8aDatabaseEnvironmentController::class, 'test'])
     ->middleware('throttle:10,1')
     ->name('assignments.module8a.database.test');
+
+Route::get('/inventory', [Module8bInventoryController::class, 'index'])
+    ->name('inventory.index');
+Route::redirect('/assignments/module8b', '/inventory');
+Route::redirect('/assignments/module8b/inventory', '/inventory');
 
 $phpAssignments = [
     'module2a/price_engine.php' => 'module2a/price_engine.php',
