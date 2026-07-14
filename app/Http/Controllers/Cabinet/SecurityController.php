@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminAccessRequest;
 use App\Services\QrCodeRenderer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 
@@ -20,6 +21,12 @@ class SecurityController extends Controller
         $adminAccessRequest = $user
             ? AdminAccessRequest::query()->where('user_id', $user->getKey())->first()
             : null;
+        $activeSessions = $user && config('session.driver') === 'database'
+            ? DB::table((string) config('session.table', 'sessions'))
+                ->where('user_id', $user->getKey())
+                ->orderByDesc('last_activity')
+                ->get()
+            : collect();
 
         return view('cabinet.security', [
             'section' => config('cabinet.sections.security'),
@@ -34,6 +41,8 @@ class SecurityController extends Controller
             'githubConfigured' => $githubConfigured,
             'githubConnected' => $githubConnected,
             'githubRedirectRouteReady' => Route::has('auth.github.redirect'),
+            'activeSessions' => $activeSessions,
+            'currentSessionId' => $request->session()->getId(),
             'checks' => [
                 [
                     'label' => 'Session authentication',

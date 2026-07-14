@@ -106,13 +106,10 @@
                         </form>
                     </div>
                 @elseif ($user->hasMfaEnabled())
-                    <form class="mt-5 grid gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end" method="POST" action="{{ route('cabinet.security.mfa.destroy') }}">
+                    <form class="mt-5 grid gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4" method="POST" action="{{ route('cabinet.security.mfa.destroy') }}">
                         @csrf
                         @method('DELETE')
-                        <label class="grid gap-2 text-sm font-bold text-slate-700">
-                            Authenticator or recovery code
-                            <input class="rounded-lg border border-stone-300 px-3 py-3 font-normal text-slate-950 outline-none transition focus:border-teal-700" name="code" type="text" autocomplete="one-time-code" required>
-                        </label>
+                        <p class="text-sm leading-6 text-slate-600">Disabling MFA requires a recent MFA step-up confirmation and revokes every other active session.</p>
                         <button class="rounded-lg border border-orange-300 bg-white px-4 py-3 text-sm font-bold text-orange-700 transition hover:bg-orange-50" type="submit">
                             Disable MFA
                         </button>
@@ -129,6 +126,60 @@
                         </div>
                     </dl>
                 @endif
+            </article>
+
+            <article class="rounded-lg border border-stone-300 bg-white p-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-950">Password</h2>
+                    <p class="mt-2 leading-7 text-slate-600">Set a strong password and revoke every other signed-in session. A recent security confirmation is required.</p>
+                </div>
+                <form class="mt-5 grid gap-3 md:grid-cols-2" method="POST" action="{{ route('cabinet.security.password.update') }}">
+                    @csrf
+                    @method('PUT')
+                    <label class="grid gap-2 text-sm font-bold text-slate-700">New password
+                        <input class="rounded-lg border border-stone-300 px-3 py-3 font-normal" name="password" type="password" autocomplete="new-password" required>
+                    </label>
+                    <label class="grid gap-2 text-sm font-bold text-slate-700">Confirm new password
+                        <input class="rounded-lg border border-stone-300 px-3 py-3 font-normal" name="password_confirmation" type="password" autocomplete="new-password" required>
+                    </label>
+                    @error('password')<p class="text-sm font-bold text-orange-700 md:col-span-2">{{ $message }}</p>@enderror
+                    <button class="rounded-lg bg-teal-800 px-4 py-3 text-sm font-bold text-white md:col-span-2" type="submit">Update password</button>
+                </form>
+            </article>
+
+            <article class="rounded-lg border border-stone-300 bg-white p-6">
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-950">Active sessions</h2>
+                        <p class="mt-2 leading-7 text-slate-600">Review signed-in devices and revoke sessions you no longer recognize.</p>
+                    </div>
+                    <form method="POST" action="{{ route('cabinet.security.sessions.destroy-others') }}">
+                        @csrf
+                        @method('DELETE')
+                        <button class="rounded-lg border border-orange-300 bg-white px-4 py-3 text-sm font-bold text-orange-700" type="submit">Revoke other sessions</button>
+                    </form>
+                </div>
+                <div class="mt-5 grid gap-3">
+                    @forelse ($activeSessions as $activeSession)
+                        <div class="grid gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+                            <div class="min-w-0">
+                                <p class="truncate text-sm font-bold text-slate-950">{{ $activeSession->user_agent ?: 'Unknown device' }}</p>
+                                <p class="mt-1 text-xs font-bold text-slate-500">{{ $activeSession->ip_address ?: 'Unknown IP' }} · active {{ \Illuminate\Support\Carbon::createFromTimestamp($activeSession->last_activity)->diffForHumans() }}</p>
+                            </div>
+                            @if ($activeSession->id === $currentSessionId)
+                                <span class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800">Current session</span>
+                            @else
+                                <form method="POST" action="{{ route('cabinet.security.sessions.destroy', $activeSession->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="rounded-lg border border-orange-300 bg-white px-3 py-2 text-xs font-bold text-orange-700" type="submit">Revoke</button>
+                                </form>
+                            @endif
+                        </div>
+                    @empty
+                        <p class="rounded-lg border border-stone-200 bg-stone-50 p-4 text-sm text-slate-600">No persisted database sessions are available to display.</p>
+                    @endforelse
+                </div>
             </article>
 
             <article class="rounded-lg border border-stone-300 bg-white p-6">
