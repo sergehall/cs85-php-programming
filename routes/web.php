@@ -86,6 +86,79 @@ Route::prefix('assignments/module7a')->name('assignments.module7a.')->group(func
     })->where('name', '[A-Za-z]+(?:-[A-Za-z]+)*')->name('greet');
 });
 
+// Assignment 7B is also a complete Laravel project. These routes mount its
+// presentation inside the coursework roadmap without changing its standalone URLs.
+$module7bHobbies = [
+    1 => [
+        'id' => 1,
+        'name' => 'Photography',
+        'eyebrow' => 'Creative practice',
+        'description' => 'I create portraits and visual stories through my SERGIOARTG photography work.',
+        'why_i_like_it' => 'Photography helps me combine technical camera skills with observation, timing, and communication.',
+        'detail' => 'I enjoy shaping light, directing a portrait session, and refining the final image so it communicates a clear mood.',
+        'icon' => 'camera',
+    ],
+    2 => [
+        'id' => 2,
+        'name' => 'Web Development',
+        'eyebrow' => 'Continuous learning',
+        'description' => 'I build web experiences and study how frontend and backend systems work together.',
+        'why_i_like_it' => 'Web development gives me a practical way to turn an idea into something useful that other people can interact with.',
+        'detail' => 'My current focus includes PHP, Laravel, accessible interfaces, secure application structure, and maintainable code.',
+        'icon' => 'code',
+    ],
+    3 => [
+        'id' => 3,
+        'name' => 'Technology Projects',
+        'eyebrow' => 'Hands-on exploration',
+        'description' => 'I like experimenting with software tools and connecting small technical ideas into complete projects.',
+        'why_i_like_it' => 'Personal projects make abstract concepts easier to understand because every decision produces a visible result.',
+        'detail' => 'I use these experiments to practice debugging, version control, documentation, and thoughtful product presentation.',
+        'icon' => 'spark',
+    ],
+];
+
+Route::prefix('assignments/module7b')->name('assignments.module7b.')->group(function () use ($module7bHobbies) {
+    $sharedViewData = [
+        'embedded' => true,
+        'layout' => 'module7b::layouts.app',
+        'routePrefix' => 'assignments.module7b.',
+    ];
+
+    Route::get('/', function () use ($sharedViewData) {
+        return view()->file(base_path('assignments/module7b/resources/views/home.blade.php'), [
+            ...$sharedViewData,
+            'name' => 'Siarhei Hancharou',
+            'title' => 'Welcome to My Personal Route Lab',
+        ]);
+    })->name('home');
+
+    Route::get('/about', function () use ($sharedViewData) {
+        return view()->file(base_path('assignments/module7b/resources/views/about.blade.php'), [
+            ...$sharedViewData,
+            'age' => 'Prefer not to disclose',
+            'school' => 'Santa Monica College',
+            'major' => 'Web Development (A.S.)',
+        ]);
+    })->name('about');
+
+    Route::get('/hobbies', function () use ($module7bHobbies, $sharedViewData) {
+        return view()->file(base_path('assignments/module7b/resources/views/hobbies/index.blade.php'), [
+            ...$sharedViewData,
+            'hobbies' => $module7bHobbies,
+        ]);
+    })->name('hobbies.index');
+
+    Route::get('/hobbies/{id}', function (int $id) use ($module7bHobbies, $sharedViewData) {
+        abort_unless(isset($module7bHobbies[$id]), 404, 'Hobby not found');
+
+        return view()->file(base_path('assignments/module7b/resources/views/hobbies/show.blade.php'), [
+            ...$sharedViewData,
+            'hobby' => $module7bHobbies[$id],
+        ]);
+    })->whereNumber('id')->name('hobbies.show');
+});
+
 Route::get('/roadmap/{module}', function (string $module) {
     $modules = collect(config('course.modules'));
     $selectedModule = $modules->firstWhere('slug', $module);

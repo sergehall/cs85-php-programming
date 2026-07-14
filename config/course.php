@@ -216,12 +216,22 @@ return [
                     'url' => '/assignments/module7a',
                     'source' => 'assignments/module7a/routes/web.php',
                 ],
+                [
+                    'label' => 'Assignment 7B',
+                    'title' => 'Basic Routing',
+                    'description' => 'Build a four-page personal Laravel website with closure and controller routes, a shared Blade layout, named navigation, a dynamic hobby parameter, and a custom 404 response.',
+                    'status' => 'Ready',
+                    'type' => 'Laravel MVC',
+                    'url' => '/assignments/module7b',
+                    'source' => 'assignments/module7b/routes/web.php',
+                ],
             ],
             'resources' => ['Routes', 'Controllers', 'Blade layouts'],
             'notes' => [
                 'This is the bridge from PHP fundamentals into a real Laravel application.',
                 'Assignment 7A is a standalone Laravel application nested inside the coursework repository and mounted into the Module 7 roadmap.',
                 'The required /hello and /greet/{name} routes are documented and protected by feature tests.',
+                'Assignment 7B expands the routing exercise into a personal four-page site with closures, a controller, reusable Blade templates, and named navigation.',
             ],
         ],
         [
