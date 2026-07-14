@@ -3,6 +3,7 @@
 use App\Http\Controllers\Assignments\AssignmentPhpPageController;
 use App\Http\Controllers\Assignments\Module1Assignment1AController;
 use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
+use App\Http\Controllers\Assignments\Module8aDatabaseEnvironmentController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\MfaChallengeController;
@@ -39,6 +40,12 @@ Route::get('/roadmap/module-1/assignment-1a', Module1Assignment1AController::cla
 
 Route::get('/roadmap/module-2/cosmic-calendar', Module2BCosmicCalendarController::class)
     ->name('assignments.module2.cosmic-calendar');
+
+Route::get('/assignments/module8a/database-environment.php', [Module8aDatabaseEnvironmentController::class, 'show'])
+    ->name('assignments.module8a.database.show');
+Route::post('/assignments/module8a/database-environment.php', [Module8aDatabaseEnvironmentController::class, 'test'])
+    ->middleware('throttle:10,1')
+    ->name('assignments.module8a.database.test');
 
 $phpAssignments = [
     'module2a/price_engine.php' => 'module2a/price_engine.php',
