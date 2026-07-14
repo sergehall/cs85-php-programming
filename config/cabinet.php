@@ -147,18 +147,18 @@ return [
             'summary' => [
                 ['label' => 'Auth', 'value' => 'Active'],
                 ['label' => 'Roles', 'value' => 'Configured'],
-                ['label' => 'Policies', 'value' => 'Planned'],
-                ['label' => 'Audit', 'value' => 'Prepared'],
+                ['label' => 'Step-up', 'value' => 'Active'],
+                ['label' => 'Audit', 'value' => 'Active'],
             ],
             'panels' => [
                 ['title' => 'Current controls', 'items' => ['Session auth protects cabinet routes', 'Admin-only middleware', 'GitHub OAuth account connection', 'CSRF-protected Laravel forms']],
-                ['title' => 'Application MFA', 'items' => ['Authenticator app codes protect cabinet login', 'Recovery codes are generated during setup', 'MFA secrets are encrypted at rest', 'Sensitive actions need confirmation later']],
-                ['title' => 'Current protection', 'items' => ['GitHub OAuth uses state validation', 'GitHub linking checks account ownership', 'Secrets stay in .env', 'CI blocks hardcoded APP_KEY in workflows']],
+                ['title' => 'Application MFA', 'items' => ['Authenticator app codes protect cabinet login', 'Recovery codes are generated during setup', 'MFA secrets are encrypted at rest', 'Sensitive actions require recent confirmation']],
+                ['title' => 'Current protection', 'items' => ['GitHub OAuth uses state validation and verified primary email', 'GitHub linking requires explicit ownership confirmation', 'Auth endpoints are rate limited', 'Security events use timeline and rotating logs']],
             ],
             'tasks' => [
                 ['label' => 'Move cabinet behind auth middleware', 'status' => 'Done'],
                 ['label' => 'Add GitHub account connection', 'status' => 'Done'],
-                ['label' => 'Record sensitive account activity', 'status' => 'Planned'],
+                ['label' => 'Record sensitive account activity', 'status' => 'Done'],
             ],
         ],
 

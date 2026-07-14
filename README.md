@@ -255,6 +255,10 @@ Supported entry points:
 - Email/password registration through `/register`
 - Email/password login through `/login`
 - GitHub OAuth through `/auth/github/redirect`
+- Email verification through signed, expiring links
+- Password recovery through `/forgot-password`
+- TOTP MFA and one-time recovery codes
+- Recent-authentication step-up for sensitive account and admin actions
 - Logout through `POST /logout`
 
 GitHub OAuth supports two flows:
@@ -262,9 +266,22 @@ GitHub OAuth supports two flows:
 - guest sign-in from `/login`
 - authenticated account connection from `/cabinet/security`
 
-GitHub account MFA is managed inside GitHub. This app can connect the GitHub
-identity provider, but GitHub OAuth does not expose a personal 2FA-enabled flag
-to this application. App-level MFA is tracked as a future Laravel feature.
+GitHub account MFA is managed inside GitHub. The application also enforces its
+own TOTP MFA challenge after either password or GitHub first-factor login when
+application MFA is enabled. GitHub identities must be linked explicitly from an
+authenticated, recently confirmed session; matching an existing email address
+does not automatically link accounts.
+
+Authentication abuse controls include named rate limiters for login, MFA,
+registration, recovery, OAuth, and sensitive actions. Security events are
+written to the user/admin activity timeline and to the dedicated rotating
+`storage/logs/security.log` channel without passwords, OAuth tokens, MFA codes,
+or recovery codes.
+
+The security page supports password changes, active database-session review,
+individual session revocation, and revocation of every other session. Password,
+MFA, role, login-access, and identity-provider changes rotate remember tokens or
+revoke affected sessions as appropriate.
 
 Roles are configured in `config/navigation.php` and enforced for admin routes
 with the `admin` middleware.
@@ -533,7 +550,14 @@ Current controls:
 
 - authenticated cabinet security hub at `/cabinet/security`
 - GitHub OAuth login and account linking with state validation
+- explicit GitHub linking with verified primary email checks
 - GitHub account ownership checks before linking an authenticated user
+- email verification and password reset notifications
+- TOTP MFA challenge TTL, replay protection, and hashed one-time recovery codes
+- recent password, MFA, or GitHub step-up for sensitive changes
+- per-flow rate limiting for authentication and recovery endpoints
+- active-session review and revocation
+- structured security audit events plus a dedicated rotating security log
 - strict Content Security Policy with `default-src 'none'`
 - `script-src 'self'` and `style-src 'self'`
 - no `unsafe-inline` or `unsafe-eval` in production policy
@@ -564,6 +588,11 @@ The test suite currently verifies:
 - Module 2A pricing rules and escaping behavior
 - security headers and CSP expectations
 - registration, login, logout, GitHub OAuth, and GitHub account linking behavior
+- email verification, password reset/change, and email normalization
+- login/MFA rate limiting and failed-attempt audit behavior
+- MFA challenge expiry, TOTP replay resistance, and recovery-code consumption
+- recent-authentication step-up for security and admin mutations
+- session ownership checks and session revocation
 - guests are redirected from protected cabinet pages
 - user and admin cabinet access boundaries
 - standard users cannot access admin cabinet pages
