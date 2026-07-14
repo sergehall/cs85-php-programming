@@ -204,11 +204,25 @@ return [
             'start' => 'Mon, Jul 13, 2026',
             'title' => 'Intro to Laravel',
             'description' => 'Move deeper into Laravel routes, controllers, Blade views, layouts, and framework conventions.',
-            'status' => 'Scheduled',
+            'status' => 'Open',
             'accent' => 'coral',
-            'assignments' => [],
+            'assignments' => [
+                [
+                    'label' => 'Assignment 7A',
+                    'title' => 'Hello Route',
+                    'description' => 'Create a standalone Laravel project, define static and parameterized routes, document the framework structure, and verify the work with tests and Git evidence.',
+                    'status' => 'Ready',
+                    'type' => 'Laravel Routing',
+                    'url' => '/assignments/module7a',
+                    'source' => 'assignments/module7a/routes/web.php',
+                ],
+            ],
             'resources' => ['Routes', 'Controllers', 'Blade layouts'],
-            'notes' => ['This is the bridge from PHP fundamentals into a real Laravel application.'],
+            'notes' => [
+                'This is the bridge from PHP fundamentals into a real Laravel application.',
+                'Assignment 7A is a standalone Laravel application nested inside the coursework repository and mounted into the Module 7 roadmap.',
+                'The required /hello and /greet/{name} routes are documented and protected by feature tests.',
+            ],
         ],
         [
             'module' => 'Module 8',

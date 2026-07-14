@@ -61,6 +61,31 @@ foreach ($phpAssignments as $publicPath => $assignmentPath) {
         ->defaults('assignmentPath', $assignmentPath);
 }
 
+Route::prefix('assignments/module7a')->name('assignments.module7a.')->group(function () {
+    Route::get('/', function () {
+        return view()->file(base_path('assignments/module7a/resources/views/welcome.blade.php'), [
+            'embedded' => true,
+        ]);
+    })->name('index');
+
+    Route::get('/hello', function () {
+        return 'Hello from Laravel!';
+    })->name('hello');
+
+    Route::get('/greet/{name}', function (string $name) {
+        $displayName = str_replace('-', ' ', ucwords(strtolower($name), '-'));
+
+        if (strtolower($name) === 'vicky-seno') {
+            return view()->file(base_path('assignments/module7a/resources/views/greeting.blade.php'), [
+                'assignmentBase' => '/assignments/module7a',
+                'displayName' => $displayName,
+            ]);
+        }
+
+        return 'Hello, '.$displayName.'!';
+    })->where('name', '[A-Za-z]+(?:-[A-Za-z]+)*')->name('greet');
+});
+
 Route::get('/roadmap/{module}', function (string $module) {
     $modules = collect(config('course.modules'));
     $selectedModule = $modules->firstWhere('slug', $module);
