@@ -99,6 +99,7 @@ class ActivityTimelineTest extends TestCase
         $accessRequest = AdminAccessRequest::factory()->create(['user_id' => $user->id]);
 
         $this->actingAs($admin)
+            ->withSecurityConfirmation($admin)
             ->patch(route('cabinet.admin.access-requests.approve', $accessRequest))
             ->assertRedirect(route('cabinet.admin.users'));
 
@@ -111,6 +112,7 @@ class ActivityTimelineTest extends TestCase
         ]);
 
         $this->actingAs($admin)
+            ->withSecurityConfirmation($admin)
             ->patch(route('cabinet.admin.users.revoke-admin', $user))
             ->assertRedirect(route('cabinet.admin.users'));
 

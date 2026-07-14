@@ -101,7 +101,7 @@ class GitHubOAuthSecurityTest extends TestCase
         $this->assertDatabaseMissing('users', ['github_id' => '12345']);
     }
 
-    public function test_github_email_match_does_not_downgrade_existing_admin_role(): void
+    public function test_github_email_match_requires_explicit_linking_for_existing_admin(): void
     {
         User::factory()->create([
             'email' => 'admin@example.com',
@@ -117,17 +117,21 @@ class GitHubOAuthSecurityTest extends TestCase
                 'email' => 'admin@example.com',
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/12345',
             ], 200),
+            'api.github.com/user/emails' => Http::response([
+                ['email' => 'admin@example.com', 'primary' => true, 'verified' => true],
+            ], 200),
         ]);
 
         $response = $this
             ->withSession(['oauth.github_state' => 'known-state'])
             ->get('/auth/github/callback?state=known-state&code=github-code');
 
-        $response->assertRedirect('/cabinet');
-        $this->assertAuthenticated();
+        $response->assertRedirect('/login');
+        $response->assertSessionHasErrors('github');
+        $this->assertGuest();
         $this->assertDatabaseHas('users', [
             'email' => 'admin@example.com',
-            'github_id' => '12345',
+            'github_id' => null,
             'role' => 'admin',
         ]);
     }
@@ -136,6 +140,7 @@ class GitHubOAuthSecurityTest extends TestCase
     {
         User::factory()->create([
             'email' => 'blocked@example.com',
+            'github_id' => '12345',
             'login_enabled' => false,
         ]);
 
@@ -147,6 +152,9 @@ class GitHubOAuthSecurityTest extends TestCase
                 'name' => 'Blocked User',
                 'email' => 'blocked@example.com',
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/12345',
+            ], 200),
+            'api.github.com/user/emails' => Http::response([
+                ['email' => 'blocked@example.com', 'primary' => true, 'verified' => true],
             ], 200),
         ]);
 
@@ -180,6 +188,9 @@ class GitHubOAuthSecurityTest extends TestCase
                 'email' => 'email-owner@example.com',
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/12345',
             ], 200),
+            'api.github.com/user/emails' => Http::response([
+                ['email' => 'email-owner@example.com', 'primary' => true, 'verified' => true],
+            ], 200),
         ]);
 
         $response = $this
@@ -206,11 +217,58 @@ class GitHubOAuthSecurityTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/auth/github/redirect');
+        $response = $this->actingAs($user)
+            ->withSecurityConfirmation($user)
+            ->get('/auth/github/redirect');
 
         $response->assertRedirectContains('https://github.com/login/oauth/authorize');
         $response->assertSessionHas('oauth.github_state');
         $response->assertSessionHas('oauth.github_link_user_id', $user->getKey());
+    }
+
+    public function test_authenticated_github_link_requires_recent_step_up(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/auth/github/redirect')
+            ->assertRedirect(route('security.confirm'));
+    }
+
+    public function test_oauth_only_user_can_complete_step_up_with_matching_github_identity(): void
+    {
+        $user = User::factory()->create([
+            'github_id' => '12345',
+            'password_login_enabled' => false,
+        ]);
+
+        Http::fake([
+            'github.com/login/oauth/access_token' => Http::response(['access_token' => 'github-token'], 200),
+            'api.github.com/user' => Http::response([
+                'id' => 12345,
+                'login' => 'sergehall',
+                'name' => 'Serge Hall',
+                'avatar_url' => 'https://avatars.githubusercontent.com/u/12345',
+            ], 200),
+            'api.github.com/user/emails' => Http::response([
+                ['email' => $user->email, 'primary' => true, 'verified' => true],
+            ], 200),
+        ]);
+
+        $this->actingAs($user)
+            ->withSession([
+                'oauth.github_state' => 'known-state',
+                'oauth.github_purpose' => 'step_up',
+                'oauth.github_link_user_id' => $user->getKey(),
+            ])
+            ->get('/auth/github/callback?state=known-state&code=github-code')
+            ->assertRedirect(route('cabinet.security'))
+            ->assertSessionHas('auth.security_confirmation.method', 'github');
+
+        $this->assertDatabaseHas('activity_logs', [
+            'subject_user_id' => $user->id,
+            'event' => 'security.step_up_succeeded',
+        ]);
     }
 
     public function test_authenticated_user_can_link_github_identity_without_replacing_local_email(): void
@@ -228,10 +286,14 @@ class GitHubOAuthSecurityTest extends TestCase
                 'email' => 'github@example.com',
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/67890',
             ], 200),
+            'api.github.com/user/emails' => Http::response([
+                ['email' => 'github@example.com', 'primary' => true, 'verified' => true],
+            ], 200),
         ]);
 
         $response = $this
             ->actingAs($user)
+            ->withSecurityConfirmation($user)
             ->withSession([
                 'oauth.github_state' => 'known-state',
                 'oauth.github_link_user_id' => $user->getKey(),
@@ -269,10 +331,14 @@ class GitHubOAuthSecurityTest extends TestCase
                 'email' => 'github@example.com',
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/67890',
             ], 200),
+            'api.github.com/user/emails' => Http::response([
+                ['email' => 'github@example.com', 'primary' => true, 'verified' => true],
+            ], 200),
         ]);
 
         $response = $this
             ->actingAs($user)
+            ->withSecurityConfirmation($user)
             ->withSession([
                 'oauth.github_state' => 'known-state',
                 'oauth.github_link_user_id' => $user->getKey(),

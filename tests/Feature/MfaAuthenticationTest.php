@@ -25,6 +25,7 @@ class MfaAuthenticationTest extends TestCase
         $totp = app(TotpAuthenticator::class);
 
         $this->actingAs($user)
+            ->withSecurityConfirmation($user)
             ->post(route('cabinet.security.mfa.start'))
             ->assertRedirect(route('cabinet.security'))
             ->assertSessionHas('mfa_setup.secret');
@@ -40,6 +41,7 @@ class MfaAuthenticationTest extends TestCase
             ->assertDontSee('Security roadmap');
 
         $this->actingAs($user)
+            ->withSecurityConfirmation($user)
             ->post(route('cabinet.security.mfa.confirm'), [
                 'code' => $totp->code($secret),
             ])
@@ -57,7 +59,7 @@ class MfaAuthenticationTest extends TestCase
         ]);
     }
 
-    public function test_user_can_disable_application_mfa_with_authenticator_code(): void
+    public function test_user_can_disable_application_mfa_after_recent_mfa_step_up(): void
     {
         $totp = app(TotpAuthenticator::class);
         $secret = $totp->generateSecret();
@@ -68,9 +70,8 @@ class MfaAuthenticationTest extends TestCase
         ]);
 
         $this->actingAs($user)
-            ->delete(route('cabinet.security.mfa.destroy'), [
-                'code' => $totp->code($secret),
-            ])
+            ->withSecurityConfirmation($user, 'mfa')
+            ->delete(route('cabinet.security.mfa.destroy'))
             ->assertRedirect(route('cabinet.security'))
             ->assertSessionHas('status', 'Application MFA disabled.');
 
@@ -127,7 +128,10 @@ class MfaAuthenticationTest extends TestCase
             'mfa_confirmed_at' => now(),
         ]);
 
-        $this->withSession(['auth.mfa.user_id' => $user->id])
+        $this->withSession([
+            'auth.mfa.user_id' => $user->id,
+            'auth.mfa.started_at' => now()->getTimestamp(),
+        ])
             ->post(route('mfa.challenge.store'), [
                 'code' => '000000',
             ])
@@ -146,7 +150,10 @@ class MfaAuthenticationTest extends TestCase
             'mfa_confirmed_at' => now(),
         ]);
 
-        $this->withSession(['auth.mfa.user_id' => $user->id])
+        $this->withSession([
+            'auth.mfa.user_id' => $user->id,
+            'auth.mfa.started_at' => now()->getTimestamp(),
+        ])
             ->post(route('mfa.challenge.store'), [
                 'code' => strtolower($recoveryCode),
             ])
@@ -156,7 +163,7 @@ class MfaAuthenticationTest extends TestCase
         $this->assertSame([], $user->refresh()->mfa_recovery_codes);
     }
 
-    public function test_user_can_disable_mfa_with_valid_code(): void
+    public function test_mfa_disable_requires_recent_security_confirmation(): void
     {
         $totp = app(TotpAuthenticator::class);
         $secret = $totp->generateSecret();
@@ -167,15 +174,13 @@ class MfaAuthenticationTest extends TestCase
         ]);
 
         $this->actingAs($user)
-            ->delete(route('cabinet.security.mfa.destroy'), [
-                'code' => $totp->code($secret),
-            ])
-            ->assertRedirect(route('cabinet.security'));
+            ->delete(route('cabinet.security.mfa.destroy'))
+            ->assertRedirect(route('security.confirm'));
 
         $user->refresh();
 
-        $this->assertFalse($user->hasMfaEnabled());
-        $this->assertDatabaseHas('activity_logs', [
+        $this->assertTrue($user->hasMfaEnabled());
+        $this->assertDatabaseMissing('activity_logs', [
             'subject_user_id' => $user->id,
             'event' => 'security.mfa_disabled',
         ]);

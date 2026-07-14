@@ -74,6 +74,7 @@ class AdminAccessRequestTest extends TestCase
         $accessRequest = AdminAccessRequest::factory()->create(['user_id' => $requester->id]);
 
         $response = $this->actingAs($admin)
+            ->withSecurityConfirmation($admin)
             ->patch(route('cabinet.admin.access-requests.approve', $accessRequest));
 
         $response->assertRedirect(route('cabinet.admin.users'));
@@ -158,6 +159,7 @@ class AdminAccessRequestTest extends TestCase
         $user = User::factory()->create(['role' => 'user', 'name' => 'Blocked Student']);
 
         $disableResponse = $this->actingAs($admin)
+            ->withSecurityConfirmation($admin)
             ->patch(route('cabinet.admin.users.disable-login', $user));
 
         $disableResponse->assertRedirect(route('cabinet.admin.users'));
@@ -181,6 +183,7 @@ class AdminAccessRequestTest extends TestCase
             ->assertSee('Allow login');
 
         $enableResponse = $this->actingAs($admin)
+            ->withSecurityConfirmation($admin)
             ->patch(route('cabinet.admin.users.enable-login', $user));
 
         $enableResponse->assertRedirect(route('cabinet.admin.users'));
@@ -203,6 +206,7 @@ class AdminAccessRequestTest extends TestCase
         $targetAdmin = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($admin)
+            ->withSecurityConfirmation($admin)
             ->patch(route('cabinet.admin.users.disable-login', $targetAdmin));
 
         $response->assertRedirect(route('cabinet.admin.users'));
@@ -219,6 +223,7 @@ class AdminAccessRequestTest extends TestCase
         $target = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($admin)
+            ->withSecurityConfirmation($admin)
             ->patch(route('cabinet.admin.users.revoke-admin', $target));
 
         $response->assertRedirect(route('cabinet.admin.users'));
@@ -239,6 +244,7 @@ class AdminAccessRequestTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($admin)
+            ->withSecurityConfirmation($admin)
             ->patch(route('cabinet.admin.users.revoke-admin', $admin));
 
         $response->assertRedirect(route('cabinet.admin.users'));
