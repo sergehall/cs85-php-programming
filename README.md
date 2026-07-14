@@ -36,6 +36,7 @@ The project currently includes:
 - Docker Compose services for MySQL, Redis, Mailpit, and Adminer.
 - Assignment pages served through Laravel routes.
 - PHPUnit feature and unit tests.
+- A local-first AI learning assistant with persistent multi-turn conversations, streaming LM Studio responses, specialized model routing, and read-only course tools.
 - Laravel Pint, Larastan/PHPStan, Prettier, Vite build checks, and GitHub
   Actions CI.
 
@@ -333,8 +334,17 @@ GITHUB_REDIRECT_URI="${APP_URL}/auth/github/callback"
 Final project AI integration:
 
 ```dotenv
-OPENAI_API_KEY=
+AI_PROVIDER=lm_studio
+AI_LM_STUDIO_BASE_URL=http://127.0.0.1:1234/v1
+AI_LM_STUDIO_API_KEY=lm-studio
 ```
+
+Start the LM Studio local server on port `1234` and load the model configured
+for the selected General, Coding, or Architecture mode. Follow the complete
+[local AI setup guide](docs/architecture/ai-local-setup.md) for required LM
+Studio settings, model verification, startup order, streaming checks, and
+troubleshooting. The rest of the Laravel application continues to work when LM
+Studio is offline.
 
 Never commit real secrets.
 
