@@ -6,9 +6,15 @@ use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
 use App\Http\Controllers\Assignments\Module8aDatabaseEnvironmentController;
 use App\Http\Controllers\Assignments\Module8bInventoryController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\MfaChallengeController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\SecurityConfirmationController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Cabinet\ActivityController;
 use App\Http\Controllers\Cabinet\Admin\AdminDashboardController;
 use App\Http\Controllers\Cabinet\Admin\AdminUserLoginAccessController;
@@ -18,8 +24,10 @@ use App\Http\Controllers\Cabinet\AdminAccessRequestController;
 use App\Http\Controllers\Cabinet\AiAssistantController;
 use App\Http\Controllers\Cabinet\CourseworkController;
 use App\Http\Controllers\Cabinet\MfaController;
+use App\Http\Controllers\Cabinet\PasswordController;
 use App\Http\Controllers\Cabinet\ProfileController;
 use App\Http\Controllers\Cabinet\SecurityController;
+use App\Http\Controllers\Cabinet\SessionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -200,25 +208,61 @@ Route::get('/contact', function () {
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('throttle:auth-login')
+        ->name('login.store');
 
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
+    Route::post('/register', [RegisteredUserController::class, 'store'])
+        ->middleware('throttle:auth-registration')
+        ->name('register.store');
+
+    Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->middleware('throttle:auth-recovery')
+        ->name('password.email');
+    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('/reset-password', [NewPasswordController::class, 'store'])
+        ->middleware('throttle:auth-recovery')
+        ->name('password.store');
 });
 
 Route::get('/mfa-challenge', [MfaChallengeController::class, 'create'])->name('mfa.challenge');
-Route::post('/mfa-challenge', [MfaChallengeController::class, 'store'])->name('mfa.challenge.store');
+Route::post('/mfa-challenge', [MfaChallengeController::class, 'store'])
+    ->middleware('throttle:auth-mfa')
+    ->name('mfa.challenge.store');
 
-Route::get('/auth/github/redirect', [GitHubOAuthController::class, 'redirect'])->name('auth.github.redirect');
-Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])->name('auth.github.callback');
+Route::get('/auth/github/redirect', [GitHubOAuthController::class, 'redirect'])
+    ->middleware('throttle:auth-oauth')
+    ->name('auth.github.redirect');
+Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])
+    ->middleware('throttle:auth-oauth')
+    ->name('auth.github.callback');
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
+Route::middleware(['auth', 'login.enabled'])->group(function () {
+    Route::get('/verify-email', EmailVerificationPromptController::class)->name('verification.notice');
+    Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+    Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+});
+
+Route::middleware(['auth', 'login.enabled', 'verified'])->group(function () {
+    Route::get('/confirm-security', [SecurityConfirmationController::class, 'create'])->name('security.confirm');
+    Route::post('/confirm-security', [SecurityConfirmationController::class, 'store'])
+        ->middleware('throttle:auth-sensitive')
+        ->name('security.confirm.store');
+});
+
 Route::redirect('/admin', '/cabinet')->name('admin.redirect');
 
-Route::prefix('cabinet')->middleware(['auth', 'login.enabled'])->name('cabinet.')->group(function () {
+Route::prefix('cabinet')->middleware(['auth', 'login.enabled', 'verified'])->name('cabinet.')->group(function () {
     Route::get('/', function (Request $request) {
         $user = $request->user();
         $configuredAccount = config('cabinet.account');
@@ -251,9 +295,25 @@ Route::prefix('cabinet')->middleware(['auth', 'login.enabled'])->name('cabinet.'
     Route::get('/coursework', CourseworkController::class)->name('coursework');
     Route::get('/security', SecurityController::class)->name('security');
     Route::post('/security/admin-access-request', AdminAccessRequestController::class)->name('security.admin-access-request');
-    Route::post('/security/mfa/start', [MfaController::class, 'start'])->name('security.mfa.start');
-    Route::post('/security/mfa/confirm', [MfaController::class, 'confirm'])->name('security.mfa.confirm');
-    Route::delete('/security/mfa', [MfaController::class, 'destroy'])->name('security.mfa.destroy');
+    Route::post('/security/mfa/start', [MfaController::class, 'start'])
+        ->middleware(['security.confirmed', 'throttle:auth-sensitive'])
+        ->name('security.mfa.start');
+    Route::post('/security/mfa/confirm', [MfaController::class, 'confirm'])
+        ->middleware(['security.confirmed', 'throttle:auth-sensitive'])
+        ->name('security.mfa.confirm');
+    Route::delete('/security/mfa', [MfaController::class, 'destroy'])
+        ->middleware(['security.confirmed', 'throttle:auth-sensitive'])
+        ->name('security.mfa.destroy');
+    Route::put('/security/password', [PasswordController::class, 'update'])
+        ->middleware(['security.confirmed', 'throttle:auth-sensitive'])
+        ->name('security.password.update');
+    Route::delete('/security/sessions', [SessionController::class, 'destroyOthers'])
+        ->middleware(['security.confirmed', 'throttle:auth-sensitive'])
+        ->name('security.sessions.destroy-others');
+    Route::delete('/security/sessions/{sessionId}', [SessionController::class, 'destroy'])
+        ->middleware(['security.confirmed', 'throttle:auth-sensitive'])
+        ->where('sessionId', '[A-Za-z0-9_-]+')
+        ->name('security.sessions.destroy');
 
     Route::get('/activity', ActivityController::class)->name('activity');
 
@@ -280,12 +340,16 @@ Route::prefix('cabinet')->middleware(['auth', 'login.enabled'])->name('cabinet.'
 
         Route::get('/users', AdminUsersController::class)->name('users');
         Route::patch('/access-requests/{adminAccessRequest}/approve', [AdminUserRoleController::class, 'approve'])
+            ->middleware('security.confirmed')
             ->name('access-requests.approve');
         Route::patch('/users/{user}/revoke-admin', [AdminUserRoleController::class, 'revoke'])
+            ->middleware('security.confirmed')
             ->name('users.revoke-admin');
         Route::patch('/users/{user}/disable-login', [AdminUserLoginAccessController::class, 'disable'])
+            ->middleware('security.confirmed')
             ->name('users.disable-login');
         Route::patch('/users/{user}/enable-login', [AdminUserLoginAccessController::class, 'enable'])
+            ->middleware('security.confirmed')
             ->name('users.enable-login');
 
         foreach (array_diff(array_keys(config('cabinet.admin.sections', [])), ['users']) as $sectionKey) {
