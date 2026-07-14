@@ -16,21 +16,26 @@ class TotpAuthenticator
 
     public function verify(string $secret, string $code, int $window = 1): bool
     {
+        return $this->matchingTimeSlice($secret, $code, $window) !== null;
+    }
+
+    public function matchingTimeSlice(string $secret, string $code, int $window = 1): ?int
+    {
         $normalizedCode = preg_replace('/\s+/', '', $code) ?? '';
 
         if (! preg_match('/^\d{6}$/', $normalizedCode)) {
-            return false;
+            return null;
         }
 
         $timeSlice = (int) floor(time() / 30);
 
         for ($offset = -$window; $offset <= $window; $offset++) {
             if (hash_equals($this->code($secret, $timeSlice + $offset), $normalizedCode)) {
-                return true;
+                return $timeSlice + $offset;
             }
         }
 
-        return false;
+        return null;
     }
 
     public function provisioningUri(string $issuer, string $accountName, string $secret): string

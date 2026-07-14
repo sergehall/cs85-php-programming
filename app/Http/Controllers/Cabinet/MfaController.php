@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\User;
 use App\Services\ActivityLogger;
+use App\Services\AuthSessionService;
 use App\Services\TotpAuthenticator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,8 +35,12 @@ class MfaController extends Controller
             ->with('status', 'Scan the MFA QR code or enter the secret manually, then confirm the six-digit code.');
     }
 
-    public function confirm(Request $request, TotpAuthenticator $totp, ActivityLogger $activity): RedirectResponse
-    {
+    public function confirm(
+        Request $request,
+        TotpAuthenticator $totp,
+        ActivityLogger $activity,
+        AuthSessionService $sessions,
+    ): RedirectResponse {
         $user = $this->authenticatedUser($request);
         $secret = $request->session()->get('mfa_setup.secret');
 
@@ -61,9 +66,13 @@ class MfaController extends Controller
             'mfa_secret' => $secret,
             'mfa_recovery_codes' => collect($recoveryCodes)->map(fn (string $code): string => Hash::make($code))->all(),
             'mfa_confirmed_at' => now(),
+            'mfa_last_used_time_slice' => $totp->matchingTimeSlice($secret, $attributes['code']),
         ])->save();
 
+        $sessions->revokeOtherSessions($request, $user);
+
         $request->session()->forget('mfa_setup');
+        $request->session()->forget('auth.security_confirmation');
         $request->session()->flash('mfa_recovery_codes', $recoveryCodes);
 
         $activity->record(
@@ -81,25 +90,22 @@ class MfaController extends Controller
             ->with('status', 'Application MFA enabled. Store your recovery codes now.');
     }
 
-    public function destroy(Request $request, TotpAuthenticator $totp, ActivityLogger $activity): RedirectResponse
-    {
+    public function destroy(
+        Request $request,
+        ActivityLogger $activity,
+        AuthSessionService $sessions,
+    ): RedirectResponse {
         $user = $this->authenticatedUser($request);
-
-        $attributes = $request->validate([
-            'code' => ['required', 'string', 'max:32'],
-        ]);
-
-        if (! $this->verifyMfaToken($user, $attributes['code'], $totp)) {
-            return redirect()
-                ->route('cabinet.security')
-                ->withErrors(['mfa' => 'The MFA code or recovery code was not valid.']);
-        }
 
         $user->forceFill([
             'mfa_secret' => null,
             'mfa_recovery_codes' => null,
             'mfa_confirmed_at' => null,
+            'mfa_last_used_time_slice' => null,
         ])->save();
+
+        $sessions->revokeOtherSessions($request, $user);
+        $request->session()->forget('auth.security_confirmation');
 
         $activity->record(
             subject: $user,
@@ -125,30 +131,6 @@ class MfaController extends Controller
         }
 
         return $user;
-    }
-
-    private function verifyMfaToken(User $user, string $token, TotpAuthenticator $totp): bool
-    {
-        if ($user->mfa_secret && $totp->verify($user->mfa_secret, $token)) {
-            return true;
-        }
-
-        $recoveryCodeHashes = $user->getAttribute('mfa_recovery_codes');
-
-        if (! is_array($recoveryCodeHashes)) {
-            return false;
-        }
-
-        foreach ($recoveryCodeHashes as $index => $hash) {
-            if (is_string($hash) && Hash::check(Str::upper(trim($token)), $hash)) {
-                unset($recoveryCodeHashes[$index]);
-                $user->forceFill(['mfa_recovery_codes' => array_values($recoveryCodeHashes)])->save();
-
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

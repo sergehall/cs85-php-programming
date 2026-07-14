@@ -5,31 +5,37 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\User;
-use App\Services\ActivityLogger;
-use App\Services\TotpAuthenticator;
+use App\Services\MfaTokenVerifier;
+use App\Services\SecurityAuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class MfaChallengeController extends Controller
 {
     public function create(Request $request): View|RedirectResponse
     {
-        if (! $request->session()->has('auth.mfa.user_id')) {
+        if (! $this->hasValidPendingChallenge($request)) {
+            $request->session()->forget('auth.mfa');
+
             return redirect()->route('login');
         }
 
         return view('auth.mfa-challenge');
     }
 
-    public function store(Request $request, TotpAuthenticator $totp, ActivityLogger $activity): RedirectResponse
+    public function store(Request $request, MfaTokenVerifier $mfa, SecurityAuditLogger $audit): RedirectResponse
     {
         $attributes = $request->validate([
             'code' => ['required', 'string', 'max:32'],
         ]);
+
+        if (! $this->hasValidPendingChallenge($request)) {
+            $request->session()->forget('auth.mfa');
+
+            return redirect()->route('login')->withErrors(['email' => 'The sign-in challenge expired. Please sign in again.']);
+        }
 
         $userId = $request->session()->get('auth.mfa.user_id');
         $user = is_numeric($userId) ? User::query()->find((int) $userId) : null;
@@ -40,7 +46,16 @@ class MfaChallengeController extends Controller
             return redirect()->route('login');
         }
 
-        if (! $this->verifyMfaToken($user, $attributes['code'], $totp)) {
+        if (! $mfa->verifyAndConsume($user, $attributes['code'])) {
+            $audit->record(
+                request: $request,
+                event: 'security.mfa_challenge_failed',
+                outcome: 'failure',
+                title: 'MFA challenge failed',
+                subject: $user,
+                description: 'A sign-in MFA challenge did not complete.',
+            );
+
             return redirect()
                 ->route('mfa.challenge')
                 ->withErrors(['code' => 'The MFA code or recovery code was not valid.']);
@@ -52,40 +67,38 @@ class MfaChallengeController extends Controller
         Auth::login($user, $remember);
         $request->session()->regenerate();
 
-        $activity->record(
+        $audit->record(
+            request: $request,
+            event: 'security.mfa_challenge_passed',
+            outcome: 'success',
+            title: 'MFA challenge completed',
             subject: $user,
             actor: $user,
-            category: 'security',
-            event: 'security.mfa_challenge_passed',
-            title: 'MFA challenge completed',
             description: 'A sign-in attempt completed the application MFA challenge.',
             visibility: ActivityLog::VISIBILITY_USER,
+            metadata: ['remembered' => $remember],
+        );
+
+        $audit->record(
+            request: $request,
+            event: 'auth.login_succeeded',
+            outcome: 'success',
+            title: 'MFA-protected sign-in completed',
+            subject: $user,
+            actor: $user,
+            description: 'A sign-in completed after successful MFA.',
+            metadata: ['provider' => 'application_mfa', 'remembered' => $remember],
         );
 
         return redirect()->intended(route('cabinet.dashboard'));
     }
 
-    private function verifyMfaToken(User $user, string $token, TotpAuthenticator $totp): bool
+    private function hasValidPendingChallenge(Request $request): bool
     {
-        if ($user->mfa_secret && $totp->verify($user->mfa_secret, $token)) {
-            return true;
-        }
+        $startedAt = $request->session()->get('auth.mfa.started_at');
 
-        $recoveryCodeHashes = $user->getAttribute('mfa_recovery_codes');
-
-        if (! is_array($recoveryCodeHashes)) {
-            return false;
-        }
-
-        foreach ($recoveryCodeHashes as $index => $hash) {
-            if (is_string($hash) && Hash::check(Str::upper(trim($token)), $hash)) {
-                unset($recoveryCodeHashes[$index]);
-                $user->forceFill(['mfa_recovery_codes' => array_values($recoveryCodeHashes)])->save();
-
-                return true;
-            }
-        }
-
-        return false;
+        return $request->session()->has('auth.mfa.user_id')
+            && is_numeric($startedAt)
+            && now()->getTimestamp() - (int) $startedAt <= (int) config('auth_security.mfa_challenge_ttl_seconds', 300);
     }
 }
