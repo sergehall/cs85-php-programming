@@ -151,6 +151,18 @@ class SiteNavigationTest extends TestCase
             ->assertSee('Hello Route')
             ->assertSee('/hello')
             ->assertSee('/greet/{name}');
+
+        $this->assertFileExists(base_path('assignments/module7b/artisan'));
+        $this->assertFileExists(base_path('assignments/module7b/routes/web.php'));
+        $this->assertFileExists(base_path('assignments/module7b/app/Http/Controllers/HobbyController.php'));
+        $this->assertFileExists(base_path('assignments/module7b/resources/views/layouts/app.blade.php'));
+        $this->assertFileExists(base_path('assignments/module7b/README.md'));
+
+        $this->get('/assignments/module7b')
+            ->assertOk()
+            ->assertSee('Module 7 Assignment 7B')
+            ->assertSee('Welcome to My Personal Route Lab')
+            ->assertSee('Siarhei Hancharou');
     }
 
     public function test_module7a_required_routes_return_the_expected_greetings(): void
@@ -176,6 +188,37 @@ class SiteNavigationTest extends TestCase
             ->assertSee('Instructor Spotlight')
             ->assertSee('Vicky Seno')
             ->assertSeeText('Hello, Vicky Seno!');
+    }
+
+    public function test_module7b_required_routes_and_active_navigation_work_when_embedded(): void
+    {
+        $this->get('/assignments/module7b')
+            ->assertOk()
+            ->assertSee('Four pages, two routing styles')
+            ->assertSee('aria-current="page"', false);
+
+        $this->get('/assignments/module7b/about')
+            ->assertOk()
+            ->assertSee('Santa Monica College')
+            ->assertSee('Web Development (A.S.)')
+            ->assertSee('lens-lounge.com')
+            ->assertSee('github.com/SergeHall')
+            ->assertSee('aria-current="page"', false);
+
+        $this->get('/assignments/module7b/hobbies')
+            ->assertOk()
+            ->assertSee('Photography')
+            ->assertSee('Web Development')
+            ->assertSee('Technology Projects')
+            ->assertSee('aria-current="page"', false);
+
+        $this->get('/assignments/module7b/hobbies/1')
+            ->assertOk()
+            ->assertSee('Photography')
+            ->assertSee('HobbyController::show(1)')
+            ->assertSee('aria-current="page"', false);
+
+        $this->get('/assignments/module7b/hobbies/999')->assertNotFound();
     }
 
     public function test_module6a_mvc_assignment_validates_posted_input(): void
