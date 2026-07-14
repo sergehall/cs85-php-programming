@@ -49,12 +49,14 @@ class ProjectConfigurationTest extends TestCase
         $this->assertContains('grant_admin_access', $roles['admin']['abilities']);
         $this->assertContains('revoke_admin_access', $roles['admin']['abilities']);
         $this->assertContains('view_admin_activity', $roles['admin']['abilities']);
+        $this->assertContains('use_ai_assistant', $roles['admin']['abilities']);
         $this->assertContains('manage_own_profile', $roles['user']['abilities']);
         $this->assertContains('track_coursework', $roles['user']['abilities']);
         $this->assertContains('manage_own_security', $roles['user']['abilities']);
         $this->assertContains('use_application_mfa', $roles['user']['abilities']);
         $this->assertContains('request_admin_access', $roles['user']['abilities']);
         $this->assertContains('view_own_activity', $roles['user']['abilities']);
+        $this->assertContains('use_ai_assistant', $roles['user']['abilities']);
         $this->assertNotContains('manage_content', $roles['admin']['abilities']);
         $this->assertNotContains('review_messages', $roles['admin']['abilities']);
         $this->assertNotContains('send_messages', $roles['user']['abilities']);
@@ -135,6 +137,7 @@ class ProjectConfigurationTest extends TestCase
         $this->assertArrayHasKey('coursework', $sections);
         $this->assertArrayHasKey('security', $sections);
         $this->assertArrayHasKey('activity', $sections);
+        $this->assertArrayHasKey('ai', $sections);
         $this->assertArrayNotHasKey('messages', $sections);
         $this->assertArrayNotHasKey('messages', $adminSections);
 
