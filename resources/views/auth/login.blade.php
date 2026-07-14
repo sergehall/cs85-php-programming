@@ -57,6 +57,7 @@
                 </label>
 
                 <button class="rounded-lg bg-teal-800 px-4 py-3 text-sm font-bold text-white transition hover:bg-slate-950" type="submit">Sign in</button>
+                <a class="text-center text-sm font-bold text-teal-800" href="{{ route('password.request') }}">Forgot your password?</a>
             </form>
         </article>
     </section>
