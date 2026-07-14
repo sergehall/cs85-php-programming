@@ -139,6 +139,43 @@ class SiteNavigationTest extends TestCase
             ->assertSee('PhotographyProject')
             ->assertSee('BookingPlannerController')
             ->assertSee('Quote total');
+
+        $this->assertFileExists(base_path('assignments/module7a/artisan'));
+        $this->assertFileExists(base_path('assignments/module7a/routes/web.php'));
+        $this->assertFileExists(base_path('assignments/module7a/resources/views/welcome.blade.php'));
+        $this->assertFileExists(base_path('assignments/module7a/README.md'));
+
+        $this->get('/assignments/module7a')
+            ->assertOk()
+            ->assertSee('Module 7 Assignment 7A')
+            ->assertSee('Hello Route')
+            ->assertSee('/hello')
+            ->assertSee('/greet/{name}');
+    }
+
+    public function test_module7a_required_routes_return_the_expected_greetings(): void
+    {
+        $this->get('/assignments/module7a/hello')
+            ->assertOk()
+            ->assertSeeText('Hello from Laravel!');
+
+        $this->get('/assignments/module7a/greet/alex')
+            ->assertOk()
+            ->assertSeeText('Hello, Alex!');
+
+        $this->get('/assignments/module7a/greet/samantha')
+            ->assertOk()
+            ->assertSeeText('Hello, Samantha!');
+
+        $this->get('/assignments/module7a/greet/serge-hall')
+            ->assertOk()
+            ->assertSeeText('Hello, Serge Hall!');
+
+        $this->get('/assignments/module7a/greet/vicky-seno')
+            ->assertOk()
+            ->assertSee('Instructor Spotlight')
+            ->assertSee('Vicky Seno')
+            ->assertSeeText('Hello, Vicky Seno!');
     }
 
     public function test_module6a_mvc_assignment_validates_posted_input(): void

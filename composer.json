@@ -64,7 +64,7 @@
             "@php vendor/bin/pint --test"
         ],
         "lint": [
-            "@php vendor/bin/phpstan analyse -c phpstan.neon app config routes tests --memory-limit=512M"
+            "@php -d memory_limit=512M vendor/phpstan/phpstan/phpstan analyse -c phpstan.neon app config routes tests --no-progress"
         ],
         "lint-fix": [
             "@format",

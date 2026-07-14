@@ -1,9 +1,9 @@
-/bootstrap/cache/
+**/bootstrap/cache/
 /coverage/
-/node_modules/
-/public/build/
-/storage/
-/vendor/
+**/node_modules/
+**/public/build/
+**/storage/
+**/vendor/
 
 composer.lock
 package-lock.json
