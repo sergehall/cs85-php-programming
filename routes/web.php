@@ -5,6 +5,8 @@ use App\Http\Controllers\Assignments\Module1Assignment1AController;
 use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
 use App\Http\Controllers\Assignments\Module8aDatabaseEnvironmentController;
 use App\Http\Controllers\Assignments\Module8bInventoryController;
+use App\Http\Controllers\Assignments\Module9aContactController;
+use App\Http\Controllers\Assignments\Module9aContactDatasetController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -61,6 +63,32 @@ Route::get('/inventory', [Module8bInventoryController::class, 'index'])
     ->name('inventory.index');
 Route::redirect('/assignments/module8b', '/inventory');
 Route::redirect('/assignments/module8b/inventory', '/inventory');
+
+Route::redirect('/assignments/module9a', '/assignments/module9a/contacts');
+Route::prefix('assignments/module9a/contacts')->name('assignments.module9a.contacts.')->group(function () {
+    Route::get('/', [Module9aContactController::class, 'index'])->name('index');
+    Route::get('/data', [Module9aContactController::class, 'data'])->name('data');
+    Route::post('/', [Module9aContactController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('store');
+    Route::post('/dataset', [Module9aContactDatasetController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('dataset.store');
+    Route::delete('/dataset', [Module9aContactDatasetController::class, 'destroy'])
+        ->middleware('throttle:5,1')
+        ->name('dataset.destroy');
+    Route::delete('/by-id', [Module9aContactController::class, 'destroyById'])
+        ->middleware('throttle:10,1')
+        ->name('destroy-by-id');
+    Route::put('/{contact}', [Module9aContactController::class, 'update'])
+        ->middleware('throttle:10,1')
+        ->whereNumber('contact')
+        ->name('update');
+    Route::delete('/{contact}', [Module9aContactController::class, 'destroy'])
+        ->middleware('throttle:10,1')
+        ->whereNumber('contact')
+        ->name('destroy');
+});
 
 $phpAssignments = [
     'module2a/price_engine.php' => 'module2a/price_engine.php',
