@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Assignments;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Assignments\DeleteModule9aContactByIdRequest;
 use App\Http\Requests\Assignments\StoreModule9aContactRequest;
+use App\Http\Requests\Assignments\UpdateModule9aContactDetailsRequest;
 use App\Http\Requests\Assignments\UpdateModule9aContactRequest;
 use App\Models\Contact;
 use App\Models\ContactGroup;
@@ -30,6 +31,11 @@ final class Module9aContactController extends Controller
         $filters = $directory->filters($request);
         $contacts = $directory->build($filters)->get();
         $groups = ContactGroup::query()->orderBy('name')->get();
+        $contactOptions = Contact::query()
+            ->with('group')
+            ->orderBy('first_name')
+            ->orderBy('last_name')
+            ->get();
         $editId = filter_var($request->query('edit'), FILTER_VALIDATE_INT, [
             'options' => ['min_range' => 1],
         ]);
@@ -40,6 +46,7 @@ final class Module9aContactController extends Controller
         return view('assignments.module9a.contacts', [
             'canMutate' => $writeAccess->allows($request->user()),
             'contacts' => $contacts,
+            'contactOptions' => $contactOptions,
             'editingContact' => $editingContact,
             'filters' => $filters,
             'groups' => $groups,
@@ -85,6 +92,22 @@ final class Module9aContactController extends Controller
         return redirect()
             ->route('assignments.module9a.contacts.index', ['edit' => $contact->getKey()])
             ->with('status', "Updated contact #{$contact->getKey()}.");
+    }
+
+    public function updateDetails(UpdateModule9aContactDetailsRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+        $contact = Contact::query()->findOrFail((int) $validated['contact_id']);
+
+        $contact->update([
+            'phone' => $validated['details_phone'],
+            'company' => $validated['details_company'],
+            'contact_group_id' => $validated['details_contact_group_id'],
+        ]);
+
+        return redirect()
+            ->route('assignments.module9a.contacts.index', ['edit' => $contact->getKey()])
+            ->with('status', "Updated phone, company, and group for contact #{$contact->getKey()}.");
     }
 
     public function destroy(Request $request, Contact $contact, Module9aWriteAccess $writeAccess): RedirectResponse

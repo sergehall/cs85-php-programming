@@ -80,6 +80,9 @@ Route::prefix('assignments/module9a/contacts')->name('assignments.module9a.conta
     Route::delete('/by-id', [Module9aContactController::class, 'destroyById'])
         ->middleware('throttle:10,1')
         ->name('destroy-by-id');
+    Route::put('/details', [Module9aContactController::class, 'updateDetails'])
+        ->middleware('throttle:10,1')
+        ->name('update-details');
     Route::put('/{contact}', [Module9aContactController::class, 'update'])
         ->middleware('throttle:10,1')
         ->whereNumber('contact')

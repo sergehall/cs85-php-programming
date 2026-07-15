@@ -289,32 +289,61 @@
             <div class="grid gap-2">
                 <p class="text-xs font-black uppercase tracking-[.14em] text-violet-800">Step 4 · Update</p>
                 <h2 class="text-3xl font-black tracking-tight">PUT an existing contact</h2>
-                <p class="leading-7 text-slate-700">Select Edit from the result table to load a record into this form.</p>
+                <p class="leading-7 text-slate-700">Choose any training contact and update its phone, company, or group without changing the real users table.</p>
             </div>
 
-            @if ($editingContact && $canMutate)
-                <div class="mt-5 rounded-xl border border-violet-300 bg-white px-4 py-3 text-sm font-bold text-violet-950">
-                    Editing ID #{{ $editingContact->getKey() }} · {{ $editingContact->fullName() }}
-                </div>
-                <form class="mt-5 grid gap-5" method="POST" action="{{ route('assignments.module9a.contacts.update', $editingContact) }}">
+            @if ($canMutate)
+                <form class="mt-6 grid gap-5 rounded-2xl border border-violet-300 bg-white p-5" method="POST" action="{{ route('assignments.module9a.contacts.update-details') }}" data-contact-details-form>
                     @csrf
                     @method('PUT')
-                    @include('assignments.module9a._contact-fields', ['contact' => $editingContact, 'prefix' => 'update'])
-                    <div class="flex flex-wrap gap-3">
-                        <button class="min-h-12 rounded-xl bg-violet-700 px-5 py-3 font-black text-white transition hover:bg-violet-800" type="submit">PUT · Update #{{ $editingContact->getKey() }}</button>
-                        <a class="inline-flex min-h-12 items-center rounded-xl border border-violet-300 bg-white px-5 py-3 font-black text-violet-900 no-underline" href="{{ route('assignments.module9a.contacts.index') }}#update-contact">Cancel</a>
+
+                    <label class="grid gap-2 text-sm font-black text-slate-700" for="update-contact-id">
+                        Training contact
+                        <select class="min-h-12 rounded-xl border border-violet-300 bg-white px-4 py-3 font-normal" id="update-contact-id" name="contact_id" required data-contact-details-select>
+                            <option value="">Choose a contact…</option>
+                            @foreach ($contactOptions as $contactOption)
+                                <option
+                                    value="{{ $contactOption->getKey() }}"
+                                    data-phone="{{ $contactOption->phone }}"
+                                    data-company="{{ $contactOption->company }}"
+                                    data-group-id="{{ $contactOption->contact_group_id }}"
+                                    @selected((string) old('contact_id', $editingContact?->getKey()) === (string) $contactOption->getKey())
+                                >#{{ $contactOption->getKey() }} · {{ $contactOption->fullName() }} · {{ $contactOption->email }}</option>
+                            @endforeach
+                        </select>
+                        <span class="text-xs leading-5 font-normal text-slate-500">The list contains every Module 9 training contact, even when the GET table is filtered.</span>
+                    </label>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <label class="grid gap-2 text-sm font-black text-slate-700" for="update-details-phone">
+                            Phone
+                            <input class="min-h-12 rounded-xl border border-stone-300 bg-white px-4 py-3 font-normal" id="update-details-phone" name="details_phone" type="tel" maxlength="32" value="{{ old('details_phone', $editingContact?->phone) }}" placeholder="+1-310-555-0100" data-contact-details-phone>
+                        </label>
+
+                        <label class="grid gap-2 text-sm font-black text-slate-700" for="update-details-company">
+                            Company
+                            <input class="min-h-12 rounded-xl border border-stone-300 bg-white px-4 py-3 font-normal" id="update-details-company" name="details_company" type="text" maxlength="150" value="{{ old('details_company', $editingContact?->company) }}" placeholder="No company" data-contact-details-company>
+                        </label>
+
+                        <label class="grid gap-2 text-sm font-black text-slate-700 sm:col-span-2" for="update-details-group">
+                            Contact group
+                            <select class="min-h-12 rounded-xl border border-stone-300 bg-white px-4 py-3 font-normal" id="update-details-group" name="details_contact_group_id" data-contact-details-group>
+                                <option value="">No group</option>
+                                @foreach ($groups as $group)
+                                    <option value="{{ $group->getKey() }}" @selected((string) old('details_contact_group_id', $editingContact?->contact_group_id) === (string) $group->getKey())>{{ $group->name }}</option>
+                                @endforeach
+                            </select>
+                        </label>
                     </div>
+
+                    <button class="min-h-12 rounded-xl bg-violet-700 px-5 py-3 font-black text-white transition hover:bg-violet-800 disabled:cursor-not-allowed disabled:opacity-50" type="submit" @disabled($contactOptions->isEmpty())>PUT · Update contact details</button>
                 </form>
-            @elseif (! $canMutate)
-                <p class="mt-5 rounded-xl border border-violet-300 bg-white p-4 text-violet-950">Production updates require an authenticated administrator.</p>
-            @else
-                <div class="mt-6 grid min-h-64 place-items-center rounded-2xl border border-dashed border-violet-300 bg-white/70 p-8 text-center">
-                    <div>
-                        <span class="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-violet-100 font-mono font-black text-violet-800">ID</span>
-                        <h3 class="mt-4 text-xl font-black">No contact selected</h3>
-                        <p class="mt-2 max-w-sm leading-7 text-slate-600">Run GET, find a row, and click Edit to demonstrate route model binding and update validation.</p>
-                    </div>
+
+                <div class="mt-4 rounded-xl border border-violet-200 bg-white/70 p-4 text-sm leading-6 text-slate-700">
+                    <strong class="text-violet-950">Training scope:</strong> local Module 9 can update any fictional contact. A real profile feature would authorize ownership so a regular user could update only their own record; production access to this lab remains administrator-only.
                 </div>
+            @else
+                <p class="mt-5 rounded-xl border border-violet-300 bg-white p-4 text-violet-950">Production updates require an authenticated administrator.</p>
             @endif
         </article>
     </section>

@@ -71,20 +71,26 @@ It contains fictional data only. The import operation is idempotent:
 
 ## HTTP and CRUD Map
 
-| Operation             | Method   | Route                                      | Laravel behavior                                 |
-| --------------------- | -------- | ------------------------------------------ | ------------------------------------------------ |
-| Open workbench        | `GET`    | `/assignments/module9a/contacts`           | Render filters, forms, table, and JSON preview   |
-| Read JSON response    | `GET`    | `/assignments/module9a/contacts/data`      | Return filtered records as JSON                  |
-| Import default data   | `POST`   | `/assignments/module9a/contacts/dataset`   | Transactionally upsert JSON groups and contacts  |
-| Create contact        | `POST`   | `/assignments/module9a/contacts`           | Validate and insert a contact                    |
-| Update contact        | `PUT`    | `/assignments/module9a/contacts/{contact}` | Validate and update through route model binding  |
-| Delete contact        | `DELETE` | `/assignments/module9a/contacts/{contact}` | Delete the bound contact                         |
-| Delete by entered ID  | `DELETE` | `/assignments/module9a/contacts/by-id`     | Validate the primary key and delete the row      |
-| Clear training tables | `DELETE` | `/assignments/module9a/contacts/dataset`   | Delete contacts, then groups, in one transaction |
+| Operation              | Method   | Route                                      | Laravel behavior                                 |
+| ---------------------- | -------- | ------------------------------------------ | ------------------------------------------------ |
+| Open workbench         | `GET`    | `/assignments/module9a/contacts`           | Render filters, forms, table, and JSON preview   |
+| Read JSON response     | `GET`    | `/assignments/module9a/contacts/data`      | Return filtered records as JSON                  |
+| Import default data    | `POST`   | `/assignments/module9a/contacts/dataset`   | Transactionally upsert JSON groups and contacts  |
+| Create contact         | `POST`   | `/assignments/module9a/contacts`           | Validate and insert a contact                    |
+| Update contact details | `PUT`    | `/assignments/module9a/contacts/details`   | Update phone, company, and optional group by ID  |
+| Update contact         | `PUT`    | `/assignments/module9a/contacts/{contact}` | Validate and update through route model binding  |
+| Delete contact         | `DELETE` | `/assignments/module9a/contacts/{contact}` | Delete the bound contact                         |
+| Delete by entered ID   | `DELETE` | `/assignments/module9a/contacts/by-id`     | Validate the primary key and delete the row      |
+| Clear training tables  | `DELETE` | `/assignments/module9a/contacts/dataset`   | Delete contacts, then groups, in one transaction |
 
 All mutating routes use CSRF protection and rate limiting. Mutations are
 available in local and testing environments. In production they require an
 authenticated application administrator.
+
+The focused PUT editor intentionally allows any fictional Module 9 contact to
+be selected in local and testing environments. A real self-service profile
+would use an ownership policy so regular users could update only their own
+record. That production profile concern is separate from these training tables.
 
 ## GET Filters
 
@@ -135,6 +141,8 @@ manual SQL is required.
 - first and last name are required and limited to 100 characters;
 - email is required, normalized to lowercase, valid, and unique;
 - phone, company, group, and notes are optional;
+- the focused PUT editor validates the selected training contact and changes
+  only its phone, company, and optional group;
 - selected groups must exist;
 - role must be `user` or `admin`;
 - active status is normalized to a boolean;

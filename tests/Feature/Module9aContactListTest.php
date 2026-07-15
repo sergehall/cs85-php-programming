@@ -44,6 +44,10 @@ class Module9aContactListTest extends TestCase
             ->assertSee('POST · Import JSON')
             ->assertSee('GET · Run query')
             ->assertSee('POST · Create contact')
+            ->assertSee('PUT · Update contact details')
+            ->assertSee('name="details_phone"', false)
+            ->assertSee('name="details_company"', false)
+            ->assertSee('name="details_contact_group_id"', false)
             ->assertSee('DELETE · Remove by ID')
             ->assertSee('maya.chen@example.com')
             ->assertSee('No contacts found');
@@ -81,22 +85,22 @@ class Module9aContactListTest extends TestCase
         $this->get(route('assignments.module9a.contacts.index', ['first_name' => 'Maya']))
             ->assertOk()
             ->assertSee('Maya Chen')
-            ->assertDontSee('Noah Williams');
+            ->assertSee('1 returned');
 
         $this->get(route('assignments.module9a.contacts.index', ['last_name' => 'Nguyen']))
             ->assertOk()
             ->assertSee('Liam Nguyen')
-            ->assertDontSee('Maya Chen');
+            ->assertSee('1 returned');
 
         $this->get(route('assignments.module9a.contacts.index', ['email' => 'sofia.ramirez']))
             ->assertOk()
             ->assertSee('Sofia Ramirez')
-            ->assertDontSee('Maya Chen');
+            ->assertSee('1 returned');
 
         $this->get(route('assignments.module9a.contacts.index', ['phone' => '0104']))
             ->assertOk()
             ->assertSee('Ethan Brooks')
-            ->assertDontSee('Maya Chen');
+            ->assertSee('1 returned');
 
         $this->get(route('assignments.module9a.contacts.index', [
             'group_id' => $work->getKey(),
@@ -105,7 +109,7 @@ class Module9aContactListTest extends TestCase
         ]))
             ->assertOk()
             ->assertSee('Maya Chen')
-            ->assertDontSee('Ethan Brooks');
+            ->assertSee('1 returned');
     }
 
     public function test_raw_get_endpoint_returns_filtered_json(): void
@@ -176,6 +180,64 @@ class Module9aContactListTest extends TestCase
         $this->assertSame('After', $contact->first_name);
         $this->assertSame(Contact::ROLE_ADMIN, $contact->role);
         $this->assertFalse($contact->is_active);
+    }
+
+    public function test_focused_put_editor_updates_training_contact_details_and_group(): void
+    {
+        $community = ContactGroup::query()->create(['name' => 'Community']);
+        $school = ContactGroup::query()->create(['name' => 'School']);
+        $contact = Contact::query()->create([
+            'first_name' => 'Taylor',
+            'last_name' => 'Morgan',
+            'email' => 'taylor.morgan@example.com',
+            'phone' => '+1-310-555-0100',
+            'company' => 'Before Company',
+            'contact_group_id' => $community->getKey(),
+            'role' => Contact::ROLE_USER,
+            'is_active' => true,
+        ]);
+
+        $this->get(route('assignments.module9a.contacts.index', ['edit' => $contact->getKey()]))
+            ->assertOk()
+            ->assertSee('Taylor Morgan')
+            ->assertSee('value="+1-310-555-0100"', false)
+            ->assertSee('value="Before Company"', false)
+            ->assertSee('Community')
+            ->assertSee('School');
+
+        $this->put(route('assignments.module9a.contacts.update-details'), [
+            'contact_id' => $contact->getKey(),
+            'details_phone' => '+1-424-555-0199',
+            'details_company' => 'Updated Training Company',
+            'details_contact_group_id' => $school->getKey(),
+        ])->assertRedirect(route('assignments.module9a.contacts.index', ['edit' => $contact->getKey()]));
+
+        $this->assertDatabaseHas('contacts', [
+            'id' => $contact->getKey(),
+            'phone' => '+1-424-555-0199',
+            'company' => 'Updated Training Company',
+            'contact_group_id' => $school->getKey(),
+            'email' => 'taylor.morgan@example.com',
+        ]);
+
+        $this->put(route('assignments.module9a.contacts.update-details'), [
+            'contact_id' => $contact->getKey(),
+            'details_phone' => '',
+            'details_company' => '',
+            'details_contact_group_id' => '',
+        ])->assertRedirect(route('assignments.module9a.contacts.index', ['edit' => $contact->getKey()]));
+
+        $contact->refresh();
+        $this->assertNull($contact->phone);
+        $this->assertNull($contact->company);
+        $this->assertNull($contact->contact_group_id);
+
+        $this->put(route('assignments.module9a.contacts.update-details'), [
+            'contact_id' => 999_999,
+            'details_phone' => null,
+            'details_company' => null,
+            'details_contact_group_id' => null,
+        ])->assertSessionHasErrors(['contact_id']);
     }
 
     public function test_delete_routes_remove_only_the_selected_contact(): void

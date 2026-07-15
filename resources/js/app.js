@@ -61,6 +61,32 @@ document.querySelectorAll('form[data-confirm]').forEach((form) => {
     });
 });
 
+const contactDetailsForm = document.querySelector('[data-contact-details-form]');
+
+if (contactDetailsForm) {
+    const contactSelect = contactDetailsForm.querySelector('[data-contact-details-select]');
+    const phoneInput = contactDetailsForm.querySelector('[data-contact-details-phone]');
+    const companyInput = contactDetailsForm.querySelector('[data-contact-details-company]');
+    const groupSelect = contactDetailsForm.querySelector('[data-contact-details-group]');
+
+    if (contactSelect && phoneInput && companyInput && groupSelect) {
+        contactSelect.addEventListener('change', () => {
+            const option = contactSelect.options[contactSelect.selectedIndex];
+
+            if (!option?.value) {
+                phoneInput.value = '';
+                companyInput.value = '';
+                groupSelect.value = '';
+                return;
+            }
+
+            phoneInput.value = option.dataset.phone ?? '';
+            companyInput.value = option.dataset.company ?? '';
+            groupSelect.value = option.dataset.groupId ?? '';
+        });
+    }
+}
+
 const aiChat = document.querySelector('[data-ai-chat]');
 
 if (aiChat) {
