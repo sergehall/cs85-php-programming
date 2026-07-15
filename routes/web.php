@@ -187,7 +187,11 @@ Route::get('/roadmap/{module}', function (string $module) {
 
     abort_unless($selectedModule, 404);
 
-    return view('pages.roadmap-module', [
+    $moduleView = is_string($selectedModule['view'] ?? null)
+        ? $selectedModule['view']
+        : 'pages.roadmap-module';
+
+    return view($moduleView, [
         'module' => $selectedModule,
         'modules' => $modules,
         'position' => $modules->search(fn (array $item): bool => $item['slug'] === $module) + 1,

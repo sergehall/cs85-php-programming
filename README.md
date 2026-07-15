@@ -62,6 +62,15 @@ The project currently includes:
 
 ## Architecture
 
+Detailed engineering documentation is maintained under [`docs/`](docs/README.md):
+
+- [Authentication and Account Security](docs/authentication/README.md)
+- [Authentication Architecture](docs/authentication/architecture.md)
+- [Authentication Audit Events](docs/authentication/audit-events.md)
+- [Authentication Operations Runbook](docs/authentication/operations.md)
+- [Authentication Testing Strategy](docs/authentication/testing.md)
+- [AI Platform SRS](docs/AI_PLATFORM_SRS.md)
+
 ```text
 app/                         Laravel application code
 app/Http/Controllers         Auth, assignment, cabinet, and workflow controllers
