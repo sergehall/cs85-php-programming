@@ -2,6 +2,40 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "npm: dev-local",
+            "type": "npm",
+            "script": "dev-local",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "npm: restart:app",
+            "type": "npm",
+            "script": "restart:app",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "npm: stop:app",
+            "type": "npm",
+            "script": "stop:app",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true,
+                "close": true
+            }
+        },
+        {
             "label": "npm: format",
             "type": "npm",
             "script": "format",

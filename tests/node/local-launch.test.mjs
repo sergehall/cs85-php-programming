@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { describe, it } from 'node:test';
+import { isProjectDevLocalProcess, parseProcessInfo } from '../../scripts/local-processes.mjs';
+import { isEnvFlagEnabled, localRuntimeEnv } from '../../scripts/local-runtime.mjs';
 
 describe('local launch scripts', () => {
     it('keeps local startup orchestration in Node instead of inline shell env', async () => {
@@ -15,6 +17,8 @@ describe('local launch scripts', () => {
             packageJson.scripts['db:migrate:local'],
             'node scripts/dev-local.mjs --migrate-only',
         );
+        assert.equal(packageJson.scripts['stop:app'], 'node scripts/stop-local.mjs');
+        assert.equal(packageJson.scripts['restart:app'], 'node scripts/restart-local.mjs');
         assert.doesNotMatch(
             packageJson.scripts['dev-local'],
             /DB_PASSWORD|DB_USERNAME|DB_DATABASE/u,
@@ -44,11 +48,49 @@ describe('local launch scripts', () => {
         assert.match(runtimeScript, /EADDRINUSE/u);
     });
 
+    it('keeps Mailpit safe by default and preserves external SMTP when opted out', () => {
+        const externalSmtp = {
+            MAIL_MAILER: 'smtp',
+            MAIL_HOST: 'smtp.example.com',
+            MAIL_PORT: '587',
+        };
+
+        const mailpitEnv = localRuntimeEnv({ baseEnv: externalSmtp });
+        const externalEnv = localRuntimeEnv({ baseEnv: externalSmtp, useMailpit: false });
+
+        assert.equal(mailpitEnv.MAIL_HOST, '127.0.0.1');
+        assert.equal(mailpitEnv.MAIL_PORT, '1025');
+        assert.equal(externalEnv.MAIL_HOST, 'smtp.example.com');
+        assert.equal(externalEnv.MAIL_PORT, '587');
+        assert.equal(isEnvFlagEnabled(undefined), true);
+        assert.equal(isEnvFlagEnabled('false'), false);
+        assert.equal(isEnvFlagEnabled('0'), false);
+    });
+
     it('can skip browser opening for headless launch checks', async () => {
         const devScript = await readFile('scripts/dev-local.mjs', 'utf8');
 
         assert.match(devScript, /process\.argv\.includes\('--no-open'\)/u);
         assert.match(devScript, /APP_OPEN_BROWSER !== 'false'/u);
         assert.match(devScript, /scripts\/open-local-app\.mjs/u);
+    });
+
+    it('identifies only this project dev-local coordinator as managed', () => {
+        const processInfo = parseProcessInfo('22388 21689 node scripts/dev-local.mjs --no-open');
+
+        assert.deepEqual(processInfo, {
+            pid: 22388,
+            parentPid: 21689,
+            command: 'node scripts/dev-local.mjs --no-open',
+        });
+        assert.equal(isProjectDevLocalProcess(processInfo, process.cwd()), true);
+        assert.equal(isProjectDevLocalProcess(processInfo, '/tmp/another-project'), false);
+        assert.equal(
+            isProjectDevLocalProcess(
+                { ...processInfo, command: 'php artisan serve --port=8000' },
+                process.cwd(),
+            ),
+            false,
+        );
     });
 });
