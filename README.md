@@ -403,12 +403,39 @@ Start the full local stack:
 npm run dev-local
 ```
 
+Local startup routes email to Mailpit by default. To use the SMTP credentials
+from `.env` instead, set the explicit opt-out and restart the full stack:
+
+```env
+CS85_USE_MAILPIT=false
+```
+
+The startup log prints either `Mailpit` or `external SMTP from .env` without
+exposing credentials. Keep the default enabled unless real delivery is the
+specific test objective.
+
 Aliases:
 
 ```bash
 npm run dev
 npm run start:app
 ```
+
+Stop the Laravel and Vite processes started by this project:
+
+```bash
+npm run stop:app
+```
+
+Stop any existing local application instance and start a fresh one:
+
+```bash
+npm run restart:app
+```
+
+Both commands verify that the process belongs to this project before stopping
+it. Docker infrastructure and database volumes remain running and are not
+deleted.
 
 Run only Laravel:
 

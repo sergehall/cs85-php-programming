@@ -48,6 +48,11 @@ production. Never reuse production client secrets locally.
 Email verification and password recovery are operational dependencies, not
 optional UI enhancements.
 
+Local startup uses Mailpit unless `.env` explicitly contains
+`CS85_USE_MAILPIT=false`. With that opt-out, `scripts/dev-local.mjs` preserves
+the external `MAIL_*` values loaded by Laravel instead of forcing
+`127.0.0.1:1025`. Fully restart the local stack after changing the mode.
+
 Before release:
 
 - authenticate the sender domain with the mail provider;
