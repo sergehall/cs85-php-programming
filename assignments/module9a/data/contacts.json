@@ -1,0 +1,115 @@
+{
+    "version": 1,
+    "groups": [
+        {
+            "key": "family",
+            "name": "Family",
+            "description": "Personal and family contacts"
+        },
+        {
+            "key": "work",
+            "name": "Work",
+            "description": "Professional contacts and project collaborators"
+        },
+        {
+            "key": "school",
+            "name": "School",
+            "description": "Classmates, instructors, and study contacts"
+        },
+        {
+            "key": "community",
+            "name": "Community",
+            "description": "Local organizations and community contacts"
+        }
+    ],
+    "contacts": [
+        {
+            "first_name": "Maya",
+            "last_name": "Chen",
+            "email": "maya.chen@example.com",
+            "phone": "+1-310-555-0101",
+            "company": "Pacific Design Studio",
+            "group": "work",
+            "role": "admin",
+            "is_active": true,
+            "notes": "Project lead for the summer portfolio review."
+        },
+        {
+            "first_name": "Noah",
+            "last_name": "Williams",
+            "email": "noah.williams@example.com",
+            "phone": "+1-424-555-0102",
+            "company": "Santa Monica Learning Lab",
+            "group": "school",
+            "role": "user",
+            "is_active": true,
+            "notes": "Study partner for Laravel exercises."
+        },
+        {
+            "first_name": "Sofia",
+            "last_name": "Ramirez",
+            "email": "sofia.ramirez@example.com",
+            "phone": "+1-213-555-0103",
+            "company": "Westside Arts Council",
+            "group": "community",
+            "role": "user",
+            "is_active": true,
+            "notes": "Coordinates community photography events."
+        },
+        {
+            "first_name": "Ethan",
+            "last_name": "Brooks",
+            "email": "ethan.brooks@example.com",
+            "phone": "+1-818-555-0104",
+            "company": "Brooks Media",
+            "group": "work",
+            "role": "user",
+            "is_active": false,
+            "notes": "Former vendor contact retained for the CRUD status filter."
+        },
+        {
+            "first_name": "Ava",
+            "last_name": "Patel",
+            "email": "ava.patel@example.com",
+            "phone": "+1-310-555-0105",
+            "company": null,
+            "group": "family",
+            "role": "user",
+            "is_active": true,
+            "notes": "Emergency contact."
+        },
+        {
+            "first_name": "Liam",
+            "last_name": "Nguyen",
+            "email": "liam.nguyen@example.com",
+            "phone": "+1-323-555-0106",
+            "company": "Open Source Club",
+            "group": "school",
+            "role": "admin",
+            "is_active": true,
+            "notes": "Maintains the class study repository."
+        },
+        {
+            "first_name": "Isabella",
+            "last_name": "Morgan",
+            "email": "isabella.morgan@example.com",
+            "phone": "+1-424-555-0107",
+            "company": "Ocean Park Collective",
+            "group": "community",
+            "role": "user",
+            "is_active": true,
+            "notes": "Community newsletter editor."
+        },
+        {
+            "first_name": "Lucas",
+            "last_name": "Kim",
+            "email": "lucas.kim@example.com",
+            "phone": "+1-213-555-0108",
+            "company": "Kim Family Studio",
+            "group": "family",
+            "role": "user",
+            "is_active": false,
+            "notes": "Archived sample record for active status filtering."
+        }
+    ]
+}
