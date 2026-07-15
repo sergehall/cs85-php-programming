@@ -13,8 +13,8 @@
             </p>
         </div>
 
-        <aside class="grid content-start gap-4 rounded-lg border border-stone-300 bg-white p-6">
-            <div class="flex items-center gap-4">
+        <aside class="grid min-w-0 content-start gap-4 overflow-hidden rounded-lg border border-stone-300 bg-white p-6">
+            <div class="flex min-w-0 items-center gap-4">
                 <div class="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-lg bg-teal-800 text-xl font-bold text-white">
                     @if ($account['photo_url'])
                         <img class="h-full w-full object-cover" src="{{ $account['photo_url'] }}" alt="" referrerpolicy="no-referrer">
@@ -22,23 +22,29 @@
                         {{ $account['initials'] }}
                     @endif
                 </div>
-                <div class="min-w-0">
-                    <p class="truncate text-lg font-bold text-slate-950">{{ $account['name'] }}</p>
-                    <p class="truncate text-sm font-bold text-slate-500">{{ $account['email'] }}</p>
+                <div class="min-w-0 flex-1 overflow-hidden">
+                    <x-truncated-text :value="$account['name']" class="text-lg font-bold text-slate-950" />
+                    <x-truncated-text :value="$account['email']" class="text-sm font-bold text-slate-500" />
                 </div>
             </div>
-            <dl class="grid gap-3 text-sm">
-                <div class="flex justify-between gap-4 border-t border-stone-200 pt-3">
-                    <dt class="font-bold text-slate-500">Course</dt>
-                    <dd class="text-right font-bold text-slate-950">{{ $account['course'] }}</dd>
+            <dl class="grid min-w-0 gap-3 text-sm">
+                <div class="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-4 border-t border-stone-200 pt-3">
+                    <dt class="shrink-0 font-bold text-slate-500">Course</dt>
+                    <dd class="min-w-0">
+                        <x-truncated-text :value="$account['course']" class="text-right font-bold text-slate-950" />
+                    </dd>
                 </div>
-                <div class="flex justify-between gap-4 border-t border-stone-200 pt-3">
-                    <dt class="font-bold text-slate-500">Role</dt>
-                    <dd class="font-bold text-teal-800">{{ $account['role'] }}</dd>
+                <div class="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-4 border-t border-stone-200 pt-3">
+                    <dt class="shrink-0 font-bold text-slate-500">Role</dt>
+                    <dd class="min-w-0">
+                        <x-truncated-text :value="$account['role']" class="text-right font-bold text-teal-800" />
+                    </dd>
                 </div>
-                <div class="flex justify-between gap-4 border-t border-stone-200 pt-3">
-                    <dt class="font-bold text-slate-500">Status</dt>
-                    <dd class="font-bold text-orange-700">{{ $account['status'] }}</dd>
+                <div class="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-4 border-t border-stone-200 pt-3">
+                    <dt class="shrink-0 font-bold text-slate-500">Status</dt>
+                    <dd class="min-w-0">
+                        <x-truncated-text :value="$account['status']" class="text-right font-bold text-orange-700" />
+                    </dd>
                 </div>
             </dl>
         </aside>

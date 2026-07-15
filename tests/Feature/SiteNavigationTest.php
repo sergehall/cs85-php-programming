@@ -329,6 +329,27 @@ class SiteNavigationTest extends TestCase
         $response->assertDontSee('Prepared role');
     }
 
+    public function test_cabinet_dashboard_constrains_long_account_values(): void
+    {
+        $longName = 'Hancharou Siarhei With An Intentionally Long Display Name';
+        $longEmail = 'hancharou_siarhei_with_a_long_student_account@student.smc.edu';
+        $user = User::factory()->create([
+            'name' => $longName,
+            'email' => $longEmail,
+        ]);
+
+        $response = $this->actingAs($user)->get('/cabinet');
+
+        $response->assertOk();
+        $response->assertSee($longName);
+        $response->assertSee($longEmail);
+        $response->assertSee('title="'.$longName.'"', false);
+        $response->assertSee('title="'.$longEmail.'"', false);
+        $response->assertSee('min-w-0 flex-1 overflow-hidden', false);
+        $response->assertSee('grid-cols-[auto_minmax(0,1fr)]', false);
+        $response->assertSee('block min-w-0 max-w-full truncate', false);
+    }
+
     public function test_cabinet_security_page_shows_real_security_controls(): void
     {
         config([

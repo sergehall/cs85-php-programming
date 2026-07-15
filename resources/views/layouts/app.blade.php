@@ -62,7 +62,7 @@
                 @endforeach
             </nav>
 
-            <div class="flex flex-wrap items-center gap-2 md:justify-end">
+            <div class="flex min-w-0 flex-wrap items-center gap-2 md:justify-end">
                 @auth
                     @php
                         $currentUser = auth()->user();
@@ -71,8 +71,8 @@
                         $initial = strtoupper(substr($displayName, 0, 1)) ?: 'U';
                         $profilePhotoUrl = $currentUser->profilePhotoUrl();
                     @endphp
-                    <details class="group relative" data-account-menu>
-                        <summary class="flex max-w-[calc(100vw_-_2rem)] cursor-pointer list-none items-center gap-2 rounded-lg border border-stone-300 bg-white px-2 py-2 text-left transition hover:border-teal-700 hover:shadow-lg hover:shadow-slate-900/10 group-open:border-teal-700 group-open:shadow-lg group-open:shadow-slate-900/10 sm:gap-3 sm:px-3 [&::-webkit-details-marker]:hidden">
+                    <details class="group relative min-w-0 max-w-full" data-account-menu>
+                        <summary class="flex min-w-0 max-w-[calc(100vw_-_2rem)] cursor-pointer list-none items-center gap-2 overflow-hidden rounded-lg border border-stone-300 bg-white px-2 py-2 text-left transition hover:border-teal-700 hover:shadow-lg hover:shadow-slate-900/10 group-open:border-teal-700 group-open:shadow-lg group-open:shadow-slate-900/10 sm:gap-3 sm:px-3 [&::-webkit-details-marker]:hidden">
                             <span class="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-lg bg-slate-950 text-base font-bold text-white sm:h-12 sm:w-12">
                                 @if ($profilePhotoUrl)
                                     <img class="h-full w-full object-cover" src="{{ $profilePhotoUrl }}" alt="" referrerpolicy="no-referrer">
@@ -80,8 +80,8 @@
                                     {{ $initial }}
                                 @endif
                             </span>
-                            <span class="grid min-w-0 gap-0.5">
-                                <span class="max-w-28 truncate text-sm font-bold text-slate-950 sm:max-w-40 sm:text-base">{{ $displayName }}</span>
+                            <span class="grid min-w-0 flex-1 gap-0.5 overflow-hidden">
+                                <x-truncated-text :value="$displayName" class="max-w-28 text-sm font-bold text-slate-950 sm:max-w-40 sm:text-base" />
                                 <span class="text-xs font-bold uppercase tracking-normal text-slate-500 sm:text-sm">{{ $roleLabel }}</span>
                             </span>
                             <span class="ml-auto rounded-md bg-stone-100 px-2 py-1 text-xs font-bold text-slate-500 group-open:bg-teal-800 group-open:text-white sm:px-3 sm:text-sm">Menu</span>
@@ -89,10 +89,10 @@
                         </summary>
 
                         <div class="absolute right-0 top-full z-50 mt-3 grid w-[min(21rem,calc(100vw_-_2rem))] gap-2 rounded-lg border border-stone-300 bg-white p-3 shadow-2xl shadow-slate-900/20" role="menu">
-                            <div class="grid gap-1 border-b border-stone-200 px-2 pb-3">
+                            <div class="grid min-w-0 gap-1 overflow-hidden border-b border-stone-200 px-2 pb-3">
                                 <span class="text-xs font-bold uppercase tracking-normal text-orange-700">Account</span>
-                                <span class="truncate text-sm font-bold text-slate-950">{{ $displayName }}</span>
-                                <span class="truncate text-xs font-bold text-slate-500">{{ $currentUser->email }}</span>
+                                <x-truncated-text :value="$displayName" class="text-sm font-bold text-slate-950" />
+                                <x-truncated-text :value="$currentUser->email" class="text-xs font-bold text-slate-500" />
                             </div>
 
                             <a class="rounded-lg px-3 py-2 text-sm font-bold text-slate-700 no-underline transition hover:bg-stone-100 hover:text-teal-800" href="{{ route('cabinet.dashboard') }}" role="menuitem">Cabinet</a>
