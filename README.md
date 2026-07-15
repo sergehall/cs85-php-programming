@@ -35,6 +35,8 @@ The project currently includes:
 - Security headers and a strict Content Security Policy.
 - Docker Compose services for MySQL, Redis, Mailpit, and Adminer.
 - Assignment pages served through Laravel routes.
+- A Module 9 Contact List CRUD workbench with a versioned JSON importer,
+  Eloquent relationships, filters, validation, and complete UI operations.
 - PHPUnit feature and unit tests.
 - A local-first AI learning assistant with persistent multi-turn conversations, streaming LM Studio responses, specialized model routing, and read-only course tools.
 - Laravel Pint, Larastan/PHPStan, Prettier, Vite build checks, and GitHub
@@ -140,6 +142,10 @@ assignments/module4a/
 
 assignments/module4b/
   show_inventory.php
+
+assignments/module9a/
+  README.md
+  data/contacts.json
 ```
 
 Reusable Module 2A classes:
