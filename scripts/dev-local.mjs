@@ -4,6 +4,7 @@ import { createInterface } from 'node:readline';
 import {
     assertPortAvailable,
     ensureEnvFile,
+    isEnvFlagEnabled,
     localAppUrl,
     localLaravelPort,
     localRuntimeEnv,
@@ -13,7 +14,8 @@ import {
     readEnvValue,
 } from './local-runtime.mjs';
 
-const env = localRuntimeEnv();
+let env = {};
+let useMailpit = true;
 const children = new Map();
 let shuttingDown = false;
 const migrateOnly = process.argv.includes('--migrate-only');
@@ -99,6 +101,9 @@ function stopAll(exitCode = 0) {
 async function preflight() {
     await ensureEnvFile();
 
+    useMailpit = isEnvFlagEnabled(await readEnvValue('CS85_USE_MAILPIT'), true);
+    env = localRuntimeEnv({ useMailpit });
+
     if (!existsSync(projectPath('vendor/autoload.php'))) {
         throw new Error(
             'Missing vendor/autoload.php. Run composer install before starting locally.',
@@ -143,6 +148,7 @@ await runStep('Apply local database migrations', 'php', ['artisan', 'migrate', '
 console.log(`\n==> Start application servers`);
 console.log(`Laravel: ${localAppUrl}`);
 console.log(`Vite: http://127.0.0.1:${localVitePort}`);
+console.log(`Mail: ${useMailpit ? 'Mailpit at http://127.0.0.1:8025' : 'external SMTP from .env'}`);
 
 startProcess('laravel', 'php', [
     'artisan',

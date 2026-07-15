@@ -16,9 +16,25 @@ export const localAppUrl = process.env.APP_URL || 'http://127.0.0.1:8000';
 export const localVitePort = Number(process.env.VITE_PORT || 5173);
 export const localLaravelPort = Number(new URL(localAppUrl).port || 8000);
 
-export function localRuntimeEnv() {
+export function isEnvFlagEnabled(value, fallback = true) {
+    if (value === undefined || value.trim() === '') {
+        return fallback;
+    }
+
+    return !['0', 'false', 'no', 'off'].includes(value.trim().toLowerCase());
+}
+
+export function localRuntimeEnv({ baseEnv = process.env, useMailpit = true } = {}) {
+    const mailEnvironment = useMailpit
+        ? {
+              MAIL_MAILER: 'smtp',
+              MAIL_HOST: '127.0.0.1',
+              MAIL_PORT: mailpitSmtpPort,
+          }
+        : {};
+
     return {
-        ...process.env,
+        ...baseEnv,
         APP_URL: localAppUrl,
         DB_CONNECTION: 'mysql',
         DB_HOST: '127.0.0.1',
@@ -27,9 +43,7 @@ export function localRuntimeEnv() {
         DB_USERNAME: mysqlUser,
         DB_PASSWORD: mysqlPassword,
         QUEUE_CONNECTION: 'database',
-        MAIL_MAILER: 'smtp',
-        MAIL_HOST: '127.0.0.1',
-        MAIL_PORT: mailpitSmtpPort,
+        ...mailEnvironment,
     };
 }
 
