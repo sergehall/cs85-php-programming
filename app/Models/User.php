@@ -45,7 +45,9 @@ class User extends Authenticatable implements MustVerifyEmail
     protected static function booted(): void
     {
         static::creating(function (User $user): void {
-            if (! $user->getAttribute('public_uuid')) {
+            $publicUuid = $user->getAttribute('public_uuid');
+
+            if (! is_string($publicUuid) || ! Str::isUuid($publicUuid)) {
                 $user->setAttribute('public_uuid', (string) Str::uuid());
             }
 
@@ -85,6 +87,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'public_uuid';
     }
 
     public function hasMfaEnabled(): bool

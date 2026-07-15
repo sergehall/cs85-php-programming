@@ -77,6 +77,11 @@ fields. It intentionally fails if case-insensitive duplicates exist. Resolve any
 collision through an approved account-merge or rename procedure before retrying;
 do not delete an account merely to make the migration pass.
 
+The public UUID hardening migration backfills missing or invalid user UUIDs and
+then makes `users.public_uuid` non-nullable. Keep the bigint primary key for
+internal joins; verify that user-facing and email-verification URLs contain the
+UUID instead of that numeric key.
+
 Confirm that the deployment can write to `storage/logs` and that the database
 contains the `users`, `sessions`, `password_reset_tokens`, and `activity_logs`
 tables.
@@ -87,7 +92,8 @@ Perform these checks in staging and a production-safe smoke test:
 
 1. Register a new account and confirm cabinet access is blocked until email is
    verified.
-2. Verify the signed email link and confirm cabinet access.
+2. Verify the signed email link contains the account UUID, not the internal
+   numeric ID, and confirm cabinet access.
 3. Sign out and sign back in with normalized email casing.
 4. Request and complete a password reset; confirm old sessions are gone.
 5. Link GitHub only after recent-auth confirmation; confirm an email match alone

@@ -2,11 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use App\Services\AI\Contracts\AiProviderInterface;
 use App\Services\AI\Providers\LmStudioProvider;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -33,6 +36,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        VerifyEmail::createUrlUsing(static function (object $notifiable): string {
+            if (! $notifiable instanceof User) {
+                throw new LogicException('Email verification requires a user public UUID.');
+            }
+
+            return URL::temporarySignedRoute(
+                'verification.verify',
+                now()->addMinutes((int) config('auth.verification.expire', 60)),
+                [
+                    'id' => $notifiable->public_uuid,
+                    'hash' => sha1($notifiable->getEmailForVerification()),
+                ],
+            );
+        });
+
         Password::defaults(fn (): Password => Password::min(12)
             ->letters()
             ->mixedCase()

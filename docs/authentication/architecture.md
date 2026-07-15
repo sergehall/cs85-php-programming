@@ -49,6 +49,7 @@ fields. No single boolean represents all security requirements.
 
 | Field                      | Meaning                                                     |
 | -------------------------- | ----------------------------------------------------------- |
+| `public_uuid`              | Required non-sequential identifier used in external routes  |
 | `email_verified_at`        | The application email identity has been verified            |
 | `password_login_enabled`   | Password is an allowed first factor for this account        |
 | `login_enabled`            | Administrators allow the account to sign in at all          |
@@ -64,6 +65,10 @@ fields. No single boolean represents all security requirements.
 `User::canLogIn()` reads the independent administrative `login_enabled` switch.
 Emails are trimmed and lowercased by `User::normalizeEmail()` and again during
 model persistence.
+
+The bigint `users.id` remains an internal relational key for compact indexes and
+foreign keys. `User::getRouteKeyName()` exposes `public_uuid` for route model
+binding so public URLs do not reveal account sequence or cardinality.
 
 ## Password Authentication Flow
 
@@ -110,9 +115,10 @@ blocked by Laravel's `verified` middleware until the signed email link is
 fulfilled.
 
 Verification routes require an authenticated, login-enabled account. Verification
-links are signed and throttled. Resend requests are also throttled. The application
-records registration, verification requests, and completed verification as
-separate audit events.
+links are signed, throttled, and identify the authenticated account by
+`public_uuid`; a signed URL containing the internal numeric key is rejected.
+Resend requests are also throttled. The application records registration,
+verification requests, and completed verification as separate audit events.
 
 ## Password Recovery and Rotation
 

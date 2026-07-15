@@ -40,7 +40,14 @@ class AuthenticationHardeningTest extends TestCase
         $user = User::query()->where('email', 'mixed.case@example.com')->firstOrFail();
 
         $this->assertFalse($user->hasVerifiedEmail());
-        Notification::assertSentTo($user, VerifyEmail::class);
+        Notification::assertSentTo($user, VerifyEmail::class, function (VerifyEmail $notification) use ($user): bool {
+            $actionUrl = $notification->toMail($user)->actionUrl;
+
+            $this->assertStringContainsString('/verify-email/'.$user->public_uuid.'/', $actionUrl);
+            $this->assertStringNotContainsString('/verify-email/'.$user->getKey().'/', $actionUrl);
+
+            return true;
+        });
 
         $this->get(route('cabinet.dashboard'))->assertRedirect(route('verification.notice'));
     }
@@ -51,7 +58,7 @@ class AuthenticationHardeningTest extends TestCase
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
             now()->addMinutes(30),
-            ['id' => $user->getKey(), 'hash' => sha1($user->getEmailForVerification())],
+            ['id' => $user->public_uuid, 'hash' => sha1($user->getEmailForVerification())],
         );
 
         $this->actingAs($user)->get($verificationUrl)->assertRedirect(route('cabinet.dashboard'));
@@ -61,6 +68,20 @@ class AuthenticationHardeningTest extends TestCase
             'subject_user_id' => $user->id,
             'event' => 'auth.email_verified',
         ]);
+    }
+
+    public function test_numeric_internal_user_id_cannot_verify_email(): void
+    {
+        $user = User::factory()->unverified()->create();
+        $numericVerificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(30),
+            ['id' => $user->getKey(), 'hash' => sha1($user->getEmailForVerification())],
+        );
+
+        $this->actingAs($user)->get($numericVerificationUrl)->assertNotFound();
+
+        $this->assertFalse($user->refresh()->hasVerifiedEmail());
     }
 
     public function test_password_reset_is_case_normalized_and_revokes_existing_sessions(): void

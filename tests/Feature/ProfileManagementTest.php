@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -66,8 +67,14 @@ class ProfileManagementTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->assertNotNull($user->public_uuid);
         $this->assertTrue(Str::isUuid($user->public_uuid));
+        $this->assertSame('public_uuid', $user->getRouteKeyName());
+        $this->assertSame($user->public_uuid, $user->getRouteKey());
+
+        $publicUuidColumn = collect(Schema::getColumns('users'))->firstWhere('name', 'public_uuid');
+
+        $this->assertIsArray($publicUuidColumn);
+        $this->assertFalse($publicUuidColumn['nullable']);
     }
 
     public function test_authenticated_user_can_update_their_profile(): void

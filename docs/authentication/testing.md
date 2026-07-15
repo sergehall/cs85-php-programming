@@ -32,7 +32,7 @@ Every authentication release should retain coverage for these cases:
 | Area               | Positive cases                                              | Negative and abuse cases                                                                                        |
 | ------------------ | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | Registration       | Normalized unique email, strong password, notification sent | Weak password, duplicate email, mismatch, throttling                                                            |
-| Email verification | Valid signed link unlocks cabinet                           | Unverified cabinet access, invalid signature, resend throttling                                                 |
+| Email verification | Valid signed UUID link unlocks cabinet                      | Numeric user ID, unverified cabinet access, invalid signature, resend throttling                                |
 | Password login     | Valid login and session regeneration                        | Invalid credentials, password-disabled account, admin-disabled account, throttling                              |
 | Password recovery  | Case-normalized request and valid reset                     | Invalid/expired token, weak replacement, enumeration resistance, throttling                                     |
 | GitHub OAuth       | New OAuth-only account, explicit linking, MFA handoff       | Missing/mismatched state, provider failure, unverified email, silent merge, identity conflict, disabled account |
