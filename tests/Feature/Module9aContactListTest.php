@@ -29,10 +29,14 @@ class Module9aContactListTest extends TestCase
             ->assertOk()
             ->assertSee('Assignment 9A')
             ->assertSee('Contact List App')
-            ->assertSee(route('assignments.module9a.contacts.index'), false);
+            ->assertSee(route('contacts.index'), false);
 
         $this->get('/assignments/module9a')
-            ->assertRedirect('/assignments/module9a/contacts');
+            ->assertRedirect('/contacts');
+
+        $this->get('/assignments/module9a/contacts')
+            ->assertOk()
+            ->assertSee(route('contacts.index'), false);
     }
 
     public function test_workbench_renders_default_json_and_empty_crud_controls(): void
@@ -45,6 +49,7 @@ class Module9aContactListTest extends TestCase
             ->assertSee('GET · Run query')
             ->assertSee('POST · Create contact')
             ->assertSee('PUT · Update contact details')
+            ->assertSee('Validated ID → findOrFail() → update()')
             ->assertSee('name="details_phone"', false)
             ->assertSee('name="details_company"', false)
             ->assertSee('name="details_contact_group_id"', false)
@@ -135,7 +140,7 @@ class Module9aContactListTest extends TestCase
             'last_name' => '',
             'email' => 'not-an-email',
             'role' => 'owner',
-        ])->assertSessionHasErrors(['first_name', 'last_name', 'email', 'role']);
+        ])->assertSessionHasErrors(['first_name', 'last_name', 'email', 'phone', 'role']);
 
         $response = $this->post(route('assignments.module9a.contacts.store'), [
             'first_name' => 'Jordan',
@@ -162,6 +167,7 @@ class Module9aContactListTest extends TestCase
             'first_name' => 'Before',
             'last_name' => 'Update',
             'email' => 'before@example.com',
+            'phone' => '+1-310-555-0109',
             'role' => Contact::ROLE_USER,
             'is_active' => true,
         ]);
@@ -222,15 +228,22 @@ class Module9aContactListTest extends TestCase
 
         $this->put(route('assignments.module9a.contacts.update-details'), [
             'contact_id' => $contact->getKey(),
-            'details_phone' => '',
+            'details_phone' => '+1-424-555-0199',
             'details_company' => '',
             'details_contact_group_id' => '',
         ])->assertRedirect(route('assignments.module9a.contacts.index', ['edit' => $contact->getKey()]));
 
         $contact->refresh();
-        $this->assertNull($contact->phone);
+        $this->assertSame('+1-424-555-0199', $contact->phone);
         $this->assertNull($contact->company);
         $this->assertNull($contact->contact_group_id);
+
+        $this->put(route('assignments.module9a.contacts.update-details'), [
+            'contact_id' => $contact->getKey(),
+            'details_phone' => '',
+            'details_company' => null,
+            'details_contact_group_id' => null,
+        ])->assertSessionHasErrors(['details_phone']);
 
         $this->put(route('assignments.module9a.contacts.update-details'), [
             'contact_id' => 999_999,
@@ -246,6 +259,7 @@ class Module9aContactListTest extends TestCase
             'first_name' => 'Delete',
             'last_name' => 'One',
             'email' => 'delete.one@example.com',
+            'phone' => '+1-310-555-0110',
             'role' => Contact::ROLE_USER,
             'is_active' => true,
         ]);
@@ -253,6 +267,7 @@ class Module9aContactListTest extends TestCase
             'first_name' => 'Keep',
             'last_name' => 'Two',
             'email' => 'keep.two@example.com',
+            'phone' => '+1-310-555-0111',
             'role' => Contact::ROLE_USER,
             'is_active' => true,
         ]);
@@ -290,6 +305,7 @@ class Module9aContactListTest extends TestCase
         $this->assertTrue(Schema::hasColumns('contacts', [
             'id',
             'contact_group_id',
+            'name',
             'first_name',
             'last_name',
             'email',
