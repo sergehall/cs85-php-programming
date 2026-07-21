@@ -1,6 +1,6 @@
 @extends('layouts.app', [
-    'title' => 'Module 10 Assignment 10A: User Authentication - CS85',
-    'description' => 'A visual overview of the Laravel session authentication, authorization, MFA, OAuth, and account security implemented in the CS85 application.',
+    'title' => 'Module 10 Advanced Authentication - CS85',
+    'description' => 'The advanced Laravel session authentication, authorization, MFA, OAuth, and account-security implementation in the CS85 portfolio application.',
 ])
 
 @section('content')
@@ -19,6 +19,8 @@
         </div>
     </nav>
 
+    @include('pages.assignments.module10.track-navigation', ['activeTrack' => 'advanced'])
+
     <section class="relative isolate overflow-hidden rounded-2xl border border-violet-900 bg-slate-950 text-white shadow-2xl shadow-violet-950/20">
         <div class="absolute -top-24 right-0 -z-10 h-80 w-80 rounded-full bg-violet-600/25 blur-3xl" aria-hidden="true"></div>
         <div class="absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-fuchsia-500/15 blur-3xl" aria-hidden="true"></div>
@@ -27,7 +29,7 @@
             <div class="grid gap-5">
                 <div class="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-normal">
                     <span class="rounded-full bg-violet-400/15 px-3 py-1.5 text-violet-200 ring-1 ring-violet-300/25">Module 10</span>
-                    <span class="text-slate-400">Assignment 10A</span>
+                    <span class="text-slate-400">Advanced track</span>
                     <span class="text-slate-600" aria-hidden="true">/</span>
                     <span class="text-emerald-300">Complete</span>
                 </div>
@@ -53,7 +55,7 @@
             </div>
 
             <aside class="grid gap-3 rounded-xl border border-white/15 bg-white/8 p-5 backdrop-blur" aria-label="Assignment result">
-                <p class="text-xs font-bold uppercase tracking-normal text-violet-200">Assignment result</p>
+                <p class="text-xs font-bold uppercase tracking-normal text-violet-200">Advanced result</p>
                 <p class="text-2xl font-bold leading-tight">Authentication is implemented and tested.</p>
                 <p class="text-sm leading-6 text-slate-300">
                     The final result is not a demo-only login form. It is the authentication layer used by the cabinet and admin areas of this application.
@@ -101,30 +103,42 @@
                 Authorization is separate from authentication: standard users manage their own account, while administrator routes
                 require an admin role and recent security confirmation for sensitive changes.
             </p>
+            <p class="rounded-xl border border-violet-200 bg-white/75 p-4 text-sm leading-6 text-slate-700">
+                <strong class="block text-slate-950">Track separation</strong>
+                The exact Assignment 10A dashboard, secret page, short answers, and screenshot checklist live in the course-aligned track; this page documents the larger security system.
+            </p>
         </article>
 
         <article class="grid gap-5 rounded-2xl border border-stone-300 bg-white p-6 shadow-xl shadow-slate-900/5 md:p-7">
             <div class="grid gap-2">
-                <p class="text-xs font-bold uppercase tracking-normal text-orange-700">Core assignment requirements</p>
-                <h2 class="text-3xl font-bold leading-tight text-slate-950">Required behavior, delivered.</h2>
+                <p class="text-xs font-bold uppercase tracking-normal text-orange-700">Advanced implementation coverage</p>
+                <h2 class="text-3xl font-bold leading-tight text-slate-950">Production behavior, delivered.</h2>
             </div>
 
-            <div class="grid gap-3 sm:grid-cols-2">
+            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 <div class="flex gap-3 rounded-xl border border-stone-200 bg-stone-50 p-4">
                     <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-800" aria-hidden="true">✓</span>
-                    <span><strong class="block text-slate-950">Register and log in</strong><span class="mt-1 block text-sm leading-6 text-slate-600">Validated user creation and secure credential checks.</span></span>
+                    <span><strong class="block text-slate-950">Login</strong><span class="mt-1 block text-sm leading-6 text-slate-600">Validated credentials start an authenticated Laravel session.</span></span>
                 </div>
                 <div class="flex gap-3 rounded-xl border border-stone-200 bg-stone-50 p-4">
                     <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-800" aria-hidden="true">✓</span>
-                    <span><strong class="block text-slate-950">Session state</strong><span class="mt-1 block text-sm leading-6 text-slate-600">Laravel remembers the authenticated user between requests.</span></span>
+                    <span><strong class="block text-slate-950">Logout</strong><span class="mt-1 block text-sm leading-6 text-slate-600">The session is invalidated and its CSRF token is regenerated.</span></span>
                 </div>
                 <div class="flex gap-3 rounded-xl border border-stone-200 bg-stone-50 p-4">
                     <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-800" aria-hidden="true">✓</span>
-                    <span><strong class="block text-slate-950">Protected content</strong><span class="mt-1 block text-sm leading-6 text-slate-600">Guests cannot open the private cabinet.</span></span>
+                    <span><strong class="block text-slate-950">Protected screens</strong><span class="mt-1 block text-sm leading-6 text-slate-600">Guests are redirected before private cabinet content is rendered.</span></span>
                 </div>
                 <div class="flex gap-3 rounded-xl border border-stone-200 bg-stone-50 p-4">
                     <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-800" aria-hidden="true">✓</span>
-                    <span><strong class="block text-slate-950">Roles and logout</strong><span class="mt-1 block text-sm leading-6 text-slate-600">Admin boundaries are enforced and logout invalidates the session.</span></span>
+                    <span><strong class="block text-slate-950">User-aware behavior</strong><span class="mt-1 block text-sm leading-6 text-slate-600">The cabinet displays the signed-in user's identity, role, and status.</span></span>
+                </div>
+                <div class="flex gap-3 rounded-xl border border-stone-200 bg-stone-50 p-4">
+                    <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-800" aria-hidden="true">✓</span>
+                    <span><strong class="block text-slate-950">Roles</strong><span class="mt-1 block text-sm leading-6 text-slate-600">Standard users receive 403 responses from administrator routes.</span></span>
+                </div>
+                <div class="flex gap-3 rounded-xl border border-stone-200 bg-stone-50 p-4">
+                    <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-800" aria-hidden="true">✓</span>
+                    <span><strong class="block text-slate-950">Secure account flows</strong><span class="mt-1 block text-sm leading-6 text-slate-600">Registration, recovery, verification, and sensitive changes are validated and limited.</span></span>
                 </div>
             </div>
         </article>
@@ -229,8 +243,8 @@
     <section class="grid gap-5 lg:grid-cols-2" aria-label="Assignment scope comparison">
         <article class="grid content-start gap-4 rounded-2xl border border-stone-300 bg-white p-6 shadow-xl shadow-slate-900/5">
             <div class="grid gap-2">
-                <span class="w-fit rounded-full bg-slate-900 px-3 py-1.5 text-xs font-bold uppercase tracking-normal text-white">Assignment foundation</span>
-                <h2 class="text-2xl font-bold text-slate-950">What Module 10 demonstrates</h2>
+                <span class="w-fit rounded-full bg-slate-900 px-3 py-1.5 text-xs font-bold uppercase tracking-normal text-white">Course concepts retained</span>
+                <h2 class="text-2xl font-bold text-slate-950">How the foundation scales</h2>
             </div>
             <ul class="grid gap-3 text-sm leading-6 text-slate-700">
                 <li class="flex gap-3"><span class="font-black text-violet-700" aria-hidden="true">01</span><span>Laravel authenticates a user and stores identity in a server-side session.</span></li>
@@ -258,38 +272,48 @@
         <div class="grid gap-2 border-b border-stone-200 bg-stone-50 p-6 md:p-7">
             <p class="text-xs font-bold uppercase tracking-normal text-violet-700">Implementation map</p>
             <h2 id="implementation-map-title" class="text-3xl font-bold leading-tight text-slate-950">Where each responsibility lives</h2>
-            <p class="max-w-3xl leading-7 text-slate-600">A short code map connects the visible behavior to the Laravel application structure.</p>
+            <p class="max-w-3xl leading-7 text-slate-600">Every advanced behavior points to runtime code and an automated feature-test owner.</p>
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full min-w-176 border-collapse text-left">
                 <thead class="bg-slate-900 text-white">
                     <tr>
-                        <th class="px-5 py-4 text-xs font-bold uppercase tracking-normal">User action</th>
-                        <th class="px-5 py-4 text-xs font-bold uppercase tracking-normal">Laravel node</th>
-                        <th class="px-5 py-4 text-xs font-bold uppercase tracking-normal">Result</th>
+                        <th class="px-5 py-4 text-xs font-bold uppercase tracking-normal">Advanced behavior</th>
+                        <th class="px-5 py-4 text-xs font-bold uppercase tracking-normal">Implementation evidence</th>
+                        <th class="px-5 py-4 text-xs font-bold uppercase tracking-normal">Automated proof</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-stone-200 text-sm">
                     <tr class="bg-white align-top">
-                        <td class="px-5 py-4 font-bold text-slate-950">Register or sign in</td>
-                        <td class="px-5 py-4 font-mono text-xs text-violet-800">Auth controllers</td>
-                        <td class="px-5 py-4 leading-6 text-slate-600">Validate identity, regenerate the session, and record the outcome.</td>
+                        <td class="px-5 py-4 font-bold text-slate-950">Login</td>
+                        <td class="px-5 py-4 font-mono text-xs text-violet-800">AuthenticatedSessionController::store</td>
+                        <td class="px-5 py-4 leading-6 text-slate-600">Module10UserAuthenticationTest authenticates a real database user.</td>
                     </tr>
                     <tr class="bg-stone-50 align-top">
-                        <td class="px-5 py-4 font-bold text-slate-950">Open the cabinet</td>
-                        <td class="px-5 py-4 font-mono text-xs text-violet-800">auth → login.enabled → verified</td>
-                        <td class="px-5 py-4 leading-6 text-slate-600">Allow only authenticated, active, email-verified accounts.</td>
+                        <td class="px-5 py-4 font-bold text-slate-950">Logout</td>
+                        <td class="px-5 py-4 font-mono text-xs text-violet-800">AuthenticatedSessionController::destroy</td>
+                        <td class="px-5 py-4 leading-6 text-slate-600">The assignment test proves the user becomes a guest.</td>
                     </tr>
                     <tr class="bg-white align-top">
-                        <td class="px-5 py-4 font-bold text-slate-950">Change security settings</td>
-                        <td class="px-5 py-4 font-mono text-xs text-violet-800">security.confirmed</td>
-                        <td class="px-5 py-4 leading-6 text-slate-600">Require recent password, MFA, or eligible GitHub proof.</td>
+                        <td class="px-5 py-4 font-bold text-slate-950">Protected screens</td>
+                        <td class="px-5 py-4 font-mono text-xs text-violet-800">auth → login.enabled → verified</td>
+                        <td class="px-5 py-4 leading-6 text-slate-600">A guest request to /cabinet is redirected to /login.</td>
                     </tr>
                     <tr class="bg-stone-50 align-top">
-                        <td class="px-5 py-4 font-bold text-slate-950">Manage another user</td>
-                        <td class="px-5 py-4 font-mono text-xs text-violet-800">admin middleware</td>
-                        <td class="px-5 py-4 leading-6 text-slate-600">Enforce the administrator role and revoke sessions after access changes.</td>
+                        <td class="px-5 py-4 font-bold text-slate-950">User-aware behavior</td>
+                        <td class="px-5 py-4 font-mono text-xs text-violet-800">cabinet.dashboard + request()->user()</td>
+                        <td class="px-5 py-4 leading-6 text-slate-600">The cabinet response contains the authenticated user's name and email.</td>
+                    </tr>
+                    <tr class="bg-white align-top">
+                        <td class="px-5 py-4 font-bold text-slate-950">Roles</td>
+                        <td class="px-5 py-4 font-mono text-xs text-violet-800">EnsureAdmin middleware</td>
+                        <td class="px-5 py-4 leading-6 text-slate-600">Tests prove a user is forbidden and an admin is allowed.</td>
+                    </tr>
+                    <tr class="bg-stone-50 align-top">
+                        <td class="px-5 py-4 font-bold text-slate-950">Secure account flows</td>
+                        <td class="px-5 py-4 font-mono text-xs text-violet-800">Form validation + rate limits + step-up</td>
+                        <td class="px-5 py-4 leading-6 text-slate-600">Auth security, MFA, OAuth, and hardening test suites cover the extension.</td>
                     </tr>
                 </tbody>
             </table>
@@ -298,7 +322,7 @@
 
     <section class="grid gap-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8" aria-labelledby="reflection-title">
         <div class="grid gap-3">
-            <p class="text-xs font-bold uppercase tracking-normal text-emerald-800">Assignment reflection</p>
+            <p class="text-xs font-bold uppercase tracking-normal text-emerald-800">Advanced reflection</p>
             <h2 id="reflection-title" class="text-3xl font-bold leading-tight text-slate-950">Authentication is a flow, not a single form.</h2>
             <p class="max-w-3xl text-base leading-7 text-slate-700">
                 The main lesson from this assignment is that login is only the first decision. A complete application must also protect sessions,
