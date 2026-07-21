@@ -146,6 +146,9 @@ assignments/module4b/
 assignments/module9a/
   README.md
   data/contacts.json
+
+assignments/module10a/
+  README.md
 ```
 
 Reusable Module 2A classes:
@@ -167,6 +170,7 @@ Canonical assignment URLs:
 | Module 3B secure product contact form | `http://127.0.0.1:8000/assignments/module3b/SecureProductContactForm.php` |
 | Module 4A database setup              | `http://127.0.0.1:8000/assignments/module4a/database-setup.php`           |
 | Module 4B personal inventory database | `http://127.0.0.1:8000/assignments/module4b/show_inventory.php`           |
+| Module 10A user authentication        | `http://127.0.0.1:8000/roadmap/module-10/assignment`                      |
 
 Legacy URLs such as `/module4b/show_inventory.php` are still routed through
 Laravel for compatibility, but new submissions should use `/assignments/...`
