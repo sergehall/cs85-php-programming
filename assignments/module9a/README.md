@@ -2,15 +2,17 @@
 
 ## Assignment Goal
 
-Build a complete Laravel CRUD application that can load a default JSON dataset,
-read and filter database records, create new contacts, update existing contacts,
-and delete one record or clear the training tables.
+Build a conventional Laravel resource CRUD application that can create, list,
+edit, and delete contacts with required name, email, and phone fields.
 
-The interactive workbench is available at:
+The assignment application is available at:
 
 ```text
-/assignments/module9a/contacts
+/contacts
 ```
+
+An extended CRUD workbench with filters, JSON import, and contact groups remains
+available at `/assignments/module9a/contacts` as an additional demonstration.
 
 The Module 9 roadmap links to the workbench from:
 
@@ -33,6 +35,7 @@ contact_groups
 contacts
   id
   contact_group_id -> contact_groups.id
+  name
   first_name
   last_name
   email
@@ -71,21 +74,29 @@ It contains fictional data only. The import operation is idempotent:
 
 ## HTTP and CRUD Map
 
-| Operation              | Method   | Route                                      | Laravel behavior                                 |
-| ---------------------- | -------- | ------------------------------------------ | ------------------------------------------------ |
-| Open workbench         | `GET`    | `/assignments/module9a/contacts`           | Render filters, forms, table, and JSON preview   |
-| Read JSON response     | `GET`    | `/assignments/module9a/contacts/data`      | Return filtered records as JSON                  |
-| Import default data    | `POST`   | `/assignments/module9a/contacts/dataset`   | Transactionally upsert JSON groups and contacts  |
-| Create contact         | `POST`   | `/assignments/module9a/contacts`           | Validate and insert a contact                    |
-| Update contact details | `PUT`    | `/assignments/module9a/contacts/details`   | Update phone, company, and optional group by ID  |
-| Update contact         | `PUT`    | `/assignments/module9a/contacts/{contact}` | Validate and update through route model binding  |
-| Delete contact         | `DELETE` | `/assignments/module9a/contacts/{contact}` | Delete the bound contact                         |
-| Delete by entered ID   | `DELETE` | `/assignments/module9a/contacts/by-id`     | Validate the primary key and delete the row      |
-| Clear training tables  | `DELETE` | `/assignments/module9a/contacts/dataset`   | Delete contacts, then groups, in one transaction |
+| Operation        | Method   | Route                      | Laravel behavior                         |
+| ---------------- | -------- | -------------------------- | ---------------------------------------- |
+| List contacts    | `GET`    | `/contacts`                | `index()` renders `contacts.index`       |
+| Open create form | `GET`    | `/contacts/create`         | `create()` renders `contacts.create`     |
+| Create contact   | `POST`   | `/contacts`                | `store()` validates and inserts          |
+| Read one contact | `GET`    | `/contacts/{contact}`      | `show()` redirects to the edit page      |
+| Open edit form   | `GET`    | `/contacts/{contact}/edit` | `edit()` renders `contacts.edit`         |
+| Update contact   | `PUT`    | `/contacts/{contact}`      | `update()` uses route model binding      |
+| Delete contact   | `DELETE` | `/contacts/{contact}`      | `destroy()` deletes the selected contact |
+
+The seven conventional CRUD routes are registered with:
+
+```php
+Route::resource('contacts', ContactController::class);
+```
 
 All mutating routes use CSRF protection and rate limiting. Mutations are
 available in local and testing environments. In production they require an
 authenticated application administrator.
+
+The advanced workbench keeps its additional endpoints under
+`/assignments/module9a/contacts` for JSON import, filtered JSON output, focused
+detail updates, and dataset reset operations.
 
 The focused PUT editor intentionally allows any fictional Module 9 contact to
 be selected in local and testing environments. A real self-service profile
@@ -112,8 +123,11 @@ directions come from a server-side allowlist.
 ## Laravel Structure
 
 ```text
+app/Http/Controllers/ContactController.php
 app/Http/Controllers/Assignments/Module9aContactController.php
 app/Http/Controllers/Assignments/Module9aContactDatasetController.php
+app/Http/Requests/StoreContactRequest.php
+app/Http/Requests/UpdateContactRequest.php
 app/Http/Requests/Assignments/*Module9aContactRequest.php
 app/Models/Contact.php
 app/Models/ContactGroup.php
@@ -121,7 +135,12 @@ app/Services/Modules/Module9A/ContactDatasetImporter.php
 app/Services/Modules/Module9A/ContactDirectoryQuery.php
 app/Services/Modules/Module9A/Module9aWriteAccess.php
 database/migrations/2026_07_14_000014_create_module9_contact_tables.php
+database/migrations/2026_07_20_000016_align_contacts_with_resource_crud_requirements.php
+resources/views/contacts/index.blade.php
+resources/views/contacts/create.blade.php
+resources/views/contacts/edit.blade.php
 resources/views/assignments/module9a/contacts.blade.php
+tests/Feature/ContactResourceTest.php
 tests/Feature/Module9aContactListTest.php
 ```
 
@@ -133,14 +152,18 @@ Run the normal project migration:
 php artisan migrate
 ```
 
-Then open the workbench and select **POST · Import JSON**. No separate seeder or
-manual SQL is required.
+Open `/contacts` for the required resource CRUD application. Open the advanced
+workbench and select **POST · Import JSON** when the extended demonstration data
+is needed. No separate seeder or manual SQL is required.
 
 ## Validation Rules
 
-- first and last name are required and limited to 100 characters;
+- name is required and limited to 255 characters;
 - email is required, normalized to lowercase, valid, and unique;
-- phone, company, group, and notes are optional;
+- phone is required and limited to 32 characters;
+- the extended first and last name fields are required and synchronized with
+  the standard `name` column;
+- company, group, and notes are optional;
 - the focused PUT editor validates the selected training contact and changes
   only its phone, company, and optional group;
 - selected groups must exist;
@@ -152,6 +175,7 @@ manual SQL is required.
 
 ```bash
 php artisan test tests/Feature/Module9aContactListTest.php
+php artisan test tests/Feature/ContactResourceTest.php
 php artisan test
 composer lint
 vendor/bin/pint --test
