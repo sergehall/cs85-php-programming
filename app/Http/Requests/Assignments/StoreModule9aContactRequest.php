@@ -25,7 +25,7 @@ final class StoreModule9aContactRequest extends FormRequest
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:255', 'unique:contacts,email'],
-            'phone' => ['nullable', 'string', 'max:32'],
+            'phone' => ['required', 'string', 'max:32'],
             'company' => ['nullable', 'string', 'max:150'],
             'contact_group_id' => ['nullable', 'integer', 'exists:contact_groups,id'],
             'role' => ['required', Rule::in([Contact::ROLE_USER, Contact::ROLE_ADMIN])],

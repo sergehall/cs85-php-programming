@@ -25,7 +25,10 @@
         <div class="absolute -top-40 right-0 -z-10 h-96 w-96 rounded-full bg-amber-500/20 blur-3xl" aria-hidden="true"></div>
         <div class="grid gap-8 px-6 py-9 sm:px-8 lg:grid-cols-[1.25fr_.75fr] lg:px-11 lg:py-12">
             <div class="grid content-start gap-5">
-                <a class="w-fit rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-bold text-white no-underline transition hover:bg-white/15" href="{{ route('roadmap.module', 'module-9') }}">← Return to Module 9</a>
+                <div class="flex flex-wrap gap-3">
+                    <a class="w-fit rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-bold text-white no-underline transition hover:bg-white/15" href="{{ route('roadmap.module', 'module-9') }}">← Return to Module 9</a>
+                    <a class="w-fit rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-sm font-bold text-sky-200 no-underline transition hover:bg-sky-300/20" href="{{ route('contacts.index') }}">Standard contact list</a>
+                </div>
                 <div class="grid gap-3">
                     <p class="text-xs font-black uppercase tracking-[.16em] text-amber-300">Module 9 · Assignment 9A</p>
                     <h1 class="max-w-4xl text-4xl leading-none font-black tracking-tight sm:text-6xl">Contact List CRUD workbench</h1>
@@ -317,7 +320,7 @@
                     <div class="grid gap-4 sm:grid-cols-2">
                         <label class="grid gap-2 text-sm font-black text-slate-700" for="update-details-phone">
                             Phone
-                            <input class="min-h-12 rounded-xl border border-stone-300 bg-white px-4 py-3 font-normal" id="update-details-phone" name="details_phone" type="tel" maxlength="32" value="{{ old('details_phone', $editingContact?->phone) }}" placeholder="+1-310-555-0100" data-contact-details-phone>
+                            <input class="min-h-12 rounded-xl border border-stone-300 bg-white px-4 py-3 font-normal" id="update-details-phone" name="details_phone" type="tel" maxlength="32" value="{{ old('details_phone', $editingContact?->phone) }}" placeholder="+1-310-555-0100" required data-contact-details-phone>
                         </label>
 
                         <label class="grid gap-2 text-sm font-black text-slate-700" for="update-details-company">
@@ -380,7 +383,7 @@
             @foreach ([
                 ['Create', 'POST', 'Validated form → Contact::create()', 'border-emerald-200 bg-emerald-50 text-emerald-900'],
                 ['Read', 'GET', 'Allowlisted filters → Eloquent query', 'border-sky-200 bg-sky-50 text-sky-900'],
-                ['Update', 'PUT', 'Route model binding → update()', 'border-violet-200 bg-violet-50 text-violet-900'],
+                ['Update', 'PUT', 'Validated ID → findOrFail() → update()', 'border-violet-200 bg-violet-50 text-violet-900'],
                 ['Delete', 'DELETE', 'Primary key → delete()', 'border-orange-200 bg-orange-50 text-orange-900'],
             ] as [$operation, $method, $description, $classes])
                 <article class="grid content-start gap-3 rounded-2xl border p-5 {{ $classes }}">

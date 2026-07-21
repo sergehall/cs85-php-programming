@@ -21,7 +21,7 @@
 
     <label class="grid gap-2 text-sm font-black text-slate-700" for="{{ $fieldPrefix }}-phone">
         Phone
-        <input class="min-h-12 rounded-xl border border-stone-300 bg-white px-4 py-3 font-normal" id="{{ $fieldPrefix }}-phone" name="phone" type="tel" maxlength="32" value="{{ old('phone', $record?->phone) }}" placeholder="+1-310-555-0100">
+        <input class="min-h-12 rounded-xl border border-stone-300 bg-white px-4 py-3 font-normal" id="{{ $fieldPrefix }}-phone" name="phone" type="tel" maxlength="32" value="{{ old('phone', $record?->phone) }}" placeholder="+1-310-555-0100" required>
     </label>
 
     <label class="grid gap-2 text-sm font-black text-slate-700" for="{{ $fieldPrefix }}-company">

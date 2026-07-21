@@ -21,7 +21,7 @@ final class UpdateModule9aContactDetailsRequest extends FormRequest
     {
         return [
             'contact_id' => ['required', 'integer', 'min:1', 'exists:contacts,id'],
-            'details_phone' => ['present', 'nullable', 'string', 'max:32'],
+            'details_phone' => ['required', 'string', 'max:32'],
             'details_company' => ['present', 'nullable', 'string', 'max:150'],
             'details_contact_group_id' => ['present', 'nullable', 'integer', 'exists:contact_groups,id'],
         ];

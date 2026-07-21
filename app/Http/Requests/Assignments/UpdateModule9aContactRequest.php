@@ -32,7 +32,7 @@ final class UpdateModule9aContactRequest extends FormRequest
                 'max:255',
                 Rule::unique('contacts', 'email')->ignore($contact instanceof Contact ? $contact->getKey() : null),
             ],
-            'phone' => ['nullable', 'string', 'max:32'],
+            'phone' => ['required', 'string', 'max:32'],
             'company' => ['nullable', 'string', 'max:150'],
             'contact_group_id' => ['nullable', 'integer', 'exists:contact_groups,id'],
             'role' => ['required', Rule::in([Contact::ROLE_USER, Contact::ROLE_ADMIN])],
