@@ -80,9 +80,20 @@ assignments/module10a/resources/views/dashboard.blade.php
 assignments/module10a/resources/views/secret.blade.php
   Custom members-only page
 
-assignments/module10a/docs/screenshots/README.md
-  Required screenshot names and safety checklist
+assignments/module10a/README.md
+  Short answers, verification commands, and the required screenshot checklist
 ```
+
+## Required Screenshots
+
+1. Browser: the complete `/register` form.
+2. Browser: the complete `/login` form.
+3. Browser: `/dashboard` after login with the personalized greeting.
+4. Browser: `/secret` after login with the `Members only!` message.
+5. VS Code: `routes/auth.php` with the authentication routes.
+
+Before submitting, hide or blur real email addresses and other personal data
+that are not required as assignment evidence.
 
 ## Verification
 
@@ -107,5 +118,5 @@ npm run quality
 - [x] Include a personalized protected dashboard.
 - [x] Include an auth-protected `/secret` page.
 - [x] Answer all four concept questions in this README.
-- [ ] Capture the five screenshots listed in `docs/screenshots/README.md`.
+- [ ] Capture the five screenshots listed in the Required Screenshots section.
 - [ ] Submit the repository URL and screenshots to Canvas.

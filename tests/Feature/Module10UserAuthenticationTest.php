@@ -72,7 +72,6 @@ class Module10UserAuthenticationTest extends TestCase
         $this->assertFileExists(base_path('assignments/module10a/routes/web.php'));
         $this->assertFileExists(base_path('assignments/module10a/resources/views/dashboard.blade.php'));
         $this->assertFileExists(base_path('assignments/module10a/resources/views/secret.blade.php'));
-        $this->assertFileExists(base_path('assignments/module10a/docs/screenshots/README.md'));
 
         $readme = file_get_contents(base_path('assignments/module10a/README.md'));
 
@@ -81,6 +80,9 @@ class Module10UserAuthenticationTest extends TestCase
         $this->assertStringContainsString('Why are passwords hashed instead of stored as plain text?', $readme);
         $this->assertStringContainsString('Which file defines the `/login` and `/register` routes?', $readme);
         $this->assertStringContainsString('What does the `auth` middleware do?', $readme);
+        $this->assertStringContainsString('## Required Screenshots', $readme);
+        $this->assertStringContainsString('Browser: the complete `/register` form.', $readme);
+        $this->assertStringContainsString('VS Code: `routes/auth.php` with the authentication routes.', $readme);
     }
 
     public function test_assignment_login_creates_an_authenticated_session(): void
