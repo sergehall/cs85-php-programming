@@ -30,6 +30,7 @@ use App\Http\Controllers\Cabinet\PasswordController;
 use App\Http\Controllers\Cabinet\ProfileController;
 use App\Http\Controllers\Cabinet\SecurityController;
 use App\Http\Controllers\Cabinet\SessionController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -64,7 +65,10 @@ Route::get('/inventory', [Module8bInventoryController::class, 'index'])
 Route::redirect('/assignments/module8b', '/inventory');
 Route::redirect('/assignments/module8b/inventory', '/inventory');
 
-Route::redirect('/assignments/module9a', '/assignments/module9a/contacts');
+Route::resource('contacts', ContactController::class)
+    ->middlewareFor(['store', 'update', 'destroy'], 'throttle:10,1');
+
+Route::redirect('/assignments/module9a', '/contacts');
 Route::prefix('assignments/module9a/contacts')->name('assignments.module9a.contacts.')->group(function () {
     Route::get('/', [Module9aContactController::class, 'index'])->name('index');
     Route::get('/data', [Module9aContactController::class, 'data'])->name('data');

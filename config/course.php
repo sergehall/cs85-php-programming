@@ -289,7 +289,7 @@ return [
                     'description' => 'Load a default JSON dataset, query and filter contacts, then create, update, and delete records through a complete Laravel CRUD interface.',
                     'status' => 'Ready',
                     'type' => 'CRUD + Validation',
-                    'route' => 'assignments.module9a.contacts.index',
+                    'route' => 'contacts.index',
                     'source' => 'assignments/module9a/README.md',
                 ],
             ],
