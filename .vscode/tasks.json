@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "npm: dev-local",
+            "label": "npm: dev",
             "type": "npm",
-            "script": "dev-local",
+            "script": "dev",
             "problemMatcher": [],
             "presentation": {
                 "reveal": "always",
@@ -13,9 +13,9 @@
             }
         },
         {
-            "label": "npm: restart:app",
+            "label": "npm: dev:restart",
             "type": "npm",
-            "script": "restart:app",
+            "script": "dev:restart",
             "problemMatcher": [],
             "presentation": {
                 "reveal": "always",
@@ -24,9 +24,9 @@
             }
         },
         {
-            "label": "npm: stop:app",
+            "label": "npm: dev:stop",
             "type": "npm",
-            "script": "stop:app",
+            "script": "dev:stop",
             "problemMatcher": [],
             "presentation": {
                 "reveal": "always",

@@ -177,7 +177,7 @@ with `data: [DONE]`.
 Start the complete local development stack:
 
 ```bash
-npm run dev-local
+npm run dev
 ```
 
 Alternatively, run Laravel and Vite separately:

@@ -8,21 +8,15 @@ describe('local launch scripts', () => {
     it('keeps local startup orchestration in Node instead of inline shell env', async () => {
         const packageJson = JSON.parse(await readFile('package.json', 'utf8'));
 
-        assert.equal(packageJson.scripts['dev-local'], 'node scripts/dev-local.mjs');
-        assert.equal(
-            packageJson.scripts['dev-local:no-open'],
-            'node scripts/dev-local.mjs --no-open',
-        );
+        assert.equal(packageJson.scripts.dev, 'node scripts/dev-local.mjs');
+        assert.equal(packageJson.scripts['dev:no-open'], 'node scripts/dev-local.mjs --no-open');
         assert.equal(
             packageJson.scripts['db:migrate:local'],
             'node scripts/dev-local.mjs --migrate-only',
         );
-        assert.equal(packageJson.scripts['stop:app'], 'node scripts/stop-local.mjs');
-        assert.equal(packageJson.scripts['restart:app'], 'node scripts/restart-local.mjs');
-        assert.doesNotMatch(
-            packageJson.scripts['dev-local'],
-            /DB_PASSWORD|DB_USERNAME|DB_DATABASE/u,
-        );
+        assert.equal(packageJson.scripts['dev:stop'], 'node scripts/stop-local.mjs');
+        assert.equal(packageJson.scripts['dev:restart'], 'node scripts/restart-local.mjs');
+        assert.doesNotMatch(packageJson.scripts.dev, /DB_PASSWORD|DB_USERNAME|DB_DATABASE/u);
         assert.doesNotMatch(
             packageJson.scripts['db:migrate:local'],
             /DB_PASSWORD|DB_USERNAME|DB_DATABASE/u,

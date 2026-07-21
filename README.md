@@ -222,7 +222,7 @@ Project infrastructure runs in Docker Compose and persists between sessions.
 
 ```mermaid
 flowchart LR
-    Developer["Developer / VS Code"] --> Script["npm run dev-local"]
+    Developer["Developer / VS Code"] --> Script["npm run dev"]
     Script --> Infra["npm run infra:up"]
     Script --> Migrate["npm run db:migrate:local"]
     Script --> Laravel["Laravel dev server\n127.0.0.1:8000"]
@@ -400,7 +400,7 @@ php artisan migrate
 Start the full local stack:
 
 ```bash
-npm run dev-local
+npm run dev
 ```
 
 Local startup routes email to Mailpit by default. To use the SMTP credentials
@@ -414,23 +414,16 @@ The startup log prints either `Mailpit` or `external SMTP from .env` without
 exposing credentials. Keep the default enabled unless real delivery is the
 specific test objective.
 
-Aliases:
-
-```bash
-npm run dev
-npm run start:app
-```
-
 Stop the Laravel and Vite processes started by this project:
 
 ```bash
-npm run stop:app
+npm run dev:stop
 ```
 
 Stop any existing local application instance and start a fresh one:
 
 ```bash
-npm run restart:app
+npm run dev:restart
 ```
 
 Both commands verify that the process belongs to this project before stopping

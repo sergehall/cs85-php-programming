@@ -42,7 +42,7 @@
 
         $workflow = [
             ['step' => 'Infra', 'command' => 'npm run infra:up', 'detail' => 'Starts Docker services for the project.'],
-            ['step' => 'App', 'command' => 'npm run dev-local', 'detail' => 'Runs Laravel and Vite for local work.'],
+            ['step' => 'App', 'command' => 'npm run dev', 'detail' => 'Runs Laravel and Vite for local work.'],
             ['step' => 'Quality', 'command' => 'composer quality', 'detail' => 'Formats, analyzes, and tests PHP.'],
             ['step' => 'Build', 'command' => 'npm run quality', 'detail' => 'Checks frontend assets and CI safety.'],
         ];
