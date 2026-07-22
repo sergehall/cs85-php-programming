@@ -20,7 +20,7 @@ return [
             'model' => 'qwen/qwen3.6-35b-a3b',
             'model_name' => 'Qwen 3.6 35B A3B',
             'model_profile' => '35B MoE · 4-bit · 20.4 GB',
-            'recommended_for' => 'Everyday learning, concept explanations, quizzes, and general programming questions.',
+            'recommended_for' => 'Everyday learning, concept explanations, quizzes, and programming questions.',
             'temperature' => 0.4,
             'prompt' => resource_path('prompts/ai/general.md'),
         ],

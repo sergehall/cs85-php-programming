@@ -39,18 +39,16 @@ class AiAssistantTest extends TestCase
             $response = $this->actingAs(User::factory()->create(['role' => $role]))->get('/cabinet/ai');
 
             $response->assertOk();
-            $response->assertSee('Learning assistant');
+            $response->assertSee('AI Study Studio');
             $response->assertSee('General Tutor');
-            $response->assertSee('data-ai-model-guide', false);
-            $response->assertSee('data-ai-model-guide-summary', false);
-            $response->assertSee('Default');
-            $response->assertSee('Three modes · three local models');
+            $response->assertSee('Your private learning copilot');
+            $response->assertSee('data-ai-conversation-search-empty', false);
+            $response->assertDontSee('data-ai-model-guide', false);
+            $response->assertDontSee('Specialized routing');
+            $response->assertSee('Private history');
             $response->assertSee('Qwen 3.6 35B A3B');
-            $response->assertSee('qwen/qwen3.6-35b-a3b');
             $response->assertSee('Qwen 3 Coder Next');
-            $response->assertSee('qwen/qwen3-coder-next');
             $response->assertSee('GPT-OSS 120B');
-            $response->assertSee('openai/gpt-oss-120b');
         }
     }
 
@@ -71,7 +69,12 @@ class AiAssistantTest extends TestCase
             ->assertOk()
             ->assertSee('Coding Assistant')
             ->assertSee('Qwen 3 Coder Next')
-            ->assertSee('Active');
+            ->assertSee('Active')
+            ->assertSee('data-ai-message-form', false)
+            ->assertSee('data-ai-character-count', false)
+            ->assertSee('data-ai-scroll-latest', false)
+            ->assertSee('Review this Laravel code for correctness and security.')
+            ->assertSee('Local AI can make mistakes.');
     }
 
     public function test_conversation_mode_is_allowlisted(): void
@@ -164,10 +167,12 @@ class AiAssistantTest extends TestCase
     {
         $owner = User::factory()->create();
         $otherUser = User::factory()->create();
-        $conversation = AiConversation::factory()->for($owner)->create();
+        $conversation = AiConversation::factory()->for($owner)->create([
+            'title' => str_repeat('Long conversation title ', 8),
+        ]);
         AiMessage::factory()->for($conversation, 'conversation')->create([
             'role' => AiMessage::ROLE_ASSISTANT,
-            'content' => '<script>alert("ai")</script>',
+            'content' => '<script>alert("ai")</script> '.str_repeat('unbroken-token-', 80),
         ]);
 
         $this->actingAs($otherUser)
@@ -179,6 +184,10 @@ class AiAssistantTest extends TestCase
 
         $response = $this->actingAs($owner)->get(route('cabinet.ai.conversations.show', $conversation->public_uuid));
         $response->assertOk();
+        $response->assertSee('data-ai-copy', false);
+        $response->assertSee('data-ai-conversation-title', false);
+        $response->assertSee('[overflow-wrap:anywhere]', false);
+        $response->assertSee('overflow-x-hidden', false);
         $response->assertDontSee('<script>alert("ai")</script>', false);
         $response->assertSee('&lt;script&gt;alert(&quot;ai&quot;)&lt;/script&gt;', false);
     }
