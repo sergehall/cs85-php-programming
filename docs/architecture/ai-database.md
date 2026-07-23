@@ -27,6 +27,7 @@ Operational telemetry only:
 
 - id
 - ai_conversation_id
+- user_message_id
 - user_id
 - mode
 - provider
@@ -38,4 +39,10 @@ Operational telemetry only:
 - error_code
 - timestamps
 
-Prompts and responses are not duplicated in request telemetry. Conversation ownership is enforced through `user_id`, and deleting a conversation cascades to its messages and request records.
+`user_message_id` links every provider attempt to the user message that caused
+it. A retry creates another request record for the same user message instead of
+duplicating conversation content.
+
+Prompts and responses are not duplicated in request telemetry. Conversation
+ownership is enforced through `user_id`, and deleting a conversation cascades
+to its messages and request records.

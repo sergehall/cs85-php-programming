@@ -16,6 +16,7 @@ Start with the [Authentication and Account Security handbook](authentication/REA
 
 - [Software requirements specification](AI_PLATFORM_SRS.md)
 - [Architecture](architecture/ai-architecture.md)
+- [AI model runtime and request lifecycle](architecture/ai-model-runtime.md)
 - [Database design](architecture/ai-database.md)
 - [Local setup](architecture/ai-local-setup.md)
 - [Model routing](architecture/ai-routing.md)

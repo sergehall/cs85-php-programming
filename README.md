@@ -72,6 +72,7 @@ Detailed engineering documentation is maintained under [`docs/`](docs/README.md)
 - [Authentication Operations Runbook](docs/authentication/operations.md)
 - [Authentication Testing Strategy](docs/authentication/testing.md)
 - [AI Platform SRS](docs/AI_PLATFORM_SRS.md)
+- [AI Model Runtime and Request Lifecycle](docs/architecture/ai-model-runtime.md)
 
 ```text
 app/                         Laravel application code

@@ -21,11 +21,15 @@ not merely a chatbot.
 
 ## 4. Supported Models
 
-| Role         | Model                 |
-| ------------ | --------------------- |
-| General      | qwen/qwen3.6-35b-a3b  |
-| Coding       | qwen/qwen3-coder-next |
-| Architecture | openai/gpt-oss-120b   |
+| Mode         | Display name        | Model identifier        |
+| ------------ | ------------------- | ----------------------- |
+| General      | Qwen 3.6 35B A3B    | `qwen/qwen3.6-35b-a3b`  |
+| Coding       | Qwen 3 Coder Next   | `qwen/qwen3-coder-next` |
+| Architecture | OpenAI GPT-OSS 120B | `openai/gpt-oss-120b`   |
+
+Users select a mode when creating a conversation. Laravel resolves and stores
+the configured model identifier, which remains fixed for that conversation.
+The browser cannot submit an arbitrary model identifier.
 
 ## 5. High-Level Architecture
 
@@ -49,7 +53,7 @@ The platform shall:
 - debug exceptions
 - maintain conversation history
 - support provider switching
-- support model switching
+- route new conversations from a validated mode to a configured model
 - stream responses to the authenticated browser
 - isolate conversation history by Laravel user
 - expose only allowlisted read-only application tools
@@ -62,8 +66,10 @@ The platform shall:
 - LM Studio is the only active provider for the local MVP.
 - The OpenAI-compatible `POST /v1/chat/completions` endpoint is used with streaming enabled.
 - The default base URL is `http://127.0.0.1:1234/v1`.
-- Provider output is rendered as escaped plain text.
+- Laravel renders model Markdown during streaming and strips raw HTML and unsafe links.
 - Tools are limited to read-only course configuration lookups.
+- The complete runtime contract is documented in
+  [AI Model Runtime](architecture/ai-model-runtime.md).
 
 ## 7. Non-functional Requirements
 
@@ -99,7 +105,7 @@ No hardcoded model names.
 - Rate limiting
 - XSS protection
 - CSRF
-- Escaped AI output
+- Server-rendered and sanitized AI Markdown
 - No secrets in Git
 - Per-user conversation ownership
 - No shell, filesystem, arbitrary URL, or SQL tools

@@ -6,6 +6,9 @@ provider. The browser never connects to LM Studio directly; it sends an
 authenticated request to Laravel, and Laravel calls LM Studio on the local
 machine.
 
+For the application-level model selection, prompt, streaming, tool, retry, and
+security contract, see [AI Model Runtime](ai-model-runtime.md).
+
 ## Required Runtime State
 
 The AI workspace works only when all of the following are true:
@@ -33,6 +36,10 @@ and the API should remain bound to `127.0.0.1` for local-only access.
 
 The API identifiers are the application contract. Do not put model file paths
 in Laravel configuration.
+
+The selected identifier is stored when a conversation is created. After
+changing a mapping, create a new conversation to verify the new model; existing
+conversations remain pinned to their stored identifier.
 
 The current workstation stores the models under these locations:
 
