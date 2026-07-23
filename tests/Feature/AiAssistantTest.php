@@ -119,6 +119,7 @@ class AiAssistantTest extends TestCase
 
         $this->assertStringContainsString('Local ', $streamed);
         $this->assertStringContainsString('answer.', $streamed);
+        $this->assertStringContainsString('"rendered_html":"<p>Local</p>', $streamed);
         $this->assertStringContainsString('event: complete', $streamed);
         $this->assertCount(1, $this->provider->requests);
         $this->assertSame(

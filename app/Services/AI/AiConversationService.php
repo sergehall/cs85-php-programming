@@ -85,6 +85,8 @@ final class AiConversationService
         ]);
 
         $startedAt = hrtime(true);
+        $streamedContent = '';
+        $lastRenderedAt = 0.0;
 
         try {
             $messages = $this->conversationMessages($conversation, $mode);
@@ -97,11 +99,12 @@ final class AiConversationService
             ));
 
             foreach ($providerStream as $delta) {
-                yield ['type' => 'delta', 'content' => $delta];
+                yield $this->streamDeltaEvent($delta, $streamedContent, $lastRenderedAt);
             }
 
             $result = $providerStream->getReturn();
             $assistantContent = $result->content;
+            $streamedContent = $assistantContent;
             $promptTokens = $result->promptTokens;
             $completionTokens = $result->completionTokens;
 
@@ -127,11 +130,11 @@ final class AiConversationService
                 ));
 
                 if ($assistantContent !== '') {
-                    yield ['type' => 'delta', 'content' => "\n\n"];
+                    yield $this->streamDeltaEvent("\n\n", $streamedContent, $lastRenderedAt);
                 }
 
                 foreach ($followUpStream as $delta) {
-                    yield ['type' => 'delta', 'content' => $delta];
+                    yield $this->streamDeltaEvent($delta, $streamedContent, $lastRenderedAt);
                 }
 
                 $followUpResult = $followUpStream->getReturn();
@@ -259,6 +262,29 @@ final class AiConversationService
     private function sumTokens(?int $first, ?int $second): ?int
     {
         return $first === null && $second === null ? null : ($first ?? 0) + ($second ?? 0);
+    }
+
+    /**
+     * @return array{type:string,content:string,rendered_html?:string}
+     */
+    private function streamDeltaEvent(
+        string $delta,
+        string &$streamedContent,
+        float &$lastRenderedAt,
+    ): array {
+        $streamedContent .= $delta;
+        $event = ['type' => 'delta', 'content' => $delta];
+        $now = microtime(true);
+        $shouldRender = $lastRenderedAt === 0.0
+            || $now - $lastRenderedAt >= 0.075
+            || str_contains($delta, "\n");
+
+        if ($shouldRender) {
+            $event['rendered_html'] = $this->markdown->render($streamedContent);
+            $lastRenderedAt = $now;
+        }
+
+        return $event;
     }
 
     private function elapsedMilliseconds(int $startedAt): int

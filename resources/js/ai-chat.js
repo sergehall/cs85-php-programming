@@ -105,6 +105,7 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
         return {
             article,
             content: article?.querySelector('[data-ai-message-content]') ?? null,
+            rawContent: content,
         };
     };
 
@@ -178,7 +179,13 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
     const handleStreamEvent = (streamEvent, assistantMessage) => {
         if (streamEvent.type === 'delta' && typeof streamEvent.content === 'string') {
             const shouldFollow = isNearLatestMessage();
-            assistantMessage.content.textContent += streamEvent.content;
+            assistantMessage.rawContent += streamEvent.content;
+
+            if (typeof streamEvent.rendered_html === 'string' && assistantMessage.content) {
+                assistantMessage.content.innerHTML = streamEvent.rendered_html;
+                assistantMessage.content.classList.remove('whitespace-pre-wrap');
+            }
+
             const stateElement = assistantMessage.article?.querySelector('[data-ai-message-state]');
 
             if (stateElement) {
