@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $ai_conversation_id
@@ -39,5 +40,13 @@ class AiMessage extends Model
     public function conversation(): BelongsTo
     {
         return $this->belongsTo(AiConversation::class, 'ai_conversation_id');
+    }
+
+    /**
+     * @return HasOne<AiRequest, $this>
+     */
+    public function latestAiRequest(): HasOne
+    {
+        return $this->hasOne(AiRequest::class, 'user_message_id')->latestOfMany();
     }
 }

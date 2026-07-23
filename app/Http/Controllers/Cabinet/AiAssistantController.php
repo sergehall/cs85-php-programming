@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateAiConversationRequest;
 use App\Http\Requests\SubmitAiMessageRequest;
 use App\Models\AiConversation;
+use App\Models\AiMessage;
 use App\Models\User;
 use App\Services\AI\AiConversationService;
+use App\Services\AI\AiMarkdownRenderer;
 use App\Services\AI\Enums\AiMode;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -16,6 +18,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AiAssistantController extends Controller
 {
+    public function __construct(
+        private readonly AiMarkdownRenderer $markdown,
+    ) {}
+
     public function index(Request $request): View
     {
         return $this->workspace($this->authenticatedUser($request));
@@ -55,8 +61,42 @@ class AiAssistantController extends Controller
         $ownedConversation = $this->ownedConversation($user, $conversation);
         $message = $request->validated('message');
 
-        return response()->stream(function () use ($service, $ownedConversation, $message): void {
-            foreach ($service->streamReply($ownedConversation, $message) as $event) {
+        return $this->streamResponse(
+            $service->streamReply($ownedConversation, $message),
+        );
+    }
+
+    public function retry(
+        Request $request,
+        string $conversation,
+        int $message,
+        AiConversationService $service,
+    ): StreamedResponse {
+        $user = $this->authenticatedUser($request);
+        $ownedConversation = $this->ownedConversation($user, $conversation);
+        $userMessage = $ownedConversation->messages()
+            ->with('latestAiRequest')
+            ->whereKey($message)
+            ->where('role', AiMessage::ROLE_USER)
+            ->firstOrFail();
+
+        abort_unless(
+            $userMessage->latestAiRequest?->isRetryable() === true,
+            422,
+        );
+
+        return $this->streamResponse(
+            $service->retryReply($ownedConversation, $userMessage),
+        );
+    }
+
+    /**
+     * @param  iterable<int, array<string, mixed>>  $events
+     */
+    private function streamResponse(iterable $events): StreamedResponse
+    {
+        return response()->stream(function () use ($events): void {
+            foreach ($events as $event) {
                 $eventName = is_string($event['type'] ?? null) ? $event['type'] : 'message';
                 echo "event: {$eventName}\n";
                 echo 'data: '.json_encode($event, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n\n";
@@ -81,13 +121,14 @@ class AiAssistantController extends Controller
             ->limit(30)
             ->get();
 
-        $activeConversation?->load('messages');
+        $activeConversation?->load('messages.latestAiRequest');
 
         return view('cabinet.ai.index', [
             'activeConversation' => $activeConversation,
             'conversations' => $conversations,
             'modes' => config('ai.modes'),
             'promptLimit' => (int) config('ai.limits.prompt_characters'),
+            'markdown' => $this->markdown,
         ]);
     }
 

@@ -38,7 +38,7 @@ return [
             'label' => 'Architecture Advisor',
             'description' => 'Architecture, planning, trade-offs, and maintainability reviews.',
             'model' => 'openai/gpt-oss-120b',
-            'model_name' => 'GPT-OSS 120B',
+            'model_name' => 'OpenAI GPT-OSS 120B',
             'model_profile' => '120B · MXFP4 · 63.4 GB',
             'recommended_for' => 'System design, architecture reviews, technical planning, and trade-off analysis.',
             'temperature' => 0.3,

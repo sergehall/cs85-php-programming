@@ -7,13 +7,19 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $ai_conversation_id
+ * @property int|null $user_message_id
  * @property int $user_id
+ * @property string $provider
+ * @property string $status
+ * @property Carbon|null $created_at
  */
 #[Fillable([
     'ai_conversation_id',
+    'user_message_id',
     'user_id',
     'mode',
     'provider',
@@ -44,10 +50,34 @@ class AiRequest extends Model
     }
 
     /**
+     * @return BelongsTo<AiMessage, $this>
+     */
+    public function userMessage(): BelongsTo
+    {
+        return $this->belongsTo(AiMessage::class, 'user_message_id');
+    }
+
+    /**
      * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function isRetryable(): bool
+    {
+        if ($this->status === self::STATUS_FAILED) {
+            return true;
+        }
+
+        if ($this->status !== self::STATUS_PROCESSING || $this->created_at === null) {
+            return false;
+        }
+
+        $providerTimeout = (int) config("ai.providers.{$this->provider}.timeout", 180);
+        $staleAfterSeconds = max(60, $providerTimeout + 30);
+
+        return $this->created_at->lte(now()->subSeconds($staleAfterSeconds));
     }
 }

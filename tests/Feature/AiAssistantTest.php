@@ -48,7 +48,7 @@ class AiAssistantTest extends TestCase
             $response->assertSee('Private history');
             $response->assertSee('Qwen 3.6 35B A3B');
             $response->assertSee('Qwen 3 Coder Next');
-            $response->assertSee('GPT-OSS 120B');
+            $response->assertSee('OpenAI GPT-OSS 120B');
         }
     }
 
@@ -69,7 +69,7 @@ class AiAssistantTest extends TestCase
             ->assertOk()
             ->assertSee('Coding Assistant')
             ->assertSee('Qwen 3 Coder Next')
-            ->assertSee('Active')
+            ->assertSee('Conversations and modes')
             ->assertSee('data-ai-message-form', false)
             ->assertSee('data-ai-character-count', false)
             ->assertSee('data-ai-scroll-latest', false)
@@ -131,6 +131,7 @@ class AiAssistantTest extends TestCase
             'content' => 'Local answer.',
         ]);
         $this->assertDatabaseHas('ai_requests', [
+            'user_message_id' => AiMessage::query()->where('content', 'How does that fit in Laravel?')->value('id'),
             'user_id' => $user->getKey(),
             'status' => AiRequest::STATUS_COMPLETED,
             'prompt_tokens' => 20,
@@ -142,7 +143,9 @@ class AiAssistantTest extends TestCase
     public function test_allowlisted_tool_call_gets_one_follow_up_round(): void
     {
         $user = User::factory()->create();
-        $conversation = AiConversation::factory()->for($user)->create();
+        $conversation = AiConversation::factory()->for($user)->create([
+            'title' => 'New conversation',
+        ]);
         $this->provider->queue([], new AiProviderResult('', [
             new AiToolCall('call-1', 'get_course_module', '{"module":"module-8"}'),
         ], 10, 4));
@@ -172,7 +175,7 @@ class AiAssistantTest extends TestCase
         ]);
         AiMessage::factory()->for($conversation, 'conversation')->create([
             'role' => AiMessage::ROLE_ASSISTANT,
-            'content' => '<script>alert("ai")</script> '.str_repeat('unbroken-token-', 80),
+            'content' => "## Safe heading\n\n**Formatted answer**\n\n<script>alert(\"ai\")</script> ".str_repeat('unbroken-token-', 80),
         ]);
 
         $this->actingAs($otherUser)
@@ -189,13 +192,16 @@ class AiAssistantTest extends TestCase
         $response->assertSee('[overflow-wrap:anywhere]', false);
         $response->assertSee('overflow-x-hidden', false);
         $response->assertDontSee('<script>alert("ai")</script>', false);
-        $response->assertSee('&lt;script&gt;alert(&quot;ai&quot;)&lt;/script&gt;', false);
+        $response->assertSee('<h2>Safe heading</h2>', false);
+        $response->assertSee('<strong>Formatted answer</strong>', false);
     }
 
     public function test_provider_failure_is_safe_and_recorded_without_prompt_content(): void
     {
         $user = User::factory()->create();
-        $conversation = AiConversation::factory()->for($user)->create();
+        $conversation = AiConversation::factory()->for($user)->create([
+            'title' => 'New conversation',
+        ]);
         $this->provider->fail = true;
 
         $response = $this->actingAs($user)->post(
@@ -208,9 +214,61 @@ class AiAssistantTest extends TestCase
 
         $this->assertStringContainsString('event: error', $streamed);
         $this->assertStringNotContainsString('secret classroom draft', $streamed);
+        $userMessage = AiMessage::query()->where('role', AiMessage::ROLE_USER)->sole();
         $this->assertDatabaseHas('ai_requests', [
+            'user_message_id' => $userMessage->getKey(),
             'status' => AiRequest::STATUS_FAILED,
             'error_code' => 'provider_unavailable',
+        ]);
+        $this->assertSame('secret classroom draft', $conversation->refresh()->title);
+
+        $this->actingAs($user)
+            ->get(route('cabinet.ai.conversations.show', $conversation->public_uuid))
+            ->assertOk()
+            ->assertSee('Response failed.')
+            ->assertSee('data-ai-retry-form', false);
+    }
+
+    public function test_failed_message_can_be_retried_without_duplicating_the_prompt(): void
+    {
+        $user = User::factory()->create();
+        $conversation = AiConversation::factory()->for($user)->create([
+            'title' => 'New conversation',
+        ]);
+        $this->provider->fail = true;
+
+        $this->actingAs($user)->post(
+            route('cabinet.ai.conversations.messages.stream', $conversation->public_uuid),
+            ['message' => 'Explain service containers.'],
+            ['Accept' => 'text/event-stream'],
+        )->streamedContent();
+
+        $userMessage = AiMessage::query()->where('role', AiMessage::ROLE_USER)->sole();
+        $this->provider->fail = false;
+        $this->provider->queue(
+            ['Recovered **answer**.'],
+            new AiProviderResult('Recovered **answer**.', [], 12, 4),
+        );
+
+        $response = $this->actingAs($user)->post(
+            route('cabinet.ai.conversations.messages.retry', [
+                $conversation->public_uuid,
+                $userMessage->getKey(),
+            ]),
+            [],
+            ['Accept' => 'text/event-stream'],
+        );
+
+        $streamed = $response->streamedContent();
+
+        $response->assertOk();
+        $this->assertStringContainsString('event: complete', $streamed);
+        $this->assertStringContainsString('<strong>answer</strong>', $streamed);
+        $this->assertDatabaseCount('ai_messages', 2);
+        $this->assertDatabaseCount('ai_requests', 2);
+        $this->assertDatabaseHas('ai_requests', [
+            'user_message_id' => $userMessage->getKey(),
+            'status' => AiRequest::STATUS_COMPLETED,
         ]);
     }
 }

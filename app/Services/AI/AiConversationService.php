@@ -28,6 +28,7 @@ final class AiConversationService
         private readonly ModelRouter $router,
         private readonly PromptBuilder $prompts,
         private readonly AiToolRegistry $tools,
+        private readonly AiMarkdownRenderer $markdown,
         private readonly ActivityLogger $activity,
     ) {}
 
@@ -45,15 +46,37 @@ final class AiConversationService
      */
     public function streamReply(AiConversation $conversation, string $prompt): Generator
     {
-        $mode = $conversation->mode;
-        $modeConfiguration = $this->router->configuration($mode);
         $userMessage = $conversation->messages()->create([
             'role' => AiMessage::ROLE_USER,
             'content' => $prompt,
         ]);
 
+        $this->titleConversationFromMessage($conversation, $userMessage);
+
+        yield from $this->streamForMessage($conversation, $userMessage);
+    }
+
+    /**
+     * @return Generator<int, array<string, mixed>>
+     */
+    public function retryReply(AiConversation $conversation, AiMessage $userMessage): Generator
+    {
+        $this->titleConversationFromMessage($conversation, $userMessage);
+
+        yield from $this->streamForMessage($conversation, $userMessage);
+    }
+
+    /**
+     * @return Generator<int, array<string, mixed>>
+     */
+    private function streamForMessage(AiConversation $conversation, AiMessage $userMessage): Generator
+    {
+        $mode = $conversation->mode;
+        $modeConfiguration = $this->router->configuration($mode);
+
         $requestLog = AiRequest::query()->create([
             'ai_conversation_id' => $conversation->getKey(),
+            'user_message_id' => $userMessage->getKey(),
             'user_id' => $conversation->user_id,
             'mode' => $mode->value,
             'provider' => $this->provider->name(),
@@ -132,12 +155,7 @@ final class AiConversationService
                 ],
             ]);
 
-            if ($conversation->title === 'New conversation') {
-                $conversation->title = $this->titleFromPrompt($prompt);
-            }
-
             $conversation->touch();
-            $conversation->save();
 
             $requestLog->update([
                 'prompt_tokens' => $promptTokens,
@@ -170,6 +188,7 @@ final class AiConversationService
                 'message_id' => $assistantMessage->getKey(),
                 'conversation_title' => $conversation->title,
                 'user_message_id' => $userMessage->getKey(),
+                'rendered_html' => $this->markdown->render($assistantContent),
             ];
         } catch (Throwable $exception) {
             $errorCode = $exception instanceof AiProviderException
@@ -252,5 +271,18 @@ final class AiConversationService
         $normalized = preg_replace('/\s+/', ' ', trim($prompt)) ?? 'New conversation';
 
         return Str::limit($normalized, 80, '…');
+    }
+
+    private function titleConversationFromMessage(
+        AiConversation $conversation,
+        AiMessage $userMessage,
+    ): void {
+        if ($conversation->title !== 'New conversation') {
+            return;
+        }
+
+        $conversation->forceFill([
+            'title' => $this->titleFromPrompt($userMessage->content),
+        ])->save();
     }
 }

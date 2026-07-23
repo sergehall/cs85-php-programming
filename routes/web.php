@@ -304,6 +304,10 @@ Route::prefix('cabinet')->middleware(['auth', 'login.enabled', 'verified'])->nam
         Route::post('/conversations/{conversation}/messages', [AiAssistantController::class, 'stream'])
             ->middleware('throttle:ai')
             ->name('conversations.messages.stream');
+        Route::post('/conversations/{conversation}/messages/{message}/retry', [AiAssistantController::class, 'retry'])
+            ->middleware('throttle:ai')
+            ->whereNumber('message')
+            ->name('conversations.messages.retry');
     });
 
     foreach (array_diff(array_keys(config('cabinet.sections', [])), ['profile', 'coursework', 'security', 'activity', 'ai']) as $sectionKey) {

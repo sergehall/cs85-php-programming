@@ -38,6 +38,7 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
     const statusDot = root.querySelector('[data-ai-status-dot]');
     const characterCount = root.querySelector('[data-ai-character-count]');
     const scrollLatest = root.querySelector('[data-ai-scroll-latest]');
+    const messageCount = root.querySelector('[data-ai-message-count]');
     const promptLimit = Number(root.dataset.promptLimit || textarea?.maxLength || 0);
     let activeRequest;
 
@@ -121,6 +122,15 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
         }
     };
 
+    const updateMessageCount = () => {
+        if (!messageCount || !messages) {
+            return;
+        }
+
+        const count = messages.querySelectorAll('[data-ai-message-role]').length;
+        messageCount.textContent = `${count.toLocaleString('en-US')} messages`;
+    };
+
     const markAssistantError = (message, errorMessage) => {
         if (message.content) {
             message.content.textContent = errorMessage;
@@ -182,8 +192,14 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
         } else if (streamEvent.type === 'status' && typeof streamEvent.content === 'string') {
             setStatus(streamEvent.content, 'busy');
         } else if (streamEvent.type === 'complete') {
+            if (typeof streamEvent.rendered_html === 'string' && assistantMessage.content) {
+                assistantMessage.content.innerHTML = streamEvent.rendered_html;
+                assistantMessage.content.classList.remove('whitespace-pre-wrap');
+            }
+
             finishAssistantMessage(assistantMessage, 'Saved locally');
             updateConversationTitle(streamEvent.conversation_title);
+            updateMessageCount();
             setStatus('Response saved locally.', 'ready');
         } else if (streamEvent.type === 'error') {
             markAssistantError(
@@ -194,8 +210,8 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
         }
     };
 
-    const streamResponse = async (formData, assistantMessage) => {
-        const response = await fetch(form.action, {
+    const streamResponse = async (action, formData, assistantMessage) => {
+        const response = await fetch(action, {
             method: 'POST',
             body: formData,
             headers: {
@@ -218,6 +234,7 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
+        let completed = false;
 
         while (true) {
             const { value, done } = await reader.read();
@@ -229,6 +246,7 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
                 const streamEvent = parseSseEventBlock(block);
                 if (streamEvent) {
                     handleStreamEvent(streamEvent, assistantMessage);
+                    completed ||= streamEvent.type === 'complete';
                 }
             });
 
@@ -237,11 +255,14 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
                     const streamEvent = parseSseEventBlock(buffer);
                     if (streamEvent) {
                         handleStreamEvent(streamEvent, assistantMessage);
+                        completed ||= streamEvent.type === 'complete';
                     }
                 }
                 break;
             }
         }
+
+        return completed;
     };
 
     root.addEventListener('click', async (event) => {
@@ -320,30 +341,51 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
     });
     scrollLatest?.addEventListener('click', () => scrollToLatestMessage());
 
-    form?.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        const formData = new FormData(form);
-        const userMessage = String(formData.get('message') ?? '').trim();
-        if (!userMessage || activeRequest) {
+    const startAssistantRequest = async ({
+        action,
+        formData,
+        userMessage = '',
+        appendUserMessage = false,
+        failedRequest = null,
+    }) => {
+        if ((appendUserMessage && !userMessage) || activeRequest) {
             return;
         }
 
-        appendMessage('[data-ai-user-template]', userMessage);
+        if (appendUserMessage) {
+            appendMessage('[data-ai-user-template]', userMessage);
+        }
+
         const assistantMessage = appendMessage('[data-ai-assistant-template]', '');
 
         if (!assistantMessage?.content) {
             return;
         }
 
-        textarea.value = '';
-        resizeTextarea();
+        if (appendUserMessage && textarea) {
+            textarea.value = '';
+            resizeTextarea();
+        }
+
+        const retryButton = failedRequest?.querySelector('button');
+        if (retryButton) {
+            retryButton.disabled = true;
+        }
+
         activeRequest = new AbortController();
         setBusy(true);
-        setStatus('Connecting to your local model…', 'busy');
+        setStatus(
+            appendUserMessage
+                ? 'Connecting to your local model…'
+                : 'Retrying the previous message…',
+            'busy',
+        );
 
         try {
-            await streamResponse(formData, assistantMessage);
+            const completed = await streamResponse(action, formData, assistantMessage);
+            if (completed) {
+                failedRequest?.remove();
+            }
         } catch (error) {
             if (error.name === 'AbortError') {
                 if (!assistantMessage.content.textContent) {
@@ -361,7 +403,52 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
         } finally {
             activeRequest = undefined;
             setBusy(false);
+            if (retryButton?.isConnected) {
+                retryButton.disabled = false;
+            }
             textarea.focus();
+        }
+    };
+
+    form?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const userMessage = String(formData.get('message') ?? '').trim();
+
+        await startAssistantRequest({
+            action: form.action,
+            formData,
+            userMessage,
+            appendUserMessage: true,
+        });
+    });
+
+    root.querySelectorAll('[data-ai-retry-form]').forEach((retryForm) => {
+        retryForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const failedRequest = retryForm.closest('[data-ai-failed-request]');
+
+            await startAssistantRequest({
+                action: retryForm.action,
+                formData: new FormData(retryForm),
+                failedRequest,
+            });
+        });
+    });
+
+    const sidebarToggle = root.querySelector('[data-ai-sidebar-toggle]');
+    const sidebar = root.querySelector('#ai-workspace-sidebar');
+    const sidebarToggleIcon = root.querySelector('[data-ai-sidebar-toggle-icon]');
+    sidebarToggle?.addEventListener('click', () => {
+        const expanded = sidebarToggle.getAttribute('aria-expanded') === 'true';
+        sidebarToggle.setAttribute('aria-expanded', String(!expanded));
+        sidebar?.classList.toggle('hidden', expanded);
+        sidebar?.classList.toggle('grid', !expanded);
+
+        if (sidebarToggleIcon) {
+            sidebarToggleIcon.textContent = expanded ? '＋' : '−';
         }
     });
 
