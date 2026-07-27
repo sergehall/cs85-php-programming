@@ -1,5 +1,9 @@
 # AI Architecture
 
+For the relationship between the course-aligned OpenAI generator and this
+final-project architecture, see
+[Module 12 AI Course Progression](ai-course-progression.md).
+
 ## System Boundary
 
 ```text
