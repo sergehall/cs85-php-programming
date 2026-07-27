@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AiContentController;
 use App\Http\Controllers\Assignments\AssignmentPhpPageController;
 use App\Http\Controllers\Assignments\Module11AApiDataController;
+use App\Http\Controllers\Assignments\Module12AiIntegrationController;
 use App\Http\Controllers\Assignments\Module1Assignment1AController;
 use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
 use App\Http\Controllers\Assignments\Module8aDatabaseEnvironmentController;
@@ -218,6 +220,16 @@ Route::get('/roadmap/module-11/data', [Module11AApiDataController::class, 'data'
 
 Route::get('/roadmap/module-11', Module11AApiDataController::class)
     ->name('assignments.module11a.index');
+
+Route::get('/ai-form', [AiContentController::class, 'showForm'])
+    ->name('ai.form');
+
+Route::post('/ai-generate', [AiContentController::class, 'generate'])
+    ->middleware('throttle:5,1')
+    ->name('ai.generate');
+
+Route::get('/roadmap/module-12', Module12AiIntegrationController::class)
+    ->name('assignments.module12.index');
 
 Route::get('/roadmap/{module}', function (string $module) {
     $modules = collect(config('course.modules'));
