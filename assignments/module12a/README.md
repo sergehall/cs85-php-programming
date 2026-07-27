@@ -41,17 +41,17 @@ clear path from a single API request to a production-oriented AI system.
 
 ## Prompt Variants
 
-| Content type         | Prompt constraint                                                |
-| -------------------- | ---------------------------------------------------------------- |
-| Blog post            | 350-500 words, Markdown, introduction, headings, and conclusion  |
-| Meta description     | One line, approximately 150-160 characters                       |
-| Email subject line   | One line, 6-10 words, no more than 60 characters                  |
+| Content type       | Prompt constraint                                               |
+| ------------------ | --------------------------------------------------------------- |
+| Blog post          | 350-500 words, Markdown, introduction, headings, and conclusion |
+| Meta description   | One line, approximately 150-160 characters                      |
+| Email subject line | One line, 6-10 words, no more than 60 characters                |
 
-| Tone          | Model role                                                         |
-| ------------- | ------------------------------------------------------------------ |
-| Professional  | Professional content strategist                                    |
-| Casual        | Friendly digital copywriter                                        |
-| Humorous      | Witty copywriter who keeps the result useful and respectful        |
+| Tone         | Model role                                                  |
+| ------------ | ----------------------------------------------------------- |
+| Professional | Professional content strategist                             |
+| Casual       | Friendly digital copywriter                                 |
+| Humorous     | Witty copywriter who keeps the result useful and respectful |
 
 ## Local Setup
 
