@@ -1,6 +1,6 @@
 @extends('layouts.app', [
     'title' => 'Assignment 12A: Integrating OpenAI - CS85',
-    'description' => 'A Laravel content generator using OpenAI gpt-4o-mini, adaptive prompts, validation, and editable output.',
+    'description' => 'A verified Laravel integration with the OpenAI API and gpt-4o-mini, featuring adaptive prompts, validation, and editable output.',
 ])
 
 @section('content')
@@ -29,6 +29,8 @@
                     <span>Assignment 12A</span>
                     <span class="text-orange-300">/</span>
                     <span class="text-emerald-300">Complete</span>
+                    <span class="text-orange-300">/</span>
+                    <span class="text-emerald-300">OpenAI API connected</span>
                 </div>
 
                 <div class="grid gap-3">
@@ -64,6 +66,31 @@
                     @endforeach
                 </ol>
             </aside>
+        </div>
+    </section>
+
+    <section class="rounded-2xl border border-emerald-300 bg-emerald-50 p-5 shadow-xl shadow-emerald-950/5 md:p-7" aria-labelledby="openai-api-status">
+        <div class="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,.8fr)] lg:items-center">
+            <div>
+                <p class="text-xs font-black uppercase tracking-normal text-emerald-800">Live integration verified</p>
+                <h2 id="openai-api-status" class="mt-2 text-3xl font-black tracking-tight text-slate-950">Assignment 12A is connected to the OpenAI API.</h2>
+                <p class="mt-3 max-w-4xl leading-7 text-slate-700">
+                    Laravel successfully sends the validated prompt to OpenAI, uses <strong>gpt-4o-mini</strong> to generate the response, and returns the result to this page as editable content.
+                </p>
+            </div>
+
+            <dl class="grid gap-3 text-sm sm:grid-cols-3 lg:grid-cols-1">
+                @foreach ([
+                    ['Provider', 'OpenAI API'],
+                    ['Endpoint', '/v1/chat/completions'],
+                    ['Secret boundary', 'Server-side .env only'],
+                ] as [$label, $value])
+                    <div class="rounded-xl border border-emerald-200 bg-white p-4">
+                        <dt class="font-black text-slate-950">{{ $label }}</dt>
+                        <dd class="mt-1 font-mono text-xs text-emerald-900">{{ $value }}</dd>
+                    </div>
+                @endforeach
+            </dl>
         </div>
     </section>
 

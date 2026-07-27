@@ -8,6 +8,23 @@ The assignment is intentionally separate from the larger Final Project AI
 workspace. This keeps every rubric requirement easy to locate while showing a
 clear path from a single API request to a production-oriented AI system.
 
+## Verified OpenAI API Integration
+
+Assignment 12A is connected to the live OpenAI API through Laravel's
+server-side HTTP client. The complete browser flow has been verified: the form
+submitted a structured prompt, OpenAI processed it with `gpt-4o-mini`, and the
+returned content appeared in the editable result textarea.
+
+- Provider: OpenAI API
+- Endpoint: `POST https://api.openai.com/v1/chat/completions`
+- Model: `gpt-4o-mini`
+- Secret boundary: `OPENAI_API_KEY` stays in the local `.env` file
+- Browser boundary: the browser posts only assignment inputs to Laravel
+- Verified result: a generated meta description was returned successfully
+
+Live browser checks use API credits. Automated tests continue to use fakes, so
+CI and local test runs do not contact OpenAI or incur API charges.
+
 ## Working Routes
 
 - `GET /ai-form` - display the content generator

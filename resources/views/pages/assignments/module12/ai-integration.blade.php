@@ -87,6 +87,9 @@
     <section class="rounded-2xl border border-stone-300 bg-white p-6 shadow-xl shadow-slate-900/5 md:p-8" aria-labelledby="progression-title">
         <p class="text-xs font-black uppercase tracking-normal text-orange-800">One concept, two deliverables</p>
         <h2 id="progression-title" class="mt-2 text-3xl font-black tracking-tight">Assignment 12A proves the API call. The final project proves the system.</h2>
+        <p class="mt-3 max-w-4xl leading-7 text-slate-600">
+            The Assignment 12A browser flow has been verified against the live OpenAI API: Laravel sent the prompt to <strong class="text-slate-950">gpt-4o-mini</strong> and returned an editable completion without exposing the API key.
+        </p>
         <div class="mt-6 overflow-x-auto">
             <table class="w-full min-w-3xl border-collapse text-left text-sm">
                 <thead class="bg-slate-950 text-white">
@@ -98,7 +101,7 @@
                 </thead>
                 <tbody class="divide-y divide-stone-200">
                     @foreach ([
-                        ['Provider', 'OpenAI cloud · gpt-4o-mini', 'LM Studio through an OpenAI-compatible provider contract'],
+                        ['Provider', 'Connected OpenAI API · gpt-4o-mini', 'LM Studio through an OpenAI-compatible provider contract'],
                         ['Interaction', 'One title → one editable draft', 'Private multi-turn conversations with retry'],
                         ['Prompting', 'Role + type + tone assembled by one service', 'Versioned, mode-specific system prompt files'],
                         ['Response', 'Validated JSON body rendered in a textarea', 'Streamed deltas rendered as sanitized Markdown'],

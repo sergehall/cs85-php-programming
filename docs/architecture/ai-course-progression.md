@@ -20,6 +20,18 @@ OpenAI fundamentals without hiding them inside the larger application:
 The source and setup guide live in
 [`assignments/module12a`](../../assignments/module12a).
 
+### Verified External API Boundary
+
+The Assignment 12A implementation has been verified against the live OpenAI
+API. Laravel sent a Chat Completions request to
+`https://api.openai.com/v1/chat/completions` with `gpt-4o-mini`, received the
+assistant message, and rendered it as editable output on `/ai-form`.
+
+The API key remains server-side in `.env`; it is never rendered into Blade,
+returned to the browser, written to application documentation, or committed to
+Git. Live verification uses API credits, while automated tests replace the
+network boundary with deterministic fakes.
+
 ## Final Project
 
 The authenticated workspace at `/cabinet/ai` expands the same design rule -
@@ -48,7 +60,7 @@ The dual-track structure solves both problems:
 
 | Assessment goal          | Evidence                                                   |
 | ------------------------ | ---------------------------------------------------------- |
-| Understand a direct API  | `AiContentService` and `/ai-form`                          |
+| Understand a direct API  | Verified OpenAI API request through `AiContentService`     |
 | Adapt prompts            | Type and tone `match` expressions                          |
 | Protect an API key       | Server-side OpenAI configuration                           |
 | Handle failures          | HTTP checks, safe errors, logging, and fake-backed tests   |

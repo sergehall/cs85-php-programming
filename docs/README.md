@@ -14,6 +14,8 @@ Start with the [Authentication and Account Security handbook](authentication/REA
 
 ## AI Platform
 
+- [Module 12 AI course progression and verified OpenAI API integration](architecture/ai-course-progression.md)
+- [Assignment 12A implementation and setup](../assignments/module12a/README.md)
 - [Software requirements specification](AI_PLATFORM_SRS.md)
 - [Architecture](architecture/ai-architecture.md)
 - [AI model runtime and request lifecycle](architecture/ai-model-runtime.md)
