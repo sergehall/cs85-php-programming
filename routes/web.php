@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Assignments\AssignmentPhpPageController;
+use App\Http\Controllers\Assignments\Module11AApiDataController;
 use App\Http\Controllers\Assignments\Module1Assignment1AController;
 use App\Http\Controllers\Assignments\Module2BCosmicCalendarController;
 use App\Http\Controllers\Assignments\Module8aDatabaseEnvironmentController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Cabinet\ProfileController;
 use App\Http\Controllers\Cabinet\SecurityController;
 use App\Http\Controllers\Cabinet\SessionController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\WeatherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -207,6 +209,15 @@ Route::prefix('assignments/module7b')->name('assignments.module7b.')->group(func
 });
 
 require base_path('assignments/module10a/routes/web.php');
+
+Route::get('/weather', [WeatherController::class, 'index'])
+    ->name('assignments.module11a.weather');
+
+Route::get('/roadmap/module-11/data', [Module11AApiDataController::class, 'data'])
+    ->name('assignments.module11a.data');
+
+Route::get('/roadmap/module-11', Module11AApiDataController::class)
+    ->name('assignments.module11a.index');
 
 Route::get('/roadmap/{module}', function (string $module) {
     $modules = collect(config('course.modules'));

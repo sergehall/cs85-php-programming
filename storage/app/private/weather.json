@@ -1,0 +1,5 @@
+[
+  {"day": "Monday", "high": 75, "low": 60, "condition": "Sunny"},
+  {"day": "Tuesday", "high": 72, "low": 58, "condition": "Partly Cloudy"},
+  {"day": "Wednesday", "high": 68, "low": 55, "condition": "Rain"}
+]
