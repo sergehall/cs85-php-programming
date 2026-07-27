@@ -2,6 +2,12 @@
 
 return [
 
+    'module11a' => [
+        'endpoint' => env('MODULE11A_API_ENDPOINT', 'https://jsonplaceholder.typicode.com/users'),
+        'timeout_seconds' => (int) env('MODULE11A_API_TIMEOUT', 3),
+        'cache_seconds' => (int) env('MODULE11A_API_CACHE_SECONDS', 600),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
