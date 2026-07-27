@@ -2,6 +2,14 @@
 
 return [
 
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
+        'url' => env('OPENAI_API_URL', 'https://api.openai.com/v1'),
+        'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+        'connect_timeout' => (int) env('OPENAI_CONNECT_TIMEOUT', 5),
+        'timeout' => (int) env('OPENAI_REQUEST_TIMEOUT', 30),
+    ],
+
     'module11a' => [
         'endpoint' => env('MODULE11A_API_ENDPOINT', 'https://jsonplaceholder.typicode.com/users'),
         'timeout_seconds' => (int) env('MODULE11A_API_TIMEOUT', 3),
