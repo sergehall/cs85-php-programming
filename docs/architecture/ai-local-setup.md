@@ -1,10 +1,10 @@
-# Local AI Setup with LM Studio
+# Hybrid AI Setup: LM Studio and OpenAI
 
-This guide describes the required local runtime state for the Laravel AI
-assistant. The application uses LM Studio as an OpenAI-compatible inference
-provider. The browser never connects to LM Studio directly; it sends an
-authenticated request to Laravel, and Laravel calls LM Studio on the local
-machine.
+This guide describes the required runtime state for the Laravel AI assistant.
+The application uses LM Studio for three local models and the OpenAI API for
+one online model. The browser never connects to either provider directly; it
+sends authenticated requests to Laravel, and Laravel selects the provider
+stored on the conversation.
 
 For the application-level model selection, prompt, streaming, tool, retry, and
 security contract, see [AI Model Runtime](ai-model-runtime.md).
@@ -22,17 +22,20 @@ The AI workspace works only when all of the following are true:
   configuration cache after environment changes.
 - Laravel and the frontend assets are running.
 - The user is authenticated before opening `/cabinet/ai`.
+- `OPENAI_API_KEY` is configured for the online mode.
+- The OpenAI project can access the configured `OPENAI_MODEL`.
 
-LM Studio CORS does not need to be enabled. All provider calls are server-side,
-and the API should remain bound to `127.0.0.1` for local-only access.
+Provider CORS does not need to be enabled. All calls are server-side, and the
+LM Studio API should remain bound to `127.0.0.1`.
 
 ## Configured Models
 
-| AI mode      | Required API model identifier |
-| ------------ | ----------------------------- |
-| General      | `qwen/qwen3.6-35b-a3b`        |
-| Coding       | `qwen/qwen3-coder-next`       |
-| Architecture | `openai/gpt-oss-120b`         |
+| AI mode       | Required API model identifier |
+| ------------- | ----------------------------- |
+| General       | `qwen/qwen3.6-35b-a3b`        |
+| Coding        | `qwen/qwen3-coder-next`       |
+| Architecture  | `openai/gpt-oss-120b`         |
+| OpenAI Online | `gpt-4o-mini` via OpenAI API  |
 
 The API identifiers are the application contract. Do not put model file paths
 in Laravel configuration.
@@ -63,10 +66,9 @@ php artisan key:generate
 php artisan migrate
 ```
 
-The local `.env` must contain the LM Studio provider settings:
+The local `.env` must contain the LM Studio and OpenAI provider settings:
 
 ```dotenv
-AI_PROVIDER=lm_studio
 AI_LM_STUDIO_BASE_URL=http://127.0.0.1:1234/v1
 AI_LM_STUDIO_API_KEY=lm-studio
 AI_CONNECT_TIMEOUT=5
@@ -76,10 +78,17 @@ AI_HISTORY_MESSAGES=30
 AI_MAX_OUTPUT_TOKENS=2048
 AI_REQUESTS_PER_MINUTE=10
 AI_TOOLS_ENABLED=true
+
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_API_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4o-mini
+OPENAI_CONNECT_TIMEOUT=5
+OPENAI_REQUEST_TIMEOUT=30
 ```
 
-The API key is a compatibility value for the local LM Studio endpoint. It is
-not an OpenAI cloud API key.
+`AI_LM_STUDIO_API_KEY` is a compatibility value for the local endpoint.
+`OPENAI_API_KEY` is the real cloud credential and must never be committed,
+rendered in Blade, returned from a controller, or placed in screenshots.
 
 After changing `.env` or `config/ai.php`, clear Laravel's configuration cache:
 
@@ -137,6 +146,17 @@ qwen/qwen3.6-35b-a3b
 qwen/qwen3-coder-next
 openai/gpt-oss-120b
 ```
+
+Verify the OpenAI project and model from the server without exposing the key:
+
+```bash
+php artisan config:show services.openai
+```
+
+The command confirms the effective URL and model configuration. Do not paste
+its output into a submission if the local framework version displays secrets.
+The cabinet performs the safer operational check through
+`GET /cabinet/ai/status`; that response never contains the key.
 
 LM Studio can load the selected model automatically when Laravel sends the
 first request. To avoid the initial loading delay, load a model in the LM Studio
@@ -199,8 +219,9 @@ Then:
 1. Open `http://127.0.0.1:8000`.
 2. Register or sign in.
 3. Open `http://127.0.0.1:8000/cabinet/ai`.
-4. Select General, Coding, or Architecture mode.
-5. Create a conversation and send a message.
+4. Confirm the connection panel reports the expected local and online states.
+5. Select General, Coding, Architecture, or OpenAI Online mode.
+6. Create a conversation and send a message.
 
 The first response can be slower because LM Studio may need to load the model.
 Later requests use the already loaded model until its configured TTL expires.
@@ -211,10 +232,12 @@ Use this order after restarting the computer:
 
 1. Start LM Studio.
 2. Start the LM Studio server on `127.0.0.1:1234`.
-3. Confirm `GET /v1/models` returns the configured model identifiers.
-4. Optionally pre-load the model needed for the selected AI mode.
-5. Start the Laravel development stack.
-6. Sign in and open `/cabinet/ai`.
+3. Confirm `GET /v1/models` returns the three local model identifiers.
+4. Confirm `OPENAI_API_KEY` and `OPENAI_MODEL=gpt-4o-mini` are in `.env`.
+5. Optionally pre-load the local model needed for the selected AI mode.
+6. Start the Laravel development stack.
+7. Sign in and open `/cabinet/ai`.
+8. Wait for the four connection cards, then use **Check again** if needed.
 
 ## Troubleshooting
 
@@ -275,9 +298,27 @@ php artisan migrate:status
 npm run build
 ```
 
+### `OpenAI API key is not configured`
+
+Add `OPENAI_API_KEY` to `.env`, then clear cached configuration:
+
+```bash
+php artisan config:clear
+```
+
+Never add the real key to `.env.example` or Git.
+
+### OpenAI health check is rejected
+
+Confirm the key is active, the OpenAI project is funded for API use, and the
+project can access `gpt-4o-mini`. ChatGPT subscriptions and OpenAI API billing
+are separate.
+
 ## Security Notes
 
 - Keep the LM Studio server bound to `127.0.0.1`.
+- Keep the OpenAI key only in `.env` or a production secret manager.
+- Online-mode prompt context leaves the local machine and is sent to OpenAI.
 - Do not expose port `1234` to the public internet.
 - Do not enable CORS for this server-side Laravel integration.
 - Do not commit `.env` or real provider secrets.

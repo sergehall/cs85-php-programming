@@ -12,8 +12,9 @@ The integration has four clear boundaries:
 Authenticated browser
     -> Laravel AI controller and conversation service
         -> AI provider interface
-            -> LM Studio OpenAI-compatible API
-                -> configured local model
+            -> routed provider
+                -> LM Studio -> configured local model
+                -> OpenAI API -> gpt-4o-mini
 ```
 
 - The browser creates conversations, submits messages, and consumes a
@@ -22,37 +23,38 @@ Authenticated browser
   model routing, tool execution, Markdown rendering, retries, and telemetry.
 - `AiProviderInterface` isolates application logic from provider-specific HTTP
   behavior.
-- LM Studio performs local inference. It does not own application sessions or
-  conversation history.
+- LM Studio performs local inference, and OpenAI performs online inference.
+  Neither provider owns application sessions or conversation history.
 
-The browser never calls LM Studio directly and never receives a provider
-credential.
+The browser never calls LM Studio or OpenAI directly and never receives a
+provider credential.
 
 ## Mode-to-Model Mapping
 
 Users select a task-oriented mode, not an arbitrary model identifier.
 `ModelRouter` resolves the mode through `config/ai.php`.
 
-| Mode           | UI model name       | Provider model identifier | Current profile           | Temperature | Intended work                                                      |
-| -------------- | ------------------- | ------------------------- | ------------------------- | ----------- | ------------------------------------------------------------------ |
-| `general`      | Qwen 3.6 35B A3B    | `qwen/qwen3.6-35b-a3b`    | 35B MoE · 4-bit · 20.4 GB | `0.4`       | Learning, explanations, quizzes, and general programming questions |
-| `coding`       | Qwen 3 Coder Next   | `qwen/qwen3-coder-next`   | 80B · 4-bit · 44.9 GB     | `0.2`       | Code generation, review, debugging, and implementation guidance    |
-| `architecture` | OpenAI GPT-OSS 120B | `openai/gpt-oss-120b`     | 120B · MXFP4 · 63.4 GB    | `0.3`       | System design, planning, trade-offs, and maintainability reviews   |
+| Mode           | Provider   | UI model name       | Provider model identifier | Current profile           | Temperature | Intended work                                                      |
+| -------------- | ---------- | ------------------- | ------------------------- | ------------------------- | ----------- | ------------------------------------------------------------------ |
+| `general`      | LM Studio  | Qwen 3.6 35B A3B    | `qwen/qwen3.6-35b-a3b`    | 35B MoE · 4-bit · 20.4 GB | `0.4`       | Learning, explanations, quizzes, and general programming questions |
+| `coding`       | LM Studio  | Qwen 3 Coder Next   | `qwen/qwen3-coder-next`   | 80B · 4-bit · 44.9 GB     | `0.2`       | Code generation, review, debugging, and implementation guidance    |
+| `architecture` | LM Studio  | OpenAI GPT-OSS 120B | `openai/gpt-oss-120b`     | 120B · MXFP4 · 63.4 GB    | `0.3`       | System design, planning, trade-offs, and maintainability reviews   |
+| `online`       | OpenAI API | OpenAI GPT-4o mini  | `gpt-4o-mini`             | Cloud API · Online        | `0.4`       | Fast online answers, polished drafts, summaries, and API evidence  |
 
-The model profile is display metadata for the currently installed local
-artifact. The provider model identifier is the API contract and must exactly
-match an identifier returned by LM Studio's `GET /v1/models`.
+The model profile is display metadata. The provider model identifier is the API
+contract and must match an identifier returned by the selected provider's
+`GET /v1/models`.
 
 ### Selection Rules
 
 - A conversation is created with one validated `AiMode`.
-- Laravel resolves the model once and stores both the mode and model identifier
-  on `ai_conversations`.
-- Every later request in that conversation uses the stored model identifier.
+- Laravel resolves the provider and model once and stores the mode, provider,
+  and model identifier on `ai_conversations`.
+- Every later request in that conversation uses the stored provider and model.
 - Changing `config/ai.php` affects new conversations only. Existing
   conversations remain pinned to their stored model.
 - The application does not inspect a prompt and automatically switch models.
-- The local MVP does not expose a manual model-identifier override.
+- The application does not expose a manual provider or model override.
 
 These rules make conversation behavior predictable and keep provider details
 out of user input.
@@ -69,10 +71,11 @@ out of user input.
    `resources/prompts/ai/`.
 6. `AiConversationService` adds a bounded window of Laravel-owned user and
    assistant history.
-7. The provider receives the stored model identifier, messages, allowlisted
-   tool definitions, mode temperature, and output-token limit.
-8. `LmStudioProvider` calls `POST /v1/chat/completions` with streaming enabled
-   and parses text, usage, and tool-call fragments.
+7. `RoutedAiProvider` selects the stored provider. The provider receives the
+   stored model identifier, messages, allowlisted tool definitions, mode
+   temperature, and output-token limit.
+8. `LmStudioProvider` or `OpenAiProvider` calls `POST /v1/chat/completions`
+   with streaming enabled and parses text, usage, and tool-call fragments.
 9. Laravel streams application-level SSE events to the browser.
 10. If the model requests an approved tool, Laravel validates and executes it,
     adds the result to provider context, and permits at most one follow-up model
@@ -91,6 +94,25 @@ The default context and generation limits are:
 
 All limits are configuration-driven.
 
+## Connection Monitoring
+
+The cabinet calls authenticated `GET /cabinet/ai/status` when the workspace
+opens and when the user selects **Check again**. `AiProviderStatusService`
+groups modes by provider so only one model-catalog request is made to LM Studio
+and one to OpenAI.
+
+Each model receives one safe state:
+
+- `connected`: the provider is reachable and the configured ID is listed;
+- `missing`: the provider is reachable but the model ID is not listed;
+- `not_configured`: the OpenAI server key is absent;
+- `rejected`: the provider returned a non-success HTTP status;
+- `unreachable`: Laravel could not connect to the provider.
+
+The response contains provider labels, model metadata, state, a safe message,
+and latency. It excludes credentials and provider response bodies. The endpoint
+has its own per-user rate limit and uses `Http::fake()` in automated tests.
+
 ## Prompts and Conversation Context
 
 Each mode has a server-side system prompt:
@@ -98,6 +120,7 @@ Each mode has a server-side system prompt:
 - `resources/prompts/ai/general.md`
 - `resources/prompts/ai/coding.md`
 - `resources/prompts/ai/architecture.md`
+- `resources/prompts/ai/online.md`
 
 Prompt files are application code. They must be reviewed and versioned with the
 feature that depends on them. User input must never be interpolated into a
@@ -112,7 +135,7 @@ budget.
 
 There are two separate streams:
 
-1. LM Studio streams OpenAI-compatible SSE data to Laravel.
+1. The selected provider streams OpenAI-compatible SSE data to Laravel.
 2. Laravel emits its own same-origin SSE events to the authenticated browser.
 
 Application events are:
@@ -152,8 +175,9 @@ context for the single allowed follow-up round.
 Provider connection, HTTP, invalid-stream, invalid-tool, and empty-response
 failures are converted to safe application errors. The request telemetry row is
 marked `failed`; prompt or response content is not written to operational logs.
-Failure of LM Studio does not affect authentication, coursework, or other
-cabinet features.
+Failure of either provider does not affect authentication, coursework, or
+other cabinet features. A local provider outage does not disable the OpenAI
+mode, and an OpenAI outage does not disable local modes.
 
 The browser's **Stop** button aborts its fetch request and stops displaying the
 stream. It is not a guarantee that local inference has already stopped on the
@@ -173,7 +197,7 @@ telemetry is stored separately in `ai_requests`:
 - mode, provider, and model;
 - processing status and error code;
 - latency;
-- prompt and completion token counts when LM Studio supplies them.
+- prompt and completion token counts when the selected provider supplies them.
 
 The telemetry table does not duplicate prompt or response text. Application
 logs contain request identifiers, error codes, and exception classes, not
@@ -186,8 +210,10 @@ conversation content. Successful responses also create a metadata-only
 - Conversations and messages are resolved through the authenticated user's
   relationship.
 - Browser requests use Laravel CSRF protection and a per-user AI rate limit.
-- Provider configuration and compatibility credentials remain server-side.
+- Provider configuration, the LM Studio compatibility key, and
+  `OPENAI_API_KEY` remain server-side.
 - LM Studio should listen only on `127.0.0.1` for local development.
+- The UI discloses that online-mode context is sent to OpenAI.
 - Model output is untrusted content and is sanitized before HTML insertion.
 - Tools are read-only, allowlisted, and validated by Laravel.
 - Conversation text is stored in the application database but excluded from
@@ -195,8 +221,10 @@ conversation content. Successful responses also create a metadata-only
 
 ## Changing a Model Safely
 
-1. Install the model in LM Studio.
-2. Confirm its exact API identifier with `GET /v1/models`.
+1. Install the local model in LM Studio or confirm the online model is
+   available to the configured OpenAI project.
+2. Confirm its exact API identifier with the selected provider's
+   `GET /v1/models`.
 3. Update the relevant mode in `config/ai.php`, including display metadata,
    temperature, and prompt path when required.
 4. Run `php artisan config:clear`.
@@ -209,5 +237,5 @@ If an old model is being removed, decide explicitly whether to keep it
 available for existing conversations or migrate/archive those conversations.
 Changing the configuration alone does not rewrite stored model identifiers.
 
-See [Local AI Setup with LM Studio](ai-local-setup.md) for startup and provider
-verification commands.
+See [Local AI Setup with LM Studio](ai-local-setup.md) for local and online
+provider verification commands.
