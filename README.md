@@ -42,10 +42,11 @@ hybrid local/online AI assistant.
 
 The eight-minute Application Demo starts with the local Laravel environment,
 tours representative coursework, verifies the Module 12A OpenAI integration,
-and demonstrates the final hybrid AI workspace. The video shows three local LM
-Studio specialists alongside the online OpenAI `gpt-4o-mini` model, live
-provider health, model selection, persistent conversations, and streamed AI
-responses.
+and demonstrates the final hybrid AI workspace. The video shows Qwen 3.6 35B
+A3B, Qwen 3 Coder Next, and OpenAI GPT-OSS 120B running locally through LM
+Studio, plus OpenAI GPT-4o mini through the OpenAI API. It also demonstrates
+live provider health, model selection, persistent conversations, and streamed
+AI responses.
 
 [Open the complete Application Demo page](https://sergehall.github.io/cs85-php-programming/)
 to watch the embedded video, jump between chapters, and review the coursework
@@ -92,9 +93,9 @@ The completed project includes:
   clean-architecture API workbench.
 - Module 12A with a verified server-side OpenAI `gpt-4o-mini` content generator.
 - A completed hybrid AI learning assistant with persistent multi-turn
-  conversations, three streamed LM Studio models, one OpenAI `gpt-4o-mini`
-  online model, live connection monitoring, specialized routing, and read-only
-  course tools.
+  conversations; locally streamed Qwen 3.6 35B A3B, Qwen 3 Coder Next, and
+  OpenAI GPT-OSS 120B models; OpenAI GPT-4o mini online; live connection
+  monitoring; specialized routing; and read-only course tools.
 - Laravel Pint, Larastan/PHPStan, Prettier, Vite build checks, and GitHub
   Actions CI.
 
