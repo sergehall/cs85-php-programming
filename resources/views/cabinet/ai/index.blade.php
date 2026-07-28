@@ -6,6 +6,8 @@
     @php
         $displayedModeKey = $activeConversation?->mode->value ?? 'general';
         $displayedMode = $modes[$displayedModeKey];
+        $providers = config('ai.providers');
+        $displayedProvider = $providers[$displayedMode['provider']];
         $starterPrompts = [
             'general' => [
                 'Explain Laravel service containers with a small example.',
@@ -21,6 +23,11 @@
                 'Compare a modular monolith with microservices for my project.',
                 'Review my Laravel application boundaries.',
                 'Turn this feature idea into a production-ready implementation plan.',
+            ],
+            'online' => [
+                'Draft a concise explanation of Laravel dependency injection.',
+                'Summarize the benefits of service-layer architecture.',
+                'Create a polished study guide for the Module 12 final project.',
             ],
         ];
         $assistantContentClasses = 'ai-markdown min-w-0 max-w-full [overflow-wrap:anywhere] rounded-2xl rounded-tl-sm border border-stone-200 bg-white px-4 py-3 text-sm leading-7 text-slate-800 shadow-sm
@@ -50,9 +57,54 @@
     @endif
 
     <section
+        class="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm shadow-slate-900/5"
+        data-ai-connections
+        data-status-endpoint="{{ route('cabinet.ai.status') }}"
+        aria-labelledby="ai-connections-title"
+    >
+        <div class="flex flex-col gap-4 border-b border-stone-200 bg-[linear-gradient(135deg,#f8fafc_0%,#f0fdfa_100%)] px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.12em] text-teal-800">Live provider health</p>
+                <h2 id="ai-connections-title" class="mt-1 text-xl font-bold text-slate-950">Three local models + one OpenAI online model</h2>
+                <p class="mt-1 text-sm leading-6 text-slate-600">Laravel checks both provider catalogs from the server. API credentials never reach the browser.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-900" role="status" aria-live="polite" data-ai-connections-summary>Checking 4 models…</span>
+                <button class="rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-teal-600 hover:text-teal-800 disabled:cursor-wait disabled:opacity-60" type="button" data-ai-connections-refresh>
+                    Check again
+                </button>
+            </div>
+        </div>
+        <div class="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-4">
+            @foreach ($modes as $mode => $configuration)
+                @php($provider = $providers[$configuration['provider']])
+                <article class="grid gap-3 rounded-2xl border border-stone-200 bg-white p-4" data-ai-connection-model="{{ $mode }}">
+                    <div class="flex items-start justify-between gap-3">
+                        <span class="grid h-10 w-10 place-items-center rounded-xl {{ $provider['location'] === 'Online' ? 'bg-orange-100 text-orange-800' : 'bg-teal-100 text-teal-900' }}" aria-hidden="true">{{ $provider['location'] === 'Online' ? '◎' : '●' }}</span>
+                        <span class="rounded-full bg-stone-100 px-2.5 py-1 text-[0.68rem] font-bold text-slate-600">{{ $provider['location'] }} · {{ $provider['label'] }}</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-950">{{ $configuration['model_name'] }}</h3>
+                        <p class="mt-1 text-xs font-bold text-slate-500">{{ $configuration['label'] }}</p>
+                        <p class="mt-2 break-all font-mono text-[0.68rem] leading-5 text-slate-400">{{ $configuration['model'] }}</p>
+                    </div>
+                    <div class="mt-auto flex items-center gap-2 text-xs font-bold text-amber-800" role="status" data-ai-connection-state>
+                        <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-amber-500" data-ai-connection-dot></span>
+                        <span data-ai-connection-label>Checking connection…</span>
+                    </div>
+                    <p class="text-xs leading-5 text-slate-500" data-ai-connection-message>Waiting for the server-side provider check.</p>
+                </article>
+            @endforeach
+        </div>
+    </section>
+
+    <section
         class="grid min-h-[42rem] min-w-0 max-w-full items-start gap-4 overflow-hidden lg:grid-cols-[18rem_minmax(0,1fr)]"
         data-ai-chat
         data-prompt-limit="{{ $promptLimit }}"
+        data-ai-provider-label="{{ $displayedProvider['label'] }}"
+        data-ai-provider-location="{{ $displayedProvider['location'] }}"
+        data-ai-mode-label="{{ $displayedMode['label'] }}"
     >
         <button
             class="order-1 flex w-full items-center justify-between rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm font-bold text-slate-800 shadow-sm lg:hidden"
@@ -70,7 +122,7 @@
                 <div class="flex items-center gap-3">
                     <span class="grid h-11 w-11 place-items-center rounded-2xl bg-teal-400 text-xl text-slate-950" aria-hidden="true">✦</span>
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-[0.14em] text-teal-300">Local AI workspace</p>
+                        <p class="text-xs font-bold uppercase tracking-[0.14em] text-teal-300">Hybrid AI workspace</p>
                         <h1 class="mt-1 text-xl font-bold">AI Study Studio</h1>
                     </div>
                 </div>
@@ -131,7 +183,7 @@
                         >
                             <span class="grid min-w-0 gap-1">
                                 <span class="overflow-hidden text-sm font-bold text-slate-950 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]" title="{{ $conversation->title }}">{{ $conversation->title }}</span>
-                                <span class="truncate text-xs text-slate-500">{{ $modes[$conversation->mode->value]['label'] ?? $conversation->mode->value }} · {{ $conversation->messages_count }} messages</span>
+                                <span class="truncate text-xs text-slate-500" data-ai-conversation-meta>{{ $modes[$conversation->mode->value]['label'] ?? $conversation->mode->value }} · {{ $conversation->messages_count }} messages</span>
                             </span>
                             <span class="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-teal-700" aria-hidden="true">›</span>
                         </a>
@@ -146,8 +198,8 @@
             </div>
 
             <div class="mx-4 mb-4 rounded-2xl border border-teal-100 bg-teal-50 p-4">
-                <p class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-teal-900"><span aria-hidden="true">●</span> Local-first</p>
-                <p class="mt-2 text-xs leading-5 text-teal-900/75">Your Laravel backend sends prompts to the configured local model. Provider credentials stay on the server.</p>
+                <p class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-teal-900"><span aria-hidden="true">●</span> Server-side providers</p>
+                <p class="mt-2 text-xs leading-5 text-teal-900/75">Choose private LM Studio inference or the OpenAI online model. Laravel keeps every provider credential on the server.</p>
             </div>
         </aside>
 
@@ -161,6 +213,7 @@
                                 <div class="flex flex-wrap items-center gap-2">
                                     <p class="text-xs font-bold uppercase tracking-[0.12em] text-teal-800">{{ $modes[$activeConversation->mode->value]['label'] }}</p>
                                     <span class="rounded-full bg-teal-50 px-2 py-0.5 text-[0.68rem] font-bold text-teal-800">{{ $modes[$activeConversation->mode->value]['model_name'] }}</span>
+                                    <span class="rounded-full bg-stone-100 px-2 py-0.5 text-[0.68rem] font-bold text-slate-500">{{ $displayedProvider['location'] }} · {{ $displayedProvider['label'] }}</span>
                                     <span class="rounded-full bg-stone-100 px-2 py-0.5 text-[0.68rem] font-bold text-slate-500" data-ai-message-count>{{ $activeConversation->messages->count() }} messages</span>
                                 </div>
                                 <h2 class="mt-1 block max-w-full truncate text-xl font-bold text-slate-950" data-ai-conversation-title title="{{ $activeConversation->title }}">{{ $activeConversation->title }}</h2>
@@ -274,7 +327,7 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="text-center text-[0.7rem] leading-5 text-slate-400">Local AI can make mistakes. Review generated code, commands, and architecture decisions before using them.</p>
+                        <p class="text-center text-[0.7rem] leading-5 text-slate-400">AI can make mistakes. Online-mode prompts are sent to OpenAI; local-mode prompts remain behind Laravel and LM Studio. Review every result before using it.</p>
                     </form>
                 </section>
 
@@ -312,13 +365,13 @@
                         </div>
                     </div>
 
-                    <div class="grid gap-4 border-t border-stone-200 p-5 sm:p-6 md:grid-cols-3">
+                    <div class="grid gap-4 border-t border-stone-200 p-5 sm:p-6 md:grid-cols-2 xl:grid-cols-4">
                         @foreach ($modes as $mode => $configuration)
                             <form class="grid content-start gap-4 rounded-2xl border border-stone-200 p-5 transition hover:-translate-y-0.5 hover:border-teal-600 hover:shadow-lg hover:shadow-slate-900/5" method="POST" action="{{ route('cabinet.ai.conversations.store') }}">
                                 @csrf
                                 <input type="hidden" name="mode" value="{{ $mode }}">
                                 <div class="flex items-start justify-between gap-3">
-                                    <span class="grid h-11 w-11 place-items-center rounded-2xl {{ $mode === 'coding' ? 'bg-slate-950 text-teal-300' : ($mode === 'architecture' ? 'bg-orange-100 text-orange-800' : 'bg-teal-100 text-teal-900') }}" aria-hidden="true">{{ $mode === 'coding' ? '</>' : ($mode === 'architecture' ? '◇' : '✦') }}</span>
+                                    <span class="grid h-11 w-11 place-items-center rounded-2xl {{ $mode === 'coding' ? 'bg-slate-950 text-teal-300' : ($mode === 'architecture' ? 'bg-orange-100 text-orange-800' : ($mode === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-teal-100 text-teal-900')) }}" aria-hidden="true">{{ $mode === 'coding' ? '</>' : ($mode === 'architecture' ? '◇' : ($mode === 'online' ? '◎' : '✦')) }}</span>
                                     <span class="rounded-full bg-stone-100 px-2.5 py-1 text-[0.68rem] font-bold text-slate-500">{{ $configuration['model_profile'] }}</span>
                                 </div>
                                 <div>
@@ -326,6 +379,7 @@
                                     <p class="mt-2 text-sm leading-6 text-slate-600">{{ $configuration['recommended_for'] }}</p>
                                 </div>
                                 <div class="mt-auto border-t border-stone-200 pt-4">
+                                    <p class="mb-2 text-[0.68rem] font-bold uppercase tracking-[0.08em] {{ $providers[$configuration['provider']]['location'] === 'Online' ? 'text-blue-700' : 'text-teal-700' }}">{{ $providers[$configuration['provider']]['location'] }} · {{ $providers[$configuration['provider']]['label'] }}</p>
                                     <p class="truncate text-xs font-bold text-slate-500" title="{{ $configuration['model_name'] }}">{{ $configuration['model_name'] }}</p>
                                     <button class="mt-3 flex w-full items-center justify-between rounded-xl bg-stone-100 px-4 py-3 text-sm font-bold text-slate-800 transition hover:bg-teal-700 hover:text-white" type="submit">
                                         Start with this mode <span aria-hidden="true">→</span>

@@ -1,4 +1,5 @@
 import { initAiChat } from './ai-chat';
+import { initAiConnections } from './ai-connections';
 
 document.addEventListener('click', (event) => {
     document.querySelectorAll('details[data-account-menu][open]').forEach((menu) => {
@@ -90,3 +91,4 @@ if (contactDetailsForm) {
 }
 
 initAiChat();
+initAiConnections();
