@@ -17,7 +17,7 @@ hybrid local/online AI assistant.
 ## Application Demo
 
 <p>
-  <a href="https://sergehall.github.io/cs85-php-programming/assets/cs85-ai-powered-application-demo.mp4">
+  <a href="https://sergehall.github.io/cs85-php-programming/">
     <img
       alt="Watch the CS85 AI-powered Laravel application demo"
       src="https://img.shields.io/badge/Watch%20Application%20Demo-Video%20Walkthrough-0f766e?style=for-the-badge&logo=github&logoColor=white"
@@ -28,14 +28,14 @@ hybrid local/online AI assistant.
 <table>
   <tr>
     <td align="center">
-      <a href="https://sergehall.github.io/cs85-php-programming/assets/cs85-ai-powered-application-demo.mp4">
+      <a href="https://sergehall.github.io/cs85-php-programming/">
         <img
           src="docs/assets/cs85-ai-powered-application-demo-poster.jpg"
           width="720"
           alt="AI Study Studio application demo preview with four connected AI models"
         />
       </a>
-      <br/><sub>CS85 Laravel and AI Study Studio walkthrough — click the preview to watch the Application Demo</sub>
+      <br/><sub>CS85 Laravel and AI Study Studio walkthrough — opens the hosted Application Demo page</sub>
     </td>
   </tr>
 </table>
@@ -47,7 +47,9 @@ Studio specialists alongside the online OpenAI `gpt-4o-mini` model, live
 provider health, model selection, persistent conversations, and streamed AI
 responses.
 
-[Watch the full Application Demo through GitHub Pages](https://sergehall.github.io/cs85-php-programming/assets/cs85-ai-powered-application-demo.mp4).
+[Open the complete Application Demo page](https://sergehall.github.io/cs85-php-programming/)
+to watch the embedded video, jump between chapters, and review the coursework
+and AI architecture demonstrated in the recording.
 
 > GitHub Pages publishes the static project documentation. The Laravel
 > application and its AI providers run locally because they require PHP, a
@@ -739,7 +741,7 @@ Possible post-course improvements:
 
 ## Submission References
 
-- [Application Demo](https://sergehall.github.io/cs85-php-programming/assets/cs85-ai-powered-application-demo.mp4)
+- [Application Demo page](https://sergehall.github.io/cs85-php-programming/)
 - [Module 11A documentation](assignments/module11a/README.md)
 - [Module 12A documentation](assignments/module12a/README.md)
 - [Final Project implementation evidence](assignments/final-project-ai/README.md)
