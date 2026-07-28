@@ -40,6 +40,9 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
     const scrollLatest = root.querySelector('[data-ai-scroll-latest]');
     const messageCount = root.querySelector('[data-ai-message-count]');
     const promptLimit = Number(root.dataset.promptLimit || textarea?.maxLength || 0);
+    const providerLabel = root.dataset.aiProviderLabel || 'AI provider';
+    const providerLocation = root.dataset.aiProviderLocation || 'Configured';
+    const modeLabel = root.dataset.aiModeLabel || 'AI';
     let activeRequest;
 
     const setStatus = (message, tone = 'ready') => {
@@ -130,6 +133,13 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
 
         const count = messages.querySelectorAll('[data-ai-message-role]').length;
         messageCount.textContent = `${count.toLocaleString('en-US')} messages`;
+
+        const activeHistoryMeta = root.querySelector(
+            '[data-ai-conversation-item][aria-current="page"] [data-ai-conversation-meta]',
+        );
+        if (activeHistoryMeta) {
+            activeHistoryMeta.textContent = `${modeLabel} · ${count.toLocaleString('en-US')} messages`;
+        }
     };
 
     const markAssistantError = (message, errorMessage) => {
@@ -192,7 +202,7 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
                 stateElement.textContent = 'Writing';
             }
 
-            setStatus('Streaming a response from your local model…', 'busy');
+            setStatus(`Streaming a response from ${providerLabel}…`, 'busy');
             if (shouldFollow) {
                 scrollToLatestMessage();
             }
@@ -211,9 +221,9 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
         } else if (streamEvent.type === 'error') {
             markAssistantError(
                 assistantMessage,
-                streamEvent.content || 'The local AI request failed.',
+                streamEvent.content || 'The AI provider request failed.',
             );
-            setStatus('The local model could not complete this response.', 'error');
+            setStatus(`${providerLabel} could not complete this response.`, 'error');
         }
     };
 
@@ -383,7 +393,7 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
         setBusy(true);
         setStatus(
             appendUserMessage
-                ? 'Connecting to your local model…'
+                ? `Connecting to ${providerLocation.toLowerCase()} ${providerLabel}…`
                 : 'Retrying the previous message…',
             'busy',
         );
@@ -403,9 +413,9 @@ export const initAiChat = (root = document.querySelector('[data-ai-chat]')) => {
             } else {
                 markAssistantError(
                     assistantMessage,
-                    error.message || 'The local AI request failed.',
+                    error.message || 'The AI provider request failed.',
                 );
-                setStatus('LM Studio request failed.', 'error');
+                setStatus(`${providerLabel} request failed.`, 'error');
             }
         } finally {
             activeRequest = undefined;
