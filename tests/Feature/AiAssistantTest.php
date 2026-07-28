@@ -51,7 +51,12 @@ class AiAssistantTest extends TestCase
             $response->assertSee('Qwen 3 Coder Next');
             $response->assertSee('OpenAI GPT-OSS 120B');
             $response->assertSee('OpenAI GPT-4o mini');
-            $response->assertSee('Three local models + one OpenAI online model');
+            $response->assertSee('Choose a connected AI specialist');
+            $response->assertSee('Start with this mode');
+            $response->assertSee('How the workspace works');
+            $response->assertSee('Conversation memory');
+            $response->assertSee('Provider-aware privacy');
+            $this->assertSame(4, substr_count($response->getContent(), 'data-ai-model-launch'));
         }
     }
 
