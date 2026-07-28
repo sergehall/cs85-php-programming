@@ -7,6 +7,41 @@ application that keeps weekly coursework, labs, notes, project experiments, and
 the final project in one organized codebase while preserving professional
 Laravel boundaries.
 
+## Application Demo
+
+<p>
+  <a href="docs/assets/cs85-ai-powered-application-demo.mp4?raw=1">
+    <img
+      alt="Watch the CS85 AI-powered Laravel application demo"
+      src="https://img.shields.io/badge/Watch%20Application%20Demo-Video%20Walkthrough-0f766e?style=for-the-badge&logo=github&logoColor=white"
+    />
+  </a>
+</p>
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="docs/assets/cs85-ai-powered-application-demo.mp4?raw=1">
+        <img
+          src="docs/assets/cs85-ai-powered-application-demo-poster.jpg"
+          width="720"
+          alt="AI Study Studio application demo preview with four connected AI models"
+        />
+      </a>
+      <br/><sub>CS85 Laravel and AI Study Studio walkthrough — click the preview to watch the Application Demo</sub>
+    </td>
+  </tr>
+</table>
+
+The eight-minute Application Demo starts with the local Laravel environment,
+tours representative coursework, verifies the Module 12A OpenAI integration,
+and demonstrates the final hybrid AI workspace. The video shows three local LM
+Studio specialists alongside the online OpenAI `gpt-4o-mini` model, live
+provider health, model selection, persistent conversations, and streamed AI
+responses.
+
+[Watch or download the full Application Demo](docs/assets/cs85-ai-powered-application-demo.mp4?raw=1).
+
 ## Project Goals
 
 - Practice PHP fundamentals, forms, Composer, routing, Blade, databases,
