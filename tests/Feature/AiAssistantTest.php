@@ -14,6 +14,7 @@ use App\Services\AI\Enums\AiMode;
 use App\Services\AI\Exceptions\AiProviderException;
 use Generator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class AiAssistantTest extends TestCase
@@ -49,6 +50,8 @@ class AiAssistantTest extends TestCase
             $response->assertSee('Qwen 3.6 35B A3B');
             $response->assertSee('Qwen 3 Coder Next');
             $response->assertSee('OpenAI GPT-OSS 120B');
+            $response->assertSee('OpenAI GPT-4o mini');
+            $response->assertSee('Three local models + one OpenAI online model');
         }
     }
 
@@ -62,6 +65,7 @@ class AiAssistantTest extends TestCase
         $response->assertRedirect(route('cabinet.ai.conversations.show', $conversation->public_uuid));
         $this->assertTrue($conversation->user->is($user));
         $this->assertSame(AiMode::Coding, $conversation->mode);
+        $this->assertSame('lm_studio', $conversation->provider);
         $this->assertSame('qwen/qwen3-coder-next', $conversation->model);
 
         $this->actingAs($user)
@@ -74,7 +78,85 @@ class AiAssistantTest extends TestCase
             ->assertSee('data-ai-character-count', false)
             ->assertSee('data-ai-scroll-latest', false)
             ->assertSee('Review this Laravel code for correctness and security.')
-            ->assertSee('Local AI can make mistakes.');
+            ->assertSee('AI can make mistakes.');
+    }
+
+    public function test_user_can_create_an_online_openai_conversation(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/cabinet/ai/conversations', ['mode' => 'online']);
+        $conversation = AiConversation::query()->sole();
+
+        $response->assertRedirect(route('cabinet.ai.conversations.show', $conversation->public_uuid));
+        $this->assertSame(AiMode::Online, $conversation->mode);
+        $this->assertSame('openai', $conversation->provider);
+        $this->assertSame('gpt-4o-mini', $conversation->model);
+
+        $this->actingAs($user)
+            ->get(route('cabinet.ai.conversations.show', $conversation->public_uuid))
+            ->assertOk()
+            ->assertSee('OpenAI Online')
+            ->assertSee('Online · OpenAI API')
+            ->assertSee('Online-mode prompts are sent to OpenAI');
+
+        $this->provider->queue(
+            ['Cloud response.'],
+            new AiProviderResult('Cloud response.', [], 11, 4),
+        );
+
+        $streamed = $this->actingAs($user)->post(
+            route('cabinet.ai.conversations.messages.stream', $conversation->public_uuid),
+            ['message' => 'Explain provider abstractions.'],
+            ['Accept' => 'text/event-stream'],
+        )->streamedContent();
+
+        $this->assertStringContainsString('Cloud response.', $streamed);
+        $this->assertSame('openai', $this->provider->requests[0]->provider);
+        $this->assertDatabaseHas('ai_requests', [
+            'provider' => 'openai',
+            'model' => 'gpt-4o-mini',
+            'status' => AiRequest::STATUS_COMPLETED,
+        ]);
+    }
+
+    public function test_authenticated_status_endpoint_checks_three_local_models_and_openai(): void
+    {
+        config([
+            'ai.providers.lm_studio.base_url' => 'http://lm-studio.test/v1',
+            'ai.providers.openai.base_url' => 'https://openai.test/v1',
+            'ai.providers.openai.api_key' => 'secret-test-key',
+        ]);
+        Http::fake([
+            'http://lm-studio.test/v1/models' => Http::response([
+                'data' => [
+                    ['id' => 'qwen/qwen3.6-35b-a3b'],
+                    ['id' => 'qwen/qwen3-coder-next'],
+                    ['id' => 'openai/gpt-oss-120b'],
+                ],
+            ]),
+            'https://openai.test/v1/models' => Http::response([
+                'data' => [['id' => 'gpt-4o-mini']],
+            ]),
+        ]);
+
+        $this->get(route('cabinet.ai.status'))->assertRedirect('/login');
+
+        $response = $this->actingAs(User::factory()->create())
+            ->getJson(route('cabinet.ai.status'));
+
+        $response->assertOk()
+            ->assertJsonPath('summary.connected', 4)
+            ->assertJsonPath('summary.total', 4)
+            ->assertJsonPath('summary.providers_reachable', 2)
+            ->assertJsonFragment([
+                'mode' => 'online',
+                'provider' => 'openai',
+                'model' => 'gpt-4o-mini',
+                'connected' => true,
+            ]);
+
+        Http::assertSentCount(2);
     }
 
     public function test_conversation_mode_is_allowlisted(): void
@@ -126,6 +208,7 @@ class AiAssistantTest extends TestCase
             ['system', 'user', 'assistant', 'user'],
             collect($this->provider->requests[0]->messages)->pluck('role')->all(),
         );
+        $this->assertSame('lm_studio', $this->provider->requests[0]->provider);
         $this->assertDatabaseHas('ai_messages', [
             'ai_conversation_id' => $conversation->getKey(),
             'role' => AiMessage::ROLE_ASSISTANT,
