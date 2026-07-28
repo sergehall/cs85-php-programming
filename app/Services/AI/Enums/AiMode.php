@@ -9,4 +9,5 @@ enum AiMode: string
     case General = 'general';
     case Coding = 'coding';
     case Architecture = 'architecture';
+    case Online = 'online';
 }

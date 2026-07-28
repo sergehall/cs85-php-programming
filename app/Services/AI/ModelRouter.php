@@ -10,7 +10,7 @@ use InvalidArgumentException;
 final class ModelRouter
 {
     /**
-     * @return array{label:string,description:string,model:string,model_name:string,model_profile:string,recommended_for:string,temperature:float,prompt:string}
+     * @return array{label:string,description:string,provider:string,model:string,model_name:string,model_profile:string,recommended_for:string,temperature:float,prompt:string}
      */
     public function configuration(AiMode $mode): array
     {
@@ -26,5 +26,10 @@ final class ModelRouter
     public function model(AiMode $mode): string
     {
         return $this->configuration($mode)['model'];
+    }
+
+    public function provider(AiMode $mode): string
+    {
+        return $this->configuration($mode)['provider'];
     }
 }
