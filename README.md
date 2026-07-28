@@ -268,28 +268,48 @@ The Laravel application runs on macOS through PHP, Composer, Node.js, and Vite.
 Project infrastructure runs in Docker Compose and persists between sessions.
 
 ```mermaid
-flowchart LR
-    Developer["Developer / VS Code"] --> Script["npm run dev"]
-    Script --> Infra["npm run infra:up"]
-    Script --> Migrate["npm run db:migrate:local"]
-    Script --> Laravel["Laravel dev server\n127.0.0.1:8000"]
-    Script --> Vite["Vite dev server\n127.0.0.1:5173"]
-    Script --> Browser["Browser\n127.0.0.1:8000"]
+flowchart TB
+    Developer["Developer / VS Code"] --> DevCommand["npm run dev"]
+    DevCommand --> Preflight["Preflight\n.env · APP_KEY · dependencies · ports"]
+    Preflight --> Compose["Docker Compose\nstarts MySQL · Redis · Mailpit · Adminer"]
+    Compose --> Migrate["php artisan migrate --force\nselected database"]
+    Migrate --> RuntimeStart["Start application processes"]
 
-    Infra --> Compose["Docker Compose\ncompose.yaml"]
-    Compose --> MySQL["MySQL 9\n127.0.0.1:3307"]
-    Compose --> Redis["Redis\n127.0.0.1:6379"]
-    Compose --> Mailpit["Mailpit\nSMTP 1025 / UI 8025"]
-    Compose --> Adminer["Adminer\n127.0.0.1:8081"]
+    subgraph Runtime["Local application runtime"]
+        direction LR
+        Laravel["Laravel\n127.0.0.1:8000"]
+        Vite["Vite\n127.0.0.1:5173"]
+        Browser["Browser\n127.0.0.1:8000"]
+    end
 
-    Laravel --> MySQL
-    Laravel --> Mailpit
+    RuntimeStart --> Laravel
+    RuntimeStart --> Vite
+    RuntimeStart --> Browser
+
+    Browser --> Laravel
+    Browser -. "development assets" .-> Vite
+
+    Laravel --> DatabaseMode{"DB_CONNECTION"}
+
+    subgraph Dependencies["Runtime dependencies"]
+        direction LR
+        SQLite["SQLite\ndefault"]
+        MySQL["MySQL 9\n127.0.0.1:3307"]
+        Redis["Redis\n127.0.0.1:6379"]
+        Mailpit["Mailpit\nSMTP 1025 · UI 8025"]
+        Adminer["Adminer\n127.0.0.1:8081"]
+    end
+
+    DatabaseMode -->|"sqlite"| SQLite
+    DatabaseMode -. "mysql" .-> MySQL
+    Laravel -. "when CS85_USE_MAILPIT=true" .-> Mailpit
     Laravel -. "optional cache/queues" .-> Redis
     Adminer --> MySQL
 ```
 
-Homebrew MySQL is not required. The app connects to Docker MySQL on
-`127.0.0.1:3307`, which avoids conflicts with other local database installations.
+SQLite is the zero-configuration default. When `DB_CONNECTION=mysql`, Laravel
+uses Docker MySQL on `127.0.0.1:3307`, so Homebrew MySQL is not required and
+other local database installations can keep their default port.
 
 ## Application Areas
 
