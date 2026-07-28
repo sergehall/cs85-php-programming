@@ -159,7 +159,8 @@ A production version should require authentication, apply user quotas, track
 latency and token usage, support provider switching, stream longer responses,
 validate structured outputs, redact sensitive input, evaluate prompt quality,
 and provide a graceful fallback. Those improvements are demonstrated by the
-separate Final Project implementation at `/cabinet/ai`.
+Final Project at `/cabinet/ai`, where this same OpenAI configuration is the
+fourth online model beside three local LM Studio models.
 
 ## Submission Evidence
 

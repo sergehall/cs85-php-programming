@@ -1,6 +1,6 @@
 @extends('layouts.app', [
     'title' => 'Module 12: AI-Powered Final Project - CS85',
-    'description' => 'A production-oriented Laravel AI assistant with local model routing, streaming, persistence, tools, telemetry, and privacy boundaries.',
+    'description' => 'A production-oriented Laravel AI assistant with three local models, one OpenAI online model, live provider health, streaming, persistence, tools, and telemetry.',
 ])
 
 @section('content')
@@ -35,13 +35,15 @@
                     <p class="text-sm font-bold uppercase tracking-normal text-orange-300">AI-Powered Web Application</p>
                     <h1 class="max-w-4xl text-4xl font-black leading-none tracking-tight sm:text-5xl lg:text-6xl">A private AI workspace owned by Laravel.</h1>
                     <p class="max-w-3xl text-base leading-7 text-slate-300 md:text-lg md:leading-8">
-                        The final project evolves a single content request into authenticated, multi-turn conversations with explicit model routing, local OpenAI-compatible inference, streaming, persistence, tools, telemetry, and safe failure behavior.
+                        The final project evolves a single content request into authenticated, multi-turn conversations with explicit provider routing, three local LM Studio models, one OpenAI online model, live connection checks, streaming, persistence, tools, telemetry, and safe failure behavior.
                     </p>
                 </div>
 
                 <div class="flex flex-wrap gap-2 text-xs font-bold">
                     <span class="rounded-lg border border-white/10 bg-white/5 px-3 py-2">Provider contract</span>
                     <span class="rounded-lg border border-white/10 bg-white/5 px-3 py-2">Local LM Studio</span>
+                    <span class="rounded-lg border border-white/10 bg-white/5 px-3 py-2">OpenAI gpt-4o-mini</span>
+                    <span class="rounded-lg border border-white/10 bg-white/5 px-3 py-2">Live model health</span>
                     <span class="rounded-lg border border-white/10 bg-white/5 px-3 py-2">SSE streaming</span>
                     <span class="rounded-lg border border-white/10 bg-white/5 px-3 py-2">Database history</span>
                     <span class="rounded-lg border border-white/10 bg-white/5 px-3 py-2">Allowlisted tools</span>
@@ -64,7 +66,7 @@
             <div class="border-b border-white/10 p-5 sm:border-r lg:border-b-0">
                 <span class="text-xs font-bold uppercase tracking-normal text-slate-400">Task modes</span>
                 <strong class="mt-2 block text-3xl">{{ count($modes) }}</strong>
-                <span class="text-sm text-slate-400">General, coding, architecture</span>
+                <span class="text-sm text-slate-400">3 local + 1 online</span>
             </div>
             <div class="border-b border-white/10 p-5 lg:border-b-0 lg:border-r">
                 <span class="text-xs font-bold uppercase tracking-normal text-slate-400">Transport</span>
@@ -101,7 +103,7 @@
                 </thead>
                 <tbody class="divide-y divide-stone-200">
                     @foreach ([
-                        ['Provider', 'Connected OpenAI API · gpt-4o-mini', 'LM Studio through an OpenAI-compatible provider contract'],
+                        ['Provider', 'Connected OpenAI API · gpt-4o-mini', 'Routed contract: three LM Studio models + OpenAI gpt-4o-mini'],
                         ['Interaction', 'One title → one editable draft', 'Private multi-turn conversations with retry'],
                         ['Prompting', 'Role + type + tone assembled by one service', 'Versioned, mode-specific system prompt files'],
                         ['Response', 'Validated JSON body rendered in a textarea', 'Streamed deltas rendered as sanitized Markdown'],
@@ -131,7 +133,7 @@
                 ['02', 'Controller', 'Authenticates, authorizes, validates, and streams.'],
                 ['03', 'Application', 'Builds context, runs tools, persists, and records telemetry.'],
                 ['04', 'Provider', 'Translates typed requests into OpenAI-compatible HTTP.'],
-                ['05', 'LM Studio', 'Runs the selected local model without owning app state.'],
+                ['05', 'AI runtime', 'LM Studio or OpenAI runs the stored provider/model choice.'],
             ] as [$number, $title, $copy])
                 <li class="rounded-xl border border-orange-200 bg-white p-5">
                     <span class="grid h-9 w-9 place-items-center rounded-lg bg-orange-700 text-xs font-black text-white">{{ $number }}</span>
@@ -142,7 +144,7 @@
         </ol>
     </section>
 
-    <section class="grid gap-5 md:grid-cols-3" aria-label="Configured AI modes">
+    <section class="grid gap-5 md:grid-cols-2 xl:grid-cols-4" aria-label="Configured AI modes">
         @foreach ($modes as $key => $mode)
             <article class="rounded-2xl border border-stone-300 bg-white p-6 shadow-xl shadow-slate-900/5">
                 <div class="flex items-start justify-between gap-4">
@@ -158,8 +160,12 @@
                         <dd class="mt-2 break-all font-mono text-xs text-slate-600">{{ $mode['model'] }}</dd>
                     </div>
                     <div class="rounded-xl bg-stone-50 p-4">
-                        <dt class="font-black text-slate-950">Local profile</dt>
+                        <dt class="font-black text-slate-950">Runtime profile</dt>
                         <dd class="mt-2 text-slate-600">{{ $mode['model_profile'] }}</dd>
+                    </div>
+                    <div class="rounded-xl bg-stone-50 p-4">
+                        <dt class="font-black text-slate-950">Provider</dt>
+                        <dd class="mt-2 font-mono text-xs text-slate-600">{{ $mode['provider'] }}</dd>
                     </div>
                 </dl>
             </article>
@@ -173,11 +179,12 @@
             <div class="mt-6 grid gap-3 sm:grid-cols-2">
                 @foreach ([
                     ['Authentication + ownership', 'Every route is protected and conversations resolve through the current user.'],
-                    ['Prompt versioning', 'General, coding, and architecture instructions live in reviewed resource files.'],
+                    ['Prompt versioning', 'General, coding, architecture, and online instructions live in reviewed resource files.'],
                     ['Safe tool calling', 'Only three read-only course tools are schema-limited and allowlisted.'],
                     ['Output safety', 'Raw model HTML is stripped before Laravel-rendered Markdown reaches the DOM.'],
                     ['Observability', 'Latency, provider, model, status, error codes, and available token usage are stored.'],
-                    ['Graceful degradation', 'A local provider outage returns a safe stream error without breaking the rest of the app.'],
+                    ['Graceful degradation', 'Either provider can fail independently without breaking the rest of the app.'],
+                    ['Live provider health', 'The cabinet verifies three local model IDs and the online OpenAI model without exposing credentials.'],
                 ] as [$title, $copy])
                     <div class="rounded-xl border border-stone-200 bg-stone-50 p-5">
                         <strong class="block text-slate-950">{{ $title }}</strong>
@@ -212,7 +219,7 @@
         <p class="text-xs font-black uppercase tracking-normal text-orange-800">Final reflection</p>
         <h2 class="mt-2 text-3xl font-black tracking-tight">The final project is not a larger prompt. It is a safer system around the model.</h2>
         <p class="mt-4 max-w-5xl leading-7 text-slate-600">
-            Assignment 12A teaches the visible mechanics of an AI request: configuration, prompt construction, HTTP, response extraction, and errors. The final project keeps those concepts but moves provider transport behind an interface, stores application-owned history, limits model authority, validates every boundary, measures operational behavior, and remains usable when local inference is unavailable.
+            Assignment 12A teaches the visible mechanics of an AI request: configuration, prompt construction, HTTP, response extraction, and errors. The final project keeps those concepts, reuses the same OpenAI connection as its fourth model, moves provider transport behind an interface, stores application-owned history, limits model authority, validates every boundary, measures operational behavior, and remains usable when either provider is unavailable.
         </p>
         <div class="mt-6 flex flex-wrap gap-3">
             <a class="rounded-lg bg-slate-950 px-4 py-3 text-sm font-black text-white no-underline transition hover:bg-orange-800" href="{{ route('cabinet.ai') }}">Launch Final Project</a>

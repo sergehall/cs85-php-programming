@@ -23,7 +23,7 @@
             @unless ($courseTrackActive) aria-current="page" @endunless
         >
             <strong class="text-sm">Final Project</strong>
-            <span class="mt-1 text-xs {{ $courseTrackActive ? 'text-slate-500' : 'text-slate-300' }}">Streaming local AI workspace</span>
+            <span class="mt-1 text-xs {{ $courseTrackActive ? 'text-slate-500' : 'text-slate-300' }}">Hybrid LM Studio + OpenAI workspace</span>
         </a>
     </div>
 </nav>

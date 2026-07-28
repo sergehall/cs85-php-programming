@@ -40,6 +40,10 @@ providers stay behind Laravel - into a complete AI-powered web application:
 - an application-facing provider interface;
 - explicit conversation-scoped model routing;
 - local OpenAI-compatible inference through LM Studio;
+- online inference through the same OpenAI `gpt-4o-mini` configuration proven
+  by Assignment 12A;
+- an authenticated connection monitor for all three local models and the
+  online model;
 - database-backed multi-turn history;
 - same-origin SSE streaming;
 - safe Markdown rendering;
@@ -58,15 +62,15 @@ would underrepresent the completed architecture.
 
 The dual-track structure solves both problems:
 
-| Assessment goal          | Evidence                                                   |
-| ------------------------ | ---------------------------------------------------------- |
-| Understand a direct API  | Verified OpenAI API request through `AiContentService`     |
-| Adapt prompts            | Type and tone `match` expressions                          |
-| Protect an API key       | Server-side OpenAI configuration                           |
-| Handle failures          | HTTP checks, safe errors, logging, and fake-backed tests   |
-| Build a complete product | `/cabinet/ai` conversations, streaming, tools, and history |
-| Demonstrate architecture | Provider contract and versioned documents                  |
-| Demonstrate operations   | Rate limits, telemetry, retry, and local runtime setup     |
+| Assessment goal          | Evidence                                                          |
+| ------------------------ | ----------------------------------------------------------------- |
+| Understand a direct API  | Verified OpenAI API request through `AiContentService`            |
+| Adapt prompts            | Type and tone `match` expressions                                 |
+| Protect an API key       | Server-side OpenAI configuration                                  |
+| Handle failures          | HTTP checks, safe errors, logging, and fake-backed tests          |
+| Build a complete product | `/cabinet/ai` hybrid conversations, streaming, tools, and history |
+| Demonstrate architecture | Provider contract and versioned documents                         |
+| Demonstrate operations   | Live provider health, rate limits, telemetry, and retry           |
 
 This preserves the learning progression from one controlled external request
 to a maintainable AI system.

@@ -133,7 +133,8 @@ final class Module12AiContentAssignmentTest extends TestCase
             ->assertSeeText('Assignment 12A proves the API call. The final project proves the system.')
             ->assertSeeText('The Assignment 12A browser flow has been verified against the live OpenAI API')
             ->assertSeeText('Connected OpenAI API · gpt-4o-mini')
-            ->assertSeeText('LM Studio through an OpenAI-compatible provider contract')
+            ->assertSeeText('Routed contract: three LM Studio models + OpenAI gpt-4o-mini')
+            ->assertSeeText('Live provider health')
             ->assertSeeText('Production concerns are implemented, not simulated.')
             ->assertSee(route('ai.form'), false)
             ->assertSee(route('cabinet.ai'), false);
