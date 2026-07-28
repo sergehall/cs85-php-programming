@@ -383,60 +383,171 @@ Admin areas:
 Sensitive actions require recent authentication, and administrative routes are
 protected by the `admin` middleware.
 
-## Environment
+## Environment Setup
 
-Create a local environment file:
+The repository includes a safe [`.env.example`](.env.example). After cloning,
+create the ignored local `.env`, generate a unique Laravel application key, and
+run the migrations:
 
 ```bash
 cp .env.example .env
 php artisan key:generate
+php artisan migrate
 ```
 
-Default quick-start storage is SQLite. Docker-backed local development uses
-MySQL:
+The default SQLite configuration is enough to open the public pages, roadmap,
+assignments, authentication screens, and cabinet. External integrations are
+enabled only when their variables and local services are available.
+
+| Feature                      | Environment variables                                             | Requirement                                                 |
+| ---------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------- |
+| Laravel runtime              | `APP_KEY`, `APP_URL`                                              | Required; generate `APP_KEY` locally                        |
+| Main database                | `DB_CONNECTION` and optional `DB_*` values                        | SQLite works immediately; MySQL is available through Docker |
+| Module 8 databases           | `MODULE8A_DB_*`, `MODULE8B_DB_*`                                  | Required only for the MySQL exercises                       |
+| Module 11 API                | `MODULE11A_API_*`                                                 | Optional; safe defaults target JSONPlaceholder              |
+| Module 12A and OpenAI Online | `OPENAI_API_KEY`, `OPENAI_API_URL`, `OPENAI_MODEL`                | API key required for live OpenAI responses                  |
+| Three local AI modes         | `AI_LM_STUDIO_*` and `AI_*` limits                                | LM Studio server and the configured models are required     |
+| GitHub sign-in               | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_REDIRECT_URI` | Optional; password authentication remains available         |
+| Email delivery               | `CS85_USE_MAILPIT` and `MAIL_*`                                   | Mailpit is the safe local default                           |
+
+### Safe Full-Project Template
+
+The following configuration documents every project-specific setting needed
+for the complete coursework and Final Project. Replace placeholder values only
+inside the local `.env`. Do not paste real credentials into README files,
+screenshots, videos, issues, commits, or CI logs.
+
+```dotenv
+# Application
+APP_NAME="CS85 PHP Programming"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8000
+
+APP_LOCALE=en
+APP_FALLBACK_LOCALE=en
+APP_FAKER_LOCALE=en_US
+APP_MAINTENANCE_DRIVER=file
+BCRYPT_ROUNDS=12
+
+# Logging and security events
+LOG_CHANNEL=stack
+LOG_STACK=single
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
+SECURITY_LOG_LEVEL=info
+SECURITY_LOG_DAYS=90
+
+# Main Laravel database: zero-configuration quick start
+DB_CONNECTION=sqlite
+
+# Module 8A MySQL exercise
+MODULE8A_DB_HOST=127.0.0.1
+MODULE8A_DB_PORT=3307
+MODULE8A_DB_DATABASE=orm_practice_db
+MODULE8A_DB_USERNAME=your_local_db_user
+MODULE8A_DB_PASSWORD=your_local_db_password
+
+# Module 8B MySQL exercise
+MODULE8B_DB_HOST=127.0.0.1
+MODULE8B_DB_PORT=3307
+MODULE8B_DB_DATABASE=inventory_db
+MODULE8B_DB_USERNAME=your_local_db_user
+MODULE8B_DB_PASSWORD=your_local_db_password
+
+# Laravel state
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_PATH=/
+SESSION_DOMAIN=null
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+FILESYSTEM_DISK=local
+BROADCAST_CONNECTION=log
+
+# Authentication security
+AUTH_MFA_CHALLENGE_TTL=300
+AUTH_STEP_UP_TTL=900
+
+# Redis
+REDIS_CLIENT=phpredis
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+# Local email testing
+CS85_USE_MAILPIT=true
+MAIL_MAILER=log
+MAIL_SCHEME=null
+MAIL_HOST=127.0.0.1
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+# Module 11A API Data
+MODULE11A_API_ENDPOINT=https://jsonplaceholder.typicode.com/users
+MODULE11A_API_TIMEOUT=3
+MODULE11A_API_CACHE_SECONDS=600
+
+# Module 12A and the Final Project OpenAI mode
+OPENAI_API_KEY=replace_with_your_openai_api_key
+OPENAI_API_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4o-mini
+OPENAI_CONNECT_TIMEOUT=5
+OPENAI_REQUEST_TIMEOUT=30
+
+# Final Project local models through LM Studio
+AI_LM_STUDIO_BASE_URL=http://127.0.0.1:1234/v1
+AI_LM_STUDIO_API_KEY=lm-studio
+AI_CONNECT_TIMEOUT=5
+AI_REQUEST_TIMEOUT=180
+AI_PROMPT_MAX_CHARACTERS=8000
+AI_HISTORY_MESSAGES=30
+AI_MAX_OUTPUT_TOKENS=2048
+AI_REQUESTS_PER_MINUTE=10
+AI_TOOLS_ENABLED=true
+
+# Optional GitHub OAuth
+GITHUB_CLIENT_ID=replace_with_your_github_client_id
+GITHUB_CLIENT_SECRET=replace_with_your_github_client_secret
+GITHUB_REDIRECT_URI="${APP_URL}/auth/github/callback"
+
+# Frontend
+VITE_APP_NAME="${APP_NAME}"
+```
+
+Run `php artisan key:generate` after copying the template so Laravel fills
+`APP_KEY` securely. Each variable should appear only once in `.env`; when a key
+is duplicated, the effective value can be unclear after configuration caching.
+
+### Optional Docker MySQL Configuration
+
+To use the Docker-backed main database instead of SQLite, replace the main
+database section with:
 
 ```dotenv
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3307
 DB_DATABASE=cs85_php_programming
-DB_USERNAME=cs85
-DB_PASSWORD=cs85_password
-CACHE_STORE=database
-QUEUE_CONNECTION=database
-MAIL_MAILER=smtp
-MAIL_HOST=127.0.0.1
-MAIL_PORT=1025
+DB_USERNAME=your_local_db_user
+DB_PASSWORD=your_local_db_password
 ```
 
-GitHub OAuth:
+Start the LM Studio local server on port `1234` and load the models configured
+for General, Coding, and Architecture modes. The OpenAI Online mode reuses
+Module 12A's server-side key and `gpt-4o-mini` configuration. Follow the
+complete [AI provider setup guide](docs/architecture/ai-local-setup.md) for
+model identifiers, startup order, live connection checks, streaming, and
+troubleshooting.
 
-```dotenv
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
-GITHUB_REDIRECT_URI="${APP_URL}/auth/github/callback"
-```
-
-Module 12 and Final Project AI providers:
-
-```dotenv
-AI_LM_STUDIO_BASE_URL=http://127.0.0.1:1234/v1
-AI_LM_STUDIO_API_KEY=lm-studio
-
-OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_API_URL=https://api.openai.com/v1
-OPENAI_MODEL=gpt-4o-mini
-```
-
-Start the LM Studio local server on port `1234` and load the model configured
-for the selected General, Coding, or Architecture mode. The OpenAI Online mode
-reuses the Module 12A server-side key and `gpt-4o-mini` configuration. Follow
-the complete [AI provider setup guide](docs/architecture/ai-local-setup.md) for
-provider settings, model verification, connection monitoring, startup order,
-streaming checks, and troubleshooting. The rest of the Laravel application
-continues to work when either AI provider is offline.
-
-Never commit real secrets.
+The Laravel application continues to work when GitHub OAuth, LM Studio, or
+OpenAI is unavailable; only the related optional feature is disabled. Never
+commit `.env` or any real secret. Only `.env.example` belongs in source control.
 
 ## Commands
 
