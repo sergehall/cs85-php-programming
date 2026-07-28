@@ -1,6 +1,6 @@
 # AI Database
 
-The local MVP uses three related tables.
+The hybrid AI workspace uses three related tables.
 
 ## ai_conversations
 
@@ -9,6 +9,7 @@ The local MVP uses three related tables.
 - user_id
 - title
 - mode
+- provider
 - model
 - timestamps
 
