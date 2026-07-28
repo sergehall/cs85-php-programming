@@ -2,21 +2,25 @@
 
 The Final Project is the authenticated Laravel AI workspace at `/cabinet/ai`.
 It extends the single-request OpenAI exercise from Assignment 12A into a
-production-oriented, local-first AI application.
+production-oriented hybrid AI application.
 
 ## Product Goal
 
 The workspace helps authenticated students learn programming, review code, and
-reason about architecture while keeping conversation history and model
-execution under local application control.
+reason about architecture while Laravel owns authorization, conversation
+history, provider selection, and operational controls. Students can choose
+three local models or the connected OpenAI online model from one interface.
 
 ## Implemented Capabilities
 
 - authenticated and verified-user access;
 - conversation ownership enforced through the current user relationship;
-- three explicit task modes with server-controlled model routing;
+- four explicit task modes with server-controlled provider and model routing;
 - provider abstraction through `AiProviderInterface`;
 - LM Studio integration over an OpenAI-compatible Chat Completions endpoint;
+- OpenAI `gpt-4o-mini` integration reusing Assignment 12A's server-side
+  credentials and API configuration;
+- live provider/model monitoring for three local models and one online model;
 - streamed Server-Sent Events from Laravel to the browser;
 - bounded, database-backed multi-turn history;
 - versioned system prompts;
@@ -30,14 +34,16 @@ execution under local application control.
 
 ## Model Routing
 
-| Mode         | Model identifier        | Primary use                             |
-| ------------ | ----------------------- | --------------------------------------- |
-| General      | `qwen/qwen3.6-35b-a3b`  | Learning, explanations, quizzes         |
-| Coding       | `qwen/qwen3-coder-next` | Code generation, review, and debugging  |
-| Architecture | `openai/gpt-oss-120b`   | Planning, trade-offs, and system design |
+| Mode          | Provider   | Model identifier        | Primary use                             |
+| ------------- | ---------- | ----------------------- | --------------------------------------- |
+| General       | LM Studio  | `qwen/qwen3.6-35b-a3b`  | Learning, explanations, quizzes         |
+| Coding        | LM Studio  | `qwen/qwen3-coder-next` | Code generation, review, and debugging  |
+| Architecture  | LM Studio  | `openai/gpt-oss-120b`   | Planning, trade-offs, and system design |
+| OpenAI Online | OpenAI API | `gpt-4o-mini`           | Online answers, drafts, and summaries   |
 
-The selected model is stored on the conversation. Configuration changes affect
-new conversations only, which keeps existing history predictable.
+The selected provider and model are stored on the conversation. Configuration
+changes affect new conversations only, which keeps existing history
+predictable.
 
 ## Architecture
 
@@ -46,13 +52,14 @@ Authenticated browser
     -> Laravel controller and form request
         -> AI conversation service
             -> AI provider interface
-                -> LM Studio OpenAI-compatible API
-                    -> conversation's configured local model
+                -> routed provider
+                    -> LM Studio -> one of three local models
+                    -> OpenAI API -> gpt-4o-mini
 ```
 
 Laravel owns authentication, authorization, prompts, history, tools, Markdown
-rendering, persistence, telemetry, and application-level streaming. LM Studio
-owns only local inference.
+rendering, persistence, telemetry, connection checks, and application-level
+streaming. LM Studio and OpenAI own only inference.
 
 ## Documentation
 
@@ -67,10 +74,9 @@ owns only local inference.
 
 Follow the complete
 [`ai-local-setup.md`](../../docs/architecture/ai-local-setup.md) guide. The
-required local provider settings are:
+required local and online provider settings are:
 
 ```dotenv
-AI_PROVIDER=lm_studio
 AI_LM_STUDIO_BASE_URL=http://127.0.0.1:1234/v1
 AI_LM_STUDIO_API_KEY=lm-studio
 AI_CONNECT_TIMEOUT=5
@@ -80,31 +86,66 @@ AI_HISTORY_MESSAGES=30
 AI_MAX_OUTPUT_TOKENS=2048
 AI_REQUESTS_PER_MINUTE=10
 AI_TOOLS_ENABLED=true
+
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_API_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4o-mini
+OPENAI_CONNECT_TIMEOUT=5
+OPENAI_REQUEST_TIMEOUT=30
 ```
 
-The compatibility key is not an OpenAI cloud key. LM Studio should remain
-bound to `127.0.0.1` during local development.
+The LM Studio compatibility key is not an OpenAI cloud key. LM Studio should
+remain bound to `127.0.0.1` during local development. The real OpenAI key stays
+only in `.env`.
+
+Opening `/cabinet/ai` automatically calls the authenticated
+`/cabinet/ai/status` endpoint. Laravel checks both provider model catalogs and
+reports each configured model as connected, missing, not configured, rejected,
+or unreachable without returning either credential.
 
 ## Verification
 
 ```bash
 php artisan test --filter=Ai
-node --test tests/node/ai-chat.test.mjs
+npm run test:node
 composer run format:check
 composer run lint
 npm run build
 ```
 
 Automated tests use a fake provider or fake HTTP responses and do not require a
-running model.
+running model or spend OpenAI API credits.
 
 ## Assignment Relationship
 
 Assignment 12A is deliberately preserved as a small OpenAI `gpt-4o-mini`
 content generator. It exposes the core mechanics the rubric asks the grader to
-find. The Final Project reuses the same central rule - AI calls stay behind a
-server-side service boundary - and expands everything around that boundary for
-security, privacy, reliability, observability, and user experience.
+find. The Final Project reuses the same live OpenAI connection as its fourth
+routed model and expands the server-side service boundary for security,
+privacy, reliability, observability, provider switching, and user experience.
+
+## Final Project Requirements Evidence
+
+| Requirement                  | Implementation evidence                                                          |
+| ---------------------------- | -------------------------------------------------------------------------------- |
+| AI-powered Laravel interface | Authenticated Blade workspace at `/cabinet/ai`                                   |
+| External AI API              | Online mode streams server-side requests to OpenAI `gpt-4o-mini`                 |
+| Effective prompts            | Four versioned role prompts in `resources/prompts/ai/`                           |
+| Clean architecture           | Controller -> conversation service -> routed provider contract                   |
+| Secure secret handling       | `OPENAI_API_KEY` is read from `.env` and never returned to JavaScript            |
+| Error handling               | Typed provider errors, safe SSE errors, request telemetry, and retry             |
+| Persistence                  | Conversations, messages, provider/model choice, and metadata-only request logs   |
+| Testing                      | HTTP fakes, fake provider, routing tests, authorization tests, and Node UI tests |
+| Working demonstration        | Live status monitor shows three local models plus one online model               |
+
+## Suggested Submission Screenshots
+
+1. `/cabinet/ai` with all four connection cards visible.
+2. The four model/mode selection cards.
+3. A successful OpenAI Online conversation with the provider badge visible.
+4. `config/ai.php` showing three `lm_studio` modes and one `openai` mode.
+5. `RoutedAiProvider`, `OpenAiProvider`, and `AiConversationService` in VS Code.
+6. A passing `php artisan test --filter=Ai` result.
 
 ## GitHub
 
