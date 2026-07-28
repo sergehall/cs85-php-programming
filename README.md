@@ -1,16 +1,23 @@
 # CS85 PHP Programming
 
-Expandable Laravel workspace for Santa Monica College CS85, Summer 2026.
+[![CI](https://github.com/SergeHall/cs85-php-programming/actions/workflows/ci.yml/badge.svg)](https://github.com/SergeHall/cs85-php-programming/actions/workflows/ci.yml)
+![Laravel 13](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
+![Course Roadmap](https://img.shields.io/badge/Modules-12%2F12-0f766e)
+![Final Project](https://img.shields.io/badge/AI%20Final%20Project-Complete-2563eb)
 
-This repository is more than a disposable course sandbox. It is a single Laravel
-application that keeps weekly coursework, labs, notes, project experiments, and
-the final project in one organized codebase while preserving professional
-Laravel boundaries.
+Completed Laravel coursework and final project for Santa Monica College CS85,
+Summer 2026.
+
+The repository brings all 12 course modules, their assignments, and the
+AI-Powered Web Application final project into one organized Laravel codebase.
+The implementation begins with PHP fundamentals and progresses through forms,
+databases, OOP, MVC, Laravel, Eloquent, CRUD, authentication, API data, and a
+hybrid local/online AI assistant.
 
 ## Application Demo
 
 <p>
-  <a href="docs/assets/cs85-ai-powered-application-demo.mp4?raw=1">
+  <a href="https://sergehall.github.io/cs85-php-programming/assets/cs85-ai-powered-application-demo.mp4">
     <img
       alt="Watch the CS85 AI-powered Laravel application demo"
       src="https://img.shields.io/badge/Watch%20Application%20Demo-Video%20Walkthrough-0f766e?style=for-the-badge&logo=github&logoColor=white"
@@ -21,7 +28,7 @@ Laravel boundaries.
 <table>
   <tr>
     <td align="center">
-      <a href="docs/assets/cs85-ai-powered-application-demo.mp4?raw=1">
+      <a href="https://sergehall.github.io/cs85-php-programming/assets/cs85-ai-powered-application-demo.mp4">
         <img
           src="docs/assets/cs85-ai-powered-application-demo-poster.jpg"
           width="720"
@@ -40,7 +47,11 @@ Studio specialists alongside the online OpenAI `gpt-4o-mini` model, live
 provider health, model selection, persistent conversations, and streamed AI
 responses.
 
-[Watch or download the full Application Demo](docs/assets/cs85-ai-powered-application-demo.mp4?raw=1).
+[Watch the full Application Demo through GitHub Pages](https://sergehall.github.io/cs85-php-programming/assets/cs85-ai-powered-application-demo.mp4).
+
+> GitHub Pages publishes the static project documentation. The Laravel
+> application and its AI providers run locally because they require PHP, a
+> database, authentication, environment secrets, LM Studio, and the OpenAI API.
 
 ## Project Goals
 
@@ -53,15 +64,17 @@ responses.
 - Keep the Laravel `public/` directory limited to the front controller and
   browser-safe assets, so source code, configuration, templates, and domain
   classes are not web-served directly.
-- Grow the coursework into a portfolio-quality application with tests, static
-  analysis, CI, Docker-backed infrastructure, and security controls.
+- Present the completed coursework as a portfolio-quality application with
+  tests, static analysis, CI, Docker-backed infrastructure, and security
+  controls.
 
 ## Current Status
 
-The project currently includes:
+The completed project includes:
 
 - Public Laravel pages for home, roadmap, stack, and contact.
-- A 12-module CS85 roadmap driven by `config/course.php`.
+- All 12 CS85 modules and their assignment evidence, driven by
+  `config/course.php`.
 - Session authentication with email/password registration and login.
 - GitHub OAuth login and authenticated account connection.
 - A protected user cabinet and admin-only cabinet area.
@@ -69,13 +82,17 @@ The project currently includes:
   technical skills.
 - Security headers and a strict Content Security Policy.
 - Docker Compose services for MySQL, Redis, Mailpit, and Adminer.
-- Assignment pages served through Laravel routes.
+- Assignment pages served through explicit Laravel routes.
 - A Module 9 Contact List CRUD workbench with a versioned JSON importer,
   Eloquent relationships, filters, validation, and complete UI operations.
 - PHPUnit feature and unit tests.
-- A hybrid AI learning assistant with persistent multi-turn conversations,
-  three streamed LM Studio models, one OpenAI `gpt-4o-mini` online model,
-  live connection monitoring, specialized routing, and read-only course tools.
+- Module 11A with both the required static weather JSON exercise and an advanced
+  clean-architecture API workbench.
+- Module 12A with a verified server-side OpenAI `gpt-4o-mini` content generator.
+- A completed hybrid AI learning assistant with persistent multi-turn
+  conversations, three streamed LM Studio models, one OpenAI `gpt-4o-mini`
+  online model, live connection monitoring, specialized routing, and read-only
+  course tools.
 - Laravel Pint, Larastan/PHPStan, Prettier, Vite build checks, and GitHub
   Actions CI.
 
@@ -90,14 +107,15 @@ The project currently includes:
 - Docker Compose local infrastructure
 - MySQL 9 for local persistent development data
 - SQLite for fast testing and default Laravel startup
-- Redis prepared for future cache and queue work
+- Redis available for cache and queue workloads
 - Mailpit for local email testing
 - Adminer for local database inspection
 - PHPUnit for tests
 - Laravel Pint for PHP formatting
 - Larastan/PHPStan for static analysis
 - Prettier for project documentation, JavaScript, and workflow formatting
-- OpenAI PHP client reserved for the final project
+- Laravel HTTP client for external JSON and OpenAI API integration
+- `openai-php/client` installed as an additional OpenAI SDK option
 
 ## Architecture
 
@@ -109,25 +127,31 @@ Detailed engineering documentation is maintained under [`docs/`](docs/README.md)
 - [Authentication Operations Runbook](docs/authentication/operations.md)
 - [Authentication Testing Strategy](docs/authentication/testing.md)
 - [AI Platform SRS](docs/AI_PLATFORM_SRS.md)
+- [AI Architecture](docs/architecture/ai-architecture.md)
 - [AI Model Runtime and Request Lifecycle](docs/architecture/ai-model-runtime.md)
+- [AI Course Progression](docs/architecture/ai-course-progression.md)
+- [AI Local Setup](docs/architecture/ai-local-setup.md)
+- [Final Project Implementation](assignments/final-project-ai/README.md)
 
 ```text
 app/                         Laravel application code
 app/Http/Controllers         Auth, assignment, cabinet, and workflow controllers
 app/Http/Middleware          Security and role middleware
 app/Models                   Eloquent models
+app/Services/AI              Provider routing, conversations, tools, and telemetry
 app/Services/Modules         Reusable coursework services and domain classes
 assignments/                 Course assignment source files outside public web root
+assignments/final-project-ai Final Project requirements and implementation evidence
 bootstrap/                   Laravel application bootstrap
 config/                      Application, course, security, navigation, and cabinet config
 database/factories           Test and seed factories
 database/migrations          Database schema changes
 database/seeders             Seed data
-final-project/               Future AI-powered final project workspace
 labs/                        Practice exercises
 notes/                       Course notes and reading summaries
 projects/                    Larger module projects
 public/                      Laravel front controller, compiled assets, favicons, robots, sitemap
+resources/prompts/ai         Versioned prompts for the four AI modes
 resources/css                Tailwind CSS entrypoint
 resources/js                 Vite JavaScript entrypoint
 resources/views              Blade pages, layouts, cabinet screens, and partials
@@ -158,67 +182,46 @@ This keeps the project closer to production Laravel conventions:
 - templates and domain classes remain inside application-controlled paths
 - URLs are registered explicitly in `routes/web.php`
 
-## Assignment Structure
+## Twelve-Module Coursework Map
 
-Current assignment source layout:
+Every module is represented on the config-driven roadmap and has working
+implementation evidence in the repository. Start at
+`http://127.0.0.1:8000/roadmap`, or open a module route directly.
 
-```text
-assignments/module2a/
-  order.php
-  price_engine.php
-  price_engine_refactored.php
-  receipt.php
+| Module | Main topic and completed work                                    | Primary local route                 | Implementation evidence                                                                           |
+| ------ | ---------------------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 1      | PHP setup and Laravel Hello World                                | `/roadmap/module-1/assignment-1a`   | [Assignment 1A Blade view](resources/views/pages/assignments/module1/assignment1a.blade.php)      |
+| 2      | Control flow, pricing rules, loops, and dates                    | `/roadmap/module-2`                 | [Module 2A source](assignments/module2a/) and [Module 2B service](app/Services/Modules/Module2B/) |
+| 3      | Forms, request handling, validation, and safe output             | `/roadmap/module-3`                 | [Assignment 3A](assignments/module3a/) and [Assignment 3B](assignments/module3b/)                 |
+| 4      | SQL, MySQL, PDO, and prepared statements                         | `/roadmap/module-4`                 | [Assignment 4A](assignments/module4a/) and [Assignment 4B](assignments/module4b/)                 |
+| 5      | Object-oriented PHP and domain behavior                          | `/roadmap/module-5`                 | [Assignment 5A](assignments/module5a/)                                                            |
+| 6      | Composer autoloading and MVC boundaries                          | `/roadmap/module-6`                 | [Assignment 6A](assignments/module6a/)                                                            |
+| 7      | Laravel routes, controllers, Blade layouts, and 404 handling     | `/roadmap/module-7`                 | [Assignment 7A](assignments/module7a/) and [Assignment 7B](assignments/module7b/)                 |
+| 8      | MySQL environment, migrations, and Eloquent                      | `/roadmap/module-8`                 | [Assignment 8A](assignments/module8a/) and [Assignment 8B](assignments/module8b/)                 |
+| 9      | Full Contact List CRUD, filtering, relationships, and validation | `/contacts`                         | [Assignment 9A](assignments/module9a/)                                                            |
+| 10     | Authentication plus an advanced account-security track           | `/roadmap/module-10/assignment`     | [Assignment 10A](assignments/module10a/)                                                          |
+| 11     | Static JSON weather data plus an advanced API workbench          | `/weather` and `/roadmap/module-11` | [Assignment 11A](assignments/module11a/)                                                          |
+| 12     | OpenAI integration and the AI-Powered Web Application            | `/ai-form` and `/cabinet/ai`        | [Assignment 12A](assignments/module12a/) and [Final Project](assignments/final-project-ai/)       |
 
-assignments/module3a/
-  ContactForm.php
+The early course-required standalone PHP pages remain under `assignments/` and
+are served through an explicit allowlist. Later work uses Laravel controllers,
+Form Requests, services, Eloquent models, Blade views, named routes, and
+automated tests.
 
-assignments/module3b/
-  SecureProductContactForm.php
+## Module 11 to Final Project Progression
 
-assignments/module4a/
-  database-setup.php
+The final three deliverables intentionally show both the required assignment
+fundamentals and the more advanced implementation built from them.
 
-assignments/module4b/
-  show_inventory.php
+| Deliverable                               | Course-aligned requirement                                                                             | Professional extension                                                                                                                                                                       |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module 11A: API Data                      | Read private `weather.json`, call `json_decode()`, pass the array to Blade, and render a weather table | Fetch a fixed HTTPS API, normalize records into `ApiContact` DTOs, validate filters, cache successful data, and use a versioned fallback                                                     |
+| Module 12A: Integrating OpenAI            | Submit title, content type, and tone; call OpenAI `gpt-4o-mini` from Laravel; return an editable draft | Structured prompts, validation, timeouts, safe errors, throttling, and HTTP-fake tests without API charges                                                                                   |
+| Final Project: AI-Powered Web Application | Provide a usable Laravel interface powered by AI                                                       | Route four specialist modes across three private LM Studio models and one online OpenAI model with authentication, live health checks, streaming, persistence, tools, retries, and telemetry |
 
-assignments/module9a/
-  README.md
-  data/contacts.json
-
-assignments/module10a/
-  README.md
-```
-
-Reusable Module 2A classes:
-
-```text
-app/Services/Modules/Module2A/
-  Application/
-  Domain/
-  Presentation/
-```
-
-Canonical assignment URLs:
-
-| Assignment                            | Local URL                                                                 |
-| ------------------------------------- | ------------------------------------------------------------------------- |
-| Module 2A price engine                | `http://127.0.0.1:8000/assignments/module2a/price_engine.php`             |
-| Module 2A refactor                    | `http://127.0.0.1:8000/assignments/module2a/price_engine_refactored.php`  |
-| Module 3A contact form review         | `http://127.0.0.1:8000/assignments/module3a/ContactForm.php`              |
-| Module 3B secure product contact form | `http://127.0.0.1:8000/assignments/module3b/SecureProductContactForm.php` |
-| Module 4A database setup              | `http://127.0.0.1:8000/assignments/module4a/database-setup.php`           |
-| Module 4B personal inventory database | `http://127.0.0.1:8000/assignments/module4b/show_inventory.php`           |
-| Module 10A user authentication        | `http://127.0.0.1:8000/roadmap/module-10/assignment`                      |
-
-Legacy URLs such as `/module4b/show_inventory.php` are still routed through
-Laravel for compatibility, but new submissions should use `/assignments/...`
-URLs and GitHub links under the `assignments/` directory.
-
-Example submission link:
-
-```text
-https://github.com/sergehall/cs85-php-programming/blob/main/assignments/module4b/show_inventory.php
-```
+Module 12A remains available as a small, grader-friendly implementation at
+`/ai-form`. The Final Project reuses its server-side OpenAI configuration as the
+online mode at `/cabinet/ai`, while keeping credentials out of the browser.
 
 ## Assignment Routing
 
@@ -279,7 +282,7 @@ flowchart LR
 
     Laravel --> MySQL
     Laravel --> Mailpit
-    Laravel -. "future cache/queues" .-> Redis
+    Laravel -. "optional cache/queues" .-> Redis
     Adminer --> MySQL
 ```
 
@@ -288,18 +291,23 @@ Homebrew MySQL is not required. The app connects to Docker MySQL on
 
 ## Application Areas
 
-| Area          | Route               | Purpose                                            |
-| ------------- | ------------------- | -------------------------------------------------- |
-| Home          | `/`                 | Project entry point and readiness overview         |
-| Roadmap       | `/roadmap`          | CS85 module path with assignment links             |
-| Module detail | `/roadmap/{module}` | Module-specific assignments, notes, and resources  |
-| Stack         | `/stack`            | Installed tooling and technical foundation         |
-| Contact       | `/contact`          | Course and project contact channels                |
-| Register      | `/register`         | Create a standard user account                     |
-| Login         | `/login`            | Session login with email/password and GitHub OAuth |
-| Cabinet       | `/cabinet`          | Authenticated user workspace                       |
-| Admin cabinet | `/cabinet/admin`    | Admin-only operational workspace                   |
-| Health        | `/up`               | Laravel health route                               |
+| Area                  | Route                | Purpose                                            |
+| --------------------- | -------------------- | -------------------------------------------------- |
+| Home                  | `/`                  | Project entry point and readiness overview         |
+| Roadmap               | `/roadmap`           | Complete 12-module path with assignment links      |
+| Module detail         | `/roadmap/{module}`  | Module-specific assignments, notes, and resources  |
+| Module 9 Contact List | `/contacts`          | Eloquent CRUD and JSON import workbench            |
+| Module 11 weather     | `/weather`           | Course-aligned static JSON and Blade exercise      |
+| Module 11 API         | `/roadmap/module-11` | Advanced normalized API data workbench             |
+| Module 12A generator  | `/ai-form`           | OpenAI `gpt-4o-mini` content generator             |
+| Stack                 | `/stack`             | Installed tooling and technical foundation         |
+| Contact               | `/contact`           | Course and project contact channels                |
+| Register              | `/register`          | Create a standard user account                     |
+| Login                 | `/login`             | Session login with email/password and GitHub OAuth |
+| Cabinet               | `/cabinet`           | Authenticated user workspace                       |
+| Final Project AI      | `/cabinet/ai`        | Hybrid local and OpenAI learning assistant         |
+| Admin cabinet         | `/cabinet/admin`     | Admin-only operational workspace                   |
+| Health                | `/up`                | Laravel health route                               |
 
 `/admin` redirects to `/cabinet` as a legacy convenience route.
 
@@ -349,27 +357,29 @@ with the `admin` middleware.
 Newly registered and GitHub-created users receive the `user` role by default.
 Admin access must be assigned intentionally.
 
-## Cabinet Foundation
+## User and Admin Cabinet
 
-The cabinet is config-driven while the project is still early in the course.
-Content lives in `config/cabinet.php`, and routes are generated from section
-keys.
+The authenticated cabinet combines config-driven navigation with
+database-backed profile, security, activity, administration, and AI workflows.
 
-Prepared user areas:
+User areas:
 
 - Overview
 - Profile
 - Coursework
 - Security
 - Activity
+- AI Assistant
 
-Prepared admin areas:
+Admin areas:
 
 - Users
 - Content
+- Access-request approval
+- Role and login-access management
 
-When database-backed coursework begins, these config-backed panels should move
-into migrations, models, seeders, policies, controllers, and Blade workflows.
+Sensitive actions require recent authentication, and administrative routes are
+protected by the `admin` middleware.
 
 ## Environment
 
@@ -405,7 +415,7 @@ GITHUB_CLIENT_SECRET=
 GITHUB_REDIRECT_URI="${APP_URL}/auth/github/callback"
 ```
 
-Final project AI integration:
+Module 12 and Final Project AI providers:
 
 ```dotenv
 AI_LM_STUDIO_BASE_URL=http://127.0.0.1:1234/v1
@@ -486,6 +496,13 @@ Run only Vite:
 
 ```bash
 npm run dev:assets
+```
+
+Start or stop the local LM Studio server:
+
+```bash
+npm run ai:server:start
+npm run ai:server:stop
 ```
 
 Build frontend assets:
@@ -667,6 +684,13 @@ The test suite currently verifies:
 - authenticated users can edit profile identity, portfolio links, bio, and
   technical skills
 - Module 2A pricing rules and escaping behavior
+- Module 9 contact import, filtering, CRUD, validation, and write protections
+- Module 11 static weather decoding, remote API normalization, caching, and
+  fallback behavior
+- Module 12A validation, prompt variants, OpenAI request shape, and safe
+  provider failures through deterministic fakes
+- Final Project conversation ownership, model routing, provider health,
+  streaming, retry behavior, read-only tools, and telemetry
 - security headers and CSP expectations
 - registration, login, logout, GitHub OAuth, and GitHub account linking behavior
 - email verification, password reset/change, and email normalization
@@ -695,27 +719,29 @@ The test suite currently verifies:
 - Keep `resources/css/app.css` as a Tailwind entrypoint only.
 - Keep secrets in `.env`, not in repository files.
 
-## Professional Upgrade Path
+## Completion and Possible Next Steps
 
-Near-term improvements:
+The 12-module roadmap, Assignment 12A, and the AI-Powered Web Application are
+complete. The repository already includes server-side OpenAI calls,
+environment-only secrets, provider routing, authentication, rate limiting,
+conversation persistence, request telemetry, automated tests, and architecture
+documentation.
 
-- Move the assignment allowlist into `config/assignments.php`.
-- Replace raw PHP assignment routes with named routes where possible.
-- Add POST feature tests for Module 3A, Module 3B, and Module 4A forms.
-- Convert Module 4B from raw PDO to Laravel migrations, seeders, Eloquent, a
-  controller, and a Blade table.
+Possible post-course improvements:
 
-Mid-course improvements:
+- deploy the dynamic Laravel application to a PHP-capable host; GitHub Pages
+  remains the static documentation and demo surface
+- add per-user OpenAI token budgets and a visual usage/cost dashboard
+- add an automated prompt-evaluation dataset for the four specialist modes
+- activate Redis-backed queues and caching for longer-running production work
+- add production observability dashboards and alerting for provider latency and
+  error rates
 
-- Add Form Request validation for write workflows.
-- Add policies for user-owned cabinet records.
-- Persist coursework, profile, and activity in MySQL.
-- Add CRUD flows for assignments, labs, notes, and final project milestones.
-- Add admin audit logging for protected operations.
+## Submission References
 
-Final project improvements:
-
-- Add server-side OpenAI API calls with environment-only API keys.
-- Track AI request cost and usage.
-- Add rate limiting and abuse protection.
-- Add deployment documentation.
+- [Application Demo](https://sergehall.github.io/cs85-php-programming/assets/cs85-ai-powered-application-demo.mp4)
+- [Module 11A documentation](assignments/module11a/README.md)
+- [Module 12A documentation](assignments/module12a/README.md)
+- [Final Project implementation evidence](assignments/final-project-ai/README.md)
+- [AI architecture documentation](docs/architecture/ai-architecture.md)
+- [Complete engineering documentation index](docs/README.md)
