@@ -18,6 +18,7 @@ class AiConversationFactory extends Factory
             'user_id' => User::factory(),
             'title' => fake()->sentence(4),
             'mode' => AiMode::General,
+            'provider' => config('ai.modes.general.provider'),
             'model' => config('ai.modes.general.model'),
         ];
     }

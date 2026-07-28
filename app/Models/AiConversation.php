@@ -16,9 +16,10 @@ use Illuminate\Support\Str;
  * @property string $public_uuid
  * @property string $title
  * @property AiMode $mode
+ * @property string $provider
  * @property string $model
  */
-#[Fillable(['user_id', 'title', 'mode', 'model'])]
+#[Fillable(['user_id', 'title', 'mode', 'provider', 'model'])]
 class AiConversation extends Model
 {
     /** @use HasFactory<AiConversationFactory> */
