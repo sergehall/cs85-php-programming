@@ -321,6 +321,9 @@ Route::prefix('cabinet')->middleware(['auth', 'login.enabled', 'verified'])->nam
 
     Route::get('/ai', [AiAssistantController::class, 'index'])->name('ai');
     Route::prefix('ai')->name('ai.')->group(function () {
+        Route::get('/status', [AiAssistantController::class, 'status'])
+            ->middleware('throttle:ai-status')
+            ->name('status');
         Route::post('/conversations', [AiAssistantController::class, 'store'])->name('conversations.store');
         Route::get('/conversations/{conversation}', [AiAssistantController::class, 'show'])->name('conversations.show');
         Route::delete('/conversations/{conversation}', [AiAssistantController::class, 'destroy'])->name('conversations.destroy');

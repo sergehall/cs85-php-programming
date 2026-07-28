@@ -10,8 +10,10 @@ use App\Models\AiMessage;
 use App\Models\User;
 use App\Services\AI\AiConversationService;
 use App\Services\AI\AiMarkdownRenderer;
+use App\Services\AI\AiProviderStatusService;
 use App\Services\AI\Enums\AiMode;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -25,6 +27,13 @@ class AiAssistantController extends Controller
     public function index(Request $request): View
     {
         return $this->workspace($this->authenticatedUser($request));
+    }
+
+    public function status(Request $request, AiProviderStatusService $status): JsonResponse
+    {
+        $this->authenticatedUser($request);
+
+        return response()->json($status->inspect());
     }
 
     public function store(CreateAiConversationRequest $request, AiConversationService $service): RedirectResponse
