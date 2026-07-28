@@ -82,9 +82,9 @@ return [
                 'route' => 'cabinet.activity',
             ],
             [
-                'title' => 'Local AI learning',
+                'title' => 'Hybrid AI learning',
                 'status' => 'Streaming',
-                'description' => 'Multi-turn tutoring, coding, and architecture conversations run through local LM Studio models.',
+                'description' => 'Multi-turn conversations use three local LM Studio models or the connected OpenAI online model.',
                 'route' => 'cabinet.ai',
             ],
         ],
@@ -185,24 +185,24 @@ return [
         ],
 
         'ai' => [
-            'eyebrow' => 'Local AI Platform',
+            'eyebrow' => 'Hybrid AI Platform',
             'title' => 'AI Learning Assistant',
-            'description' => 'Private multi-turn conversations routed to specialized local models through LM Studio.',
+            'description' => 'Private multi-turn conversations routed to three local models or OpenAI gpt-4o-mini with live connection status.',
             'summary' => [
-                ['label' => 'Provider', 'value' => 'LM Studio'],
+                ['label' => 'Providers', 'value' => 'LM Studio + OpenAI'],
                 ['label' => 'History', 'value' => 'Multi-turn'],
                 ['label' => 'Delivery', 'value' => 'Streaming'],
                 ['label' => 'Access', 'value' => 'User/Admin'],
             ],
             'panels' => [
-                ['title' => 'Learning modes', 'items' => ['General tutor', 'Coding assistant', 'Architecture advisor']],
-                ['title' => 'Local-first', 'items' => ['Server-side provider calls', 'Database conversation history', 'No cloud fallback']],
+                ['title' => 'Learning modes', 'items' => ['General tutor', 'Coding assistant', 'Architecture advisor', 'OpenAI online']],
+                ['title' => 'Hybrid routing', 'items' => ['Three LM Studio models', 'OpenAI gpt-4o-mini', 'Live provider health']],
                 ['title' => 'Safety boundaries', 'items' => ['Escaped output', 'Rate limiting', 'Read-only allowlisted course tools']],
             ],
             'tasks' => [
                 ['label' => 'Select a learning mode', 'status' => 'Ready'],
                 ['label' => 'Start a conversation', 'status' => 'Ready'],
-                ['label' => 'Load the configured LM Studio model', 'status' => 'Local setup'],
+                ['label' => 'Verify local and online connections', 'status' => 'Live status'],
             ],
         ],
     ],

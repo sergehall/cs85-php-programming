@@ -38,7 +38,9 @@ The project currently includes:
 - A Module 9 Contact List CRUD workbench with a versioned JSON importer,
   Eloquent relationships, filters, validation, and complete UI operations.
 - PHPUnit feature and unit tests.
-- A local-first AI learning assistant with persistent multi-turn conversations, streaming LM Studio responses, specialized model routing, and read-only course tools.
+- A hybrid AI learning assistant with persistent multi-turn conversations,
+  three streamed LM Studio models, one OpenAI `gpt-4o-mini` online model,
+  live connection monitoring, specialized routing, and read-only course tools.
 - Laravel Pint, Larastan/PHPStan, Prettier, Vite build checks, and GitHub
   Actions CI.
 
@@ -371,17 +373,21 @@ GITHUB_REDIRECT_URI="${APP_URL}/auth/github/callback"
 Final project AI integration:
 
 ```dotenv
-AI_PROVIDER=lm_studio
 AI_LM_STUDIO_BASE_URL=http://127.0.0.1:1234/v1
 AI_LM_STUDIO_API_KEY=lm-studio
+
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_API_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4o-mini
 ```
 
 Start the LM Studio local server on port `1234` and load the model configured
-for the selected General, Coding, or Architecture mode. Follow the complete
-[local AI setup guide](docs/architecture/ai-local-setup.md) for required LM
-Studio settings, model verification, startup order, streaming checks, and
-troubleshooting. The rest of the Laravel application continues to work when LM
-Studio is offline.
+for the selected General, Coding, or Architecture mode. The OpenAI Online mode
+reuses the Module 12A server-side key and `gpt-4o-mini` configuration. Follow
+the complete [AI provider setup guide](docs/architecture/ai-local-setup.md) for
+provider settings, model verification, connection monitoring, startup order,
+streaming checks, and troubleshooting. The rest of the Laravel application
+continues to work when either AI provider is offline.
 
 Never commit real secrets.
 
