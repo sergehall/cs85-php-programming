@@ -15,6 +15,8 @@ class ModelRouterTest extends TestCase
         $this->assertSame('qwen/qwen3.6-35b-a3b', $router->model(AiMode::General));
         $this->assertSame('qwen/qwen3-coder-next', $router->model(AiMode::Coding));
         $this->assertSame('openai/gpt-oss-120b', $router->model(AiMode::Architecture));
+        $this->assertSame('gpt-4o-mini', $router->model(AiMode::Online));
+        $this->assertSame('openai', $router->provider(AiMode::Online));
 
         foreach (AiMode::cases() as $mode) {
             $configuration = $router->configuration($mode);
@@ -23,6 +25,7 @@ class ModelRouterTest extends TestCase
             $this->assertNotEmpty($configuration['model_name']);
             $this->assertNotEmpty($configuration['model_profile']);
             $this->assertNotEmpty($configuration['recommended_for']);
+            $this->assertContains($configuration['provider'], ['lm_studio', 'openai']);
             $this->assertGreaterThanOrEqual(0.0, $configuration['temperature']);
         }
     }

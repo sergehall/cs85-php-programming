@@ -30,6 +30,7 @@ class LmStudioProviderTest extends TestCase
         ]);
 
         $stream = app(LmStudioProvider::class)->stream(new AiProviderRequest(
+            provider: 'lm_studio',
             model: 'test-model',
             messages: [['role' => 'user', 'content' => 'Hello']],
             tools: [['type' => 'function', 'function' => ['name' => 'get_course_module']]],
