@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Models\User;
 use App\Services\AI\Contracts\AiProviderInterface;
-use App\Services\AI\Providers\LmStudioProvider;
+use App\Services\AI\Providers\RoutedAiProvider;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -23,12 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(AiProviderInterface::class, function ($app): AiProviderInterface {
-            return match (config('ai.provider')) {
-                'lm_studio' => $app->make(LmStudioProvider::class),
-                default => throw new LogicException('The configured AI provider is not supported.'),
-            };
-        });
+        $this->app->bind(AiProviderInterface::class, RoutedAiProvider::class);
     }
 
     /**
@@ -105,6 +100,12 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(max(1, (int) config('ai.limits.requests_per_minute')))
                 ->by('ai:'.$key);
+        });
+
+        RateLimiter::for('ai-status', function (Request $request): Limit {
+            $key = $request->user()?->getAuthIdentifier() ?? $request->ip();
+
+            return Limit::perMinute(20)->by('ai-status:'.$key);
         });
 
         // Module 7B remains a standalone Laravel project, while this namespace

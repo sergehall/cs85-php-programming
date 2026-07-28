@@ -11,6 +11,7 @@ final readonly class AiProviderRequest
      * @param  list<array<string, mixed>>  $tools
      */
     public function __construct(
+        public string $provider,
         public string $model,
         public array $messages,
         public array $tools,

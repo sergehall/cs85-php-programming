@@ -37,6 +37,7 @@ final class AiConversationService
         return $user->aiConversations()->create([
             'title' => 'New conversation',
             'mode' => $mode,
+            'provider' => $this->router->provider($mode),
             'model' => $this->router->model($mode),
         ]);
     }
@@ -79,7 +80,7 @@ final class AiConversationService
             'user_message_id' => $userMessage->getKey(),
             'user_id' => $conversation->user_id,
             'mode' => $mode->value,
-            'provider' => $this->provider->name(),
+            'provider' => $conversation->provider,
             'model' => $conversation->model,
             'status' => AiRequest::STATUS_PROCESSING,
         ]);
@@ -91,6 +92,7 @@ final class AiConversationService
         try {
             $messages = $this->conversationMessages($conversation, $mode);
             $providerStream = $this->provider->stream(new AiProviderRequest(
+                provider: $conversation->provider,
                 model: $conversation->model,
                 messages: $messages,
                 tools: $this->tools->definitions(),
@@ -122,6 +124,7 @@ final class AiConversationService
                 }
 
                 $followUpStream = $this->provider->stream(new AiProviderRequest(
+                    provider: $conversation->provider,
                     model: $conversation->model,
                     messages: $messages,
                     tools: [],
@@ -146,14 +149,14 @@ final class AiConversationService
             }
 
             if (trim($assistantContent) === '') {
-                throw new AiProviderException('LM Studio returned an empty response.', 'empty_response');
+                throw new AiProviderException('The AI provider returned an empty response.', 'empty_response');
             }
 
             $assistantMessage = $conversation->messages()->create([
                 'role' => AiMessage::ROLE_ASSISTANT,
                 'content' => $assistantContent,
                 'metadata' => [
-                    'provider' => $this->provider->name(),
+                    'provider' => $conversation->provider,
                     'model' => $conversation->model,
                 ],
             ]);
@@ -176,11 +179,11 @@ final class AiConversationService
                     category: 'ai',
                     event: 'ai.response.completed',
                     title: 'AI response completed',
-                    description: 'A local AI conversation received a response.',
+                    description: 'An AI conversation received a provider response.',
                     visibility: ActivityLog::VISIBILITY_USER,
                     metadata: [
                         'mode' => $mode->value,
-                        'provider' => $this->provider->name(),
+                        'provider' => $conversation->provider,
                         'model' => $conversation->model,
                     ],
                 );
@@ -199,7 +202,7 @@ final class AiConversationService
                 : ($exception instanceof JsonException ? 'invalid_tool_result' : 'application_error');
             $message = $exception instanceof AiProviderException
                 ? $exception->getMessage()
-                : 'The local AI request could not be completed. Please try again.';
+                : 'The AI request could not be completed. Please try again.';
 
             $requestLog->update([
                 'latency_ms' => $this->elapsedMilliseconds($startedAt),
@@ -207,8 +210,9 @@ final class AiConversationService
                 'error_code' => $errorCode,
             ]);
 
-            Log::warning('Local AI request failed.', [
+            Log::warning('AI provider request failed.', [
                 'ai_request_id' => $requestLog->getKey(),
+                'provider' => $conversation->provider,
                 'error_code' => $errorCode,
                 'exception' => $exception::class,
             ]);
